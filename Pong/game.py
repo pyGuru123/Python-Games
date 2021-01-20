@@ -61,8 +61,8 @@ ball.color('white')
 ball.penup()
 ball.goto(0,0)
 
-ball.dx = 0.5
-ball.dy = 0.5
+ball.dx = 1.0
+ball.dy = 1.0
 
 
 # Pen
@@ -78,22 +78,22 @@ pen.goto(0,250)
 # Functions :
 def padA_up():
 	y = padA.ycor()
-	y += 20
+	y += 25
 	padA.sety(y)
 
 def padA_down():
 	y = padA.ycor()
-	y -= 20
+	y -= 25
 	padA.sety(y)
 
 def padB_up():
 	y = padB.ycor()
-	y += 20
+	y += 25
 	padB.sety(y)
 
 def padB_down():
 	y = padB.ycor()
-	y -= 20
+	y -= 25
 	padB.sety(y)
 
 
@@ -101,12 +101,11 @@ def write():
 	pen.write(f"Player A : {scoreA}    Player B : {scoreB}",align='center',font=('Courier',24,'normal'))
 
 
-def playMusic():
+def playMusic(music):
 	try:
-		winsound.PlaySound('bounce.wav',winsound.SND_ASYNC)
+		winsound.PlaySound(music, winsound.SND_ASYNC)
 	except FileNotFoundError:
 		print('The required music file does not exist.')
-		print('Make sure its in the same folder as the script')
 	except:
 		print('winsound module only works on windows.')
 		print('try playing the sound with os module')
@@ -123,45 +122,47 @@ write()
 # * ------------------------------------------------------------ *
 
 # Main game loop
-while True:
-	win.update()
+try:
+	while True:
+		win.update()
 
-	# Moving the ball
-	ball.setx(ball.xcor() + ball.dx)
-	ball.sety(ball.ycor() + ball.dy)
+		# Moving the ball
+		ball.setx(ball.xcor() + ball.dx)
+		ball.sety(ball.ycor() + ball.dy)
 
-	# Border collison
-	if ball.ycor() > 290:
-		ball.dy *= -1
-		playMusic()
+		# Border collison
+		if ball.ycor() > 290:
+			ball.dy *= -1
+			playMusic('assets/hit1.wav')
 
-	if ball.ycor() < -290:
-		ball.dy *= -1
-		playMusic()
+		if ball.ycor() < -290:
+			ball.dy *= -1
+			playMusic('assets/hit1.wav')
 
-	if ball.xcor() > 390:
-		ball.setx(0)
-		ball.dx *= -1
-		scoreA += 1
-		pen.clear()
-		write()
+		if ball.xcor() > 390:
+			ball.setx(-100)
+			ball.dx *= -1
+			scoreA += 1
+			pen.clear()
+			write()
 
-	if ball.xcor() < -390:
-		ball.setx(0)
-		ball.dx *= -1
-		scoreB += 1
-		pen.clear()
-		write()
+		if ball.xcor() < -390:
+			ball.setx(-100)
+			ball.dx *= -1
+			scoreB += 1
+			pen.clear()
+			write()
 
-	# Paddle and ball collision
-	if (ball.xcor() > 340 and ball.xcor() < 350) and (ball.ycor() < padB.ycor() + 50 and ball.ycor() > padB.ycor() - 50):
-		playMusic()
-		ball.setx(340)
-		ball.dx *= -1
-	if (ball.xcor() < -340 and ball.xcor() >-350) and (ball.ycor() < padA.ycor() + 50 and ball.ycor() > padA.ycor() - 50):
-		playMusic()
-		ball.setx(-340)
-		ball.dx *= -1
+		# Paddle and ball collision
+		if (ball.xcor() > 340 and ball.xcor() < 350) and (ball.ycor() < padB.ycor() + 50 and ball.ycor() > padB.ycor() - 50):
+			playMusic('assets/hit2.wav')
+			ball.setx(340)
+			ball.dx *= -1
+		if (ball.xcor() < -340 and ball.xcor() >-350) and (ball.ycor() < padA.ycor() + 50 and ball.ycor() > padA.ycor() - 50):
+			playMusic('assets/hit2.wav')
+			ball.setx(-340)
+			ball.dx *= -1
 
 
-turtle.done()
+except Exception as e:
+	pass
