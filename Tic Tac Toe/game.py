@@ -173,7 +173,7 @@ class Application(tk.Frame):
 	def game_over_window(self, msg):
 		self.top = tk.Toplevel(self)
 		self.top.geometry('200x100+500+380')
-		self.top.title('Minesweeper')
+		self.top.title('Tic Tac Toe')
 		self.top.resizable(0,0)
 		self.top.protocol("WM_DELETE_WINDOW", self.master.destroy)
 
@@ -189,6 +189,7 @@ class Application(tk.Frame):
 if __name__ == '__main__':
 	root = tk.Tk()
 	root.title('Tic Tac Toe')
+	root.resizable(0,0)
 	root.geometry('300x400+450+200')
 
 	app = Application(master=root)
