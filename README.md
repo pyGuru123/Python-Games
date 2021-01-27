@@ -19,6 +19,10 @@ and pygame library.
 	> Pong game written using turtle module.\
 	> Link to project : [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 
+* ## Rock Paper Scissor
+	> Rock Paper Scissor game written using tkinter module.\
+	> Link to project : [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
+
 * ## Tic Tac Toe
 	> Tic Tac Toe game written using tkinter module.\
 	> Link to project : [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
