@@ -3,8 +3,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import PhotoImage
 from tkinter import messagebox
+from datetime import datetime
 
 from logic import isSolvable, isSolved
+from game_over_screen import GameWon
 
 class Application(tk.Frame):
 	def __init__(self, master=None):
@@ -16,6 +18,7 @@ class Application(tk.Frame):
 		self.imgType = tk.StringVar()
 		self.imgType.set('car')
 		self.numMoves = 0
+		self.firstMove = True
 
 		self.imgDict = {'car':car_list, 'rain':rain_list, 'superhero':superhero_list,
 					'universe':universe_list, 'nature':nature_list, 'night':night_list}
@@ -43,13 +46,17 @@ class Application(tk.Frame):
 
 		self.options = ttk.OptionMenu(self.header, self.imgType, 'car', *self.imgDict.keys())
 		self.options.config(width=10)
-		self.options.grid(row=0, column=1, padx=(30,10), pady=20)
+		self.options.grid(row=0, column=1, padx=(30,10), pady=10)
 		
 		# self.options.bind("<Configure>", self.new_game)
 
 		self.hint_btn = tk.Button(self.header, image=hint_icon,
 				relief=tk.FLAT, command=self.show_solution, bg='white')
 		self.hint_btn.grid(row=0, column=2, padx=(30,10), pady=0)
+
+		self.timer_label = tk.Label(self.header, font=('verdana', 14), fg='black',
+						text='00:00:00', width=10, bg='white')
+		self.timer_label.grid(row=1, column=0, columnspan=3)
 
 		self.movesFrame = tk.LabelFrame(self.header, width=100, height=100, bg='gray')
 		self.movesFrame.grid(row=0, column=3, rowspan=2)
@@ -100,7 +107,13 @@ class Application(tk.Frame):
 
 		self.numMoves = 0
 		self.movesLabel['text'] = self.numMoves
+		self.firstMove = True
 		self.gridCells = []
+
+		if self.timer_id:
+			self.after_cancel(self.timer_id)
+			self.timer_label['text'] = '00:00:00'
+		# self.start_time = datetime.now()
 
 		self.draw_body()
 
@@ -142,12 +155,17 @@ class Application(tk.Frame):
 			self.update_state()
 
 	def swap_cell(self, p1, p2):
+		if self.firstMove:
+			self.start_time = datetime.now()
+			self.firstMove = False
+			self.timer_id = self.after(1000, self.update_timer)
+
 		self.imgMatrix[p1], self.imgMatrix[p2] = self.imgMatrix[p2], self.imgMatrix[p1]
 		self.array[p1], self.array[p2] = self.array[p2], self.array[p1]
 		self.update_moves()
 
-		# if not isSolved(self.array):
-		# 	self.game_over()
+		if isSolved(self.array):
+			GameWon(self.master, self.numMoves, self.new_game)
 
 	def update_state(self):
 		for index, img in enumerate(self.imgMatrix):
@@ -160,6 +178,13 @@ class Application(tk.Frame):
 	def update_moves(self):
 		self.numMoves += 1
 		self.movesLabel['text'] = self.numMoves
+
+	def update_timer(self):
+		now =  datetime.now()
+		minutes, seconds = divmod((now - self.start_time).total_seconds(),60)
+		string = f"00:{int(minutes):02}:{round(seconds):02}"
+		self.timer_label['text'] = string
+		self.timer_id = self.after(1000, self.update_timer)
 
 	def show_solution(self):
 		self.body.grid_forget()
@@ -174,28 +199,6 @@ class Application(tk.Frame):
 		self.body.grid()
 		self.reset_btn.config(state=tk.NORMAL)
 		self.hint_btn.config(state=tk.NORMAL)
-
-	def game_over(self):
-		self.top = tk.Toplevel()
-		self.top.title('Picture Slider')
-		self.top.geometry('300x200+500+330')
-		self.top.protocol("WM_DELETE_WINDOW", self.destroy_top)
-
-		self.photolist = [PhotoImage(file=f'images/claps/frame_{i}.png') for i in range(4)]
-		self.animate_index = 0
-
-		tk.Label(self.top, image=self.photolist[index]).grid(row=0,column=2, pady=3)
-		tk.Label(self.top, text=f'You solved it in {self.numMoves} moves',
-				font='verdana 12 bold', fg='green').grid(row=1, column=0,
-					columnspan=5)
-		self.top.after(100, self.animate_clap)
-
-	def animate_index():
-		pass
-
-	def destroy_top(self):
-		self.new_game()
-		self.top.destroy()
 
 
 # https://www.imgonline.com.ua/eng/cut-photo-into-pieces.php
