@@ -19,6 +19,7 @@ class Application(tk.Frame):
 		self.imgType.set('car')
 		self.numMoves = 0
 		self.firstMove = True
+		self.timer_id = None
 
 		self.imgDict = {'car':car_list, 'rain':rain_list, 'superhero':superhero_list,
 					'universe':universe_list, 'nature':nature_list, 'night':night_list}

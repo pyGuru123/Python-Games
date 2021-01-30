@@ -130,7 +130,7 @@ class Application(tk.Frame):
 		self.paper_system = tk.Label(self.body, image=paper_small)
 		self.paper_system.grid(row=1, column=5, pady=(5,0), padx=(15,10))
 
-		self.scissor_system = tk.Label(self.body, image='')
+		self.scissor_system = tk.Label(self.body, image=scissor_small)
 		self.scissor_system.grid(row=2, column=5, pady=(5,0), padx=(10,10))
 
 		self.r1 = tk.Label(self.lbox, image='')
