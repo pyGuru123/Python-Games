@@ -15,6 +15,10 @@ and pygame library.
 	> MineSweeper game written using tkinter library.\
 	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
 
+* ## Picture Sliding Game
+	> Picture Sliding Game written using tkinter module.\
+	> Link to project : [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
+
 * ## Pong
 	> Pong game written using turtle module.\
 	> Link to project : [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
