@@ -1,7 +1,5 @@
 # Python-Games
 
-# Python Projects
-
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/check-it-out.svg)](https://forthebadge.com)
@@ -16,7 +14,7 @@ and pygame library.
 	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
 
 * ## Picture Sliding Puzzle
-	> Picture Sliding Puzzle is an implementation of 15 puzzle.\
+	> Picture Sliding Puzzle is an implementation of 15 puzzle in tkinter library.\
 	> Link to project : [Picture Sliding Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Picture%20Sliding%20Puzzle)
 
 * ## Pong
@@ -24,11 +22,11 @@ and pygame library.
 	> Link to project : [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 
 * ## Rock Paper Scissor
-	> Rock Paper Scissor game written using tkinter module.\
+	> Rock Paper Scissor game written using tkinter library.\
 	> Link to project : [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 
 * ## Tic Tac Toe
-	> Tic Tac Toe game written using tkinter module.\
+	> Tic Tac Toe game written using tkinter library.\
 	> Link to project : [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
 
 
