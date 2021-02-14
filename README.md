@@ -9,6 +9,10 @@ and pygame library.
 
 ### All the projects are listed here
 
+* ## Asteroids
+	> Asteroids is an implementaion of Asteroids game in pygame.\
+	> Link to project : [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
+
 * ## MineSweeper
 	> MineSweeper game written using tkinter library.\
 	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
