@@ -1,6 +1,6 @@
 import random
 import pygame
-from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_SPACE
+from pygame.locals import KEYDOWN, QUIT, K_ESCAPE, K_SPACE, K_LEFT, K_RIGHT
 
 from objects import Rocket, Asteroid, Bullet, Explosion
 
@@ -52,10 +52,15 @@ while running:
 			if event.key == K_ESCAPE:
 				running = False
 			if event.key == K_SPACE:
-				bullet = Bullet(rocket.rect[:2], SIZE)
+				pos = rocket.rect[:2]
+				bullet = Bullet(pos, rocket.dir, SIZE)
 				bullets.add(bullet)
 				all_sprites.add(bullet)
 				gunshot_sound.play()
+			if event.key == K_LEFT:
+				rocket.rotate_left()
+			if event.key == K_RIGHT:
+				rocket.rotate_right()
 
 		elif event.type == ADDAST1:
 			ast = Asteroid(1, SIZE)
