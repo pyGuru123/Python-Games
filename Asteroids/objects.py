@@ -1,6 +1,7 @@
 import random
 import pygame
-from pygame.locals import (RLEACCEL, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+from pygame.locals import (RLEACCEL, K_UP, K_DOWN, K_LEFT, K_RIGHT, 
+									 K_w, K_s, K_a, K_d)
 
 class Rocket(pygame.sprite.Sprite):
 	def __init__(self, winsize):
@@ -17,13 +18,13 @@ class Rocket(pygame.sprite.Sprite):
 		self.dir = self.dirlist[self.dirindex]
 
 	def update(self, pressed_keys):
-		if pressed_keys[K_UP]:
+		if pressed_keys[K_UP] or pressed_keys[K_w]:
 			self.rect.move_ip(0, -self.speed)
-		elif pressed_keys[K_DOWN]:
+		elif pressed_keys[K_DOWN] or pressed_keys[K_s]:
 			self.rect.move_ip(0, self.speed)
-		elif pressed_keys[K_LEFT]:
+		elif pressed_keys[K_LEFT] or pressed_keys[K_a]:
 			self.rect.move_ip(-self.speed, 0)
-		elif pressed_keys[K_RIGHT]:
+		elif pressed_keys[K_RIGHT] or pressed_keys[K_d]:
 			self.rect.move_ip(self.speed, 0)
 
 		if self.rect.left < 0:
@@ -112,19 +113,23 @@ class Asteroid(pygame.sprite.Sprite):
 		asteroid_types = {i:f'assets/asteroids/asteroid{i}.png' for i in range(1,6)}
 		img = asteroid_types.get(type)
 
-		self.dirlist = ['top', 'bottom']
-		# 'right', , 'left'
+		self.dirlist = ['top', 'bottom', 'left', 'right']
 		self.dir = random.choice(self.dirlist)
 		
-
 		self.surf = pygame.image.load(img).convert()
 		self.surf.set_colorkey((0,0,0), RLEACCEL)
 
 		pos = self.initial_pos()
-		if pos[0] < self.winwidth / 2:
-			self.x = random.choice([0,0,0,1,2,3,4,5])
-		elif pos[0] >= self.winwidth / 2:
-			self.x = random.choice([0,0,0,-1,-2,-3,-4,-5])
+		if self.dir in ('top', 'bottom'):
+			if pos[0] < self.winwidth / 2:
+				self.x = random.choice([0,0,0,1,2,3,4,5])
+			elif pos[0] >= self.winwidth / 2:
+				self.x = random.choice([0,0,0,-1,-2,-3,-4,-5])
+		elif self.dir in ('left', 'right'):
+			if pos[1] < self.winheight / 2:
+				self.y = random.choice([0,0,0,1,2,3,4,5])
+			elif pos[1] >= self.winheight / 2:
+				self.y = random.choice([0,0,0,-1,-2,-3,-4,-5])
 
 		self.rect = self.surf.get_rect(center=pos)
 
@@ -139,6 +144,16 @@ class Asteroid(pygame.sprite.Sprite):
 				random.randint(20, self.winwidth-20),
 				random.randint(self.winheight+50, self.winheight+100)
 			)
+		elif self.dir == 'left':
+			pos = (
+				random.randint(-20, 0),
+				random.randint(0, self.winheight)
+			)
+		elif self.dir == 'right':
+			pos = (
+				random.randint(self.winwidth+20, self.winwidth+70),
+				random.randint(0, self.winheight)
+			)
 
 		return pos
 
@@ -150,6 +165,14 @@ class Asteroid(pygame.sprite.Sprite):
 		elif self.dir == 'bottom':
 			self.rect.move_ip(self.x, -5)
 			if self.rect.bottom < 0:
+				self.kill()
+		elif self.dir == 'left':
+			self.rect.move_ip(5, self.y)
+			if self.rect.left > self.winwidth:
+				self.kill()
+		elif self.dir == 'right':
+			self.rect.move_ip(-5, self.y)
+			if self.rect.right < 0:
 				self.kill()
 
 class Explosion(pygame.sprite.Sprite):

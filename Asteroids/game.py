@@ -132,6 +132,9 @@ if __name__ == '__main__':
 				score = 0
 				for sprite in all_sprites:
 					sprite.kill()
+				all_sprites.empty()
+				rocket = Rocket(SIZE)
+				all_sprites.add(rocket)
 				gameStarted = False
 				musicStarted = False
 
