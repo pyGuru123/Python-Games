@@ -13,6 +13,10 @@ and pygame library.
 	> Asteroids is an implementaion of Asteroids game in pygame.\
 	> Link to project : [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 
+* ## Dino Run
+	> Dino Run is an implementaion of chromes dino run game in pygame.\
+	> Link to project : [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
+
 * ## MineSweeper
 	> MineSweeper game written using tkinter library.\
 	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
