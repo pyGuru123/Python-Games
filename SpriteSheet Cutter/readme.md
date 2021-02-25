@@ -1,12 +1,12 @@
 # Spritesheet Cutter
 
-Image Cutter & Resizer is a simple python tkinter based application to resize and divide imagesin equal parts
+Image Cutter & Resizer is a simple python tkinter based application to resize, cut and divide spritesheets
 
 ![Alt text](app.png?raw=true "Spritesheet Cutter")
 
 ## How to Download
 
-Download this project from here [Download Spritesheet Cutter](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Projects/tree/master/Image%20-%20CutterCropperResizer)
+Download this project from here [Download Spritesheet Cutter](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/SpriteSheet%20Cutter)
 
 ## Requirements
 

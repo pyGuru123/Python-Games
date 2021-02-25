@@ -7,7 +7,7 @@
 This repository contains a collection of small python games made by me using turtle, tkinter
 and pygame library.
 
-### All the projects are listed here
+### All the Games are listed here
 
 * ## Asteroids
 	> Asteroids is an implementaion of Asteroids game in pygame.\
@@ -36,6 +36,12 @@ and pygame library.
 * ## Tic Tac Toe
 	> Tic Tac Toe game written using tkinter library.\
 	> Link to project : [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
+
+### Tools & Utilities
+
+* ## SpriteSheet Cutter
+	> SpriteSheet Cutter is a tool to cut spritsheets.\
+	> Link to project : [SpriteSheet Cutter](https://github.com/pyGuru123/Python-Games/tree/master/SpriteSheet%20Cutter)
 
 
 <br/>
