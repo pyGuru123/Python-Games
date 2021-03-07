@@ -31,7 +31,7 @@ pygame.display.set_caption('Level Editor')
 
 # load backgrounds
 sun_img = pygame.image.load('assets/sun.png')
-bg_img = pygame.image.load('assets/BG2.png')
+bg_img = pygame.image.load('assets/BG1.png')
 bg_img = pygame.transform.scale(bg_img, (win_width - margin, HEIGHT))
 
 # load buttons
@@ -103,9 +103,9 @@ def draw_world():
 					img = pygame.transform.scale(tiles[index-1], (tile_size, int(tile_size * 0.50)))
 					win.blit(img, (col * tile_size, row * tile_size + tile_size // 2))
 				if index == 16:
-					#mushroom blocks
-					img = pygame.transform.scale(tiles[index-1], (int(tile_size * 0.80), int(tile_size * 0.80)))
-					win.blit(img, (col * tile_size + tile_size//8, row * tile_size + tile_size // 5))
+					#Lava Still block
+					img = pygame.transform.scale(tiles[index-1], (tile_size, tile_size))
+					win.blit(img, (col * tile_size, row * tile_size))
 				if index == 17:
 					#Diamond blocks
 					img = pygame.transform.scale(tiles[index-1], (tile_size, tile_size))
@@ -119,13 +119,25 @@ def draw_world():
 					img = pygame.transform.scale(tiles[index-1], (tile_size, int(tile_size * 0.50)))
 					win.blit(img, (col * tile_size, row * tile_size + tile_size // 2))
 				if index == 20:
+					#Water blocks
+					img = pygame.transform.scale(tiles[index-1], (tile_size, tile_size))
+					win.blit(img, (col * tile_size, row * tile_size))
+				if index == 21:
 					#tree blocks
 					img = pygame.transform.scale(tiles[index-1], (3*tile_size, 3 * tile_size))
 					win.blit(img, ((col-1) * tile_size + 10, (row-2) * tile_size + 5))
-				if index == 21:
-					#floating_platform blocks
-					img = pygame.transform.scale(tiles[index-1], (tile_size//2, tile_size//2))
-					win.blit(img, (col * tile_size + 10, row * tile_size))
+				if index == 22:
+					#mushroom blocks
+					img = pygame.transform.scale(tiles[index-1], (int(tile_size * 0.80), int(tile_size * 0.80)))
+					win.blit(img, (col * tile_size + tile_size//8, row * tile_size + tile_size // 5))
+				if index == 23:
+					#Bee blocks
+					img = pygame.transform.scale(tiles[index-1], (50, 50))
+					win.blit(img, (col * tile_size, row * tile_size))
+				if index == 24:
+					#Bee blocks
+					img = tiles[index-1]
+					win.blit(img, (col * tile_size - tile_size//4, row * tile_size - tile_size//4))
 
 
 class Button:

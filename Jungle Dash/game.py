@@ -12,21 +12,28 @@ win = pygame.display.set_mode(SIZE)
 pygame.display.set_caption('DASH')
 clock = pygame.time.Clock()
 FPS = 30
- 
-bg = pygame.image.load('assets/BG.png')
-sun = pygame.image.load('assets/sun.png')
 
-f = open('levels/level1_data', 'rb')
+level = 3
+level_dict = {
+	(i+1):f'levels/level{i+1}_data' for i in range(3)
+}
+
+d = level_dict[level]
+f = open(d, 'rb')
 data = pickle.load(f)
 f.close()
 
+bg = pygame.image.load('assets/BG1.png')
+sun = pygame.image.load('assets/sun.png')
+
 water_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
-forest_groups = pygame.sprite.Group()
-diamond_groups = pygame.sprite.Group()
-groups = [water_group, lava_group, forest_groups, diamond_groups]
+forest_group = pygame.sprite.Group()
+diamond_group = pygame.sprite.Group()
+enemies_group = pygame.sprite.Group()
+groups = [water_group, lava_group, forest_group, diamond_group, enemies_group]
 world = World(win, data, groups)
-player = Player(win, (100, 440), world, groups)
+player = Player(win, (10, 340), world, groups)
 
 game_over = False
 running = True
@@ -47,6 +54,7 @@ while running:
 	world.draw()
 	for group in groups:
 		group.draw(win)
+	enemies_group.update(player)
 	game_over = player.update(pressed_keys, game_over)
 
 

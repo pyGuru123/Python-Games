@@ -32,7 +32,7 @@ class World:
 			col_count = 0
 			for col in row:
 				if col > 0:
-					if col in range(1,14):
+					if col in range(1,14) or col == 18:
 						# dirt blocks
 						img = pygame.transform.scale(tiles[col-1], (tile_size, tile_size))
 						rect = img.get_rect()
@@ -48,20 +48,42 @@ class World:
 
 					if col == 15:
 						# lava
-						lava = Fluid('lava', col_count * tile_size, row_count * tile_size + tile_size // 2)
+						lava = Fluid('lava_flow', col_count * tile_size, row_count * tile_size + tile_size // 2)
 						self.groups[1].add(lava)
+					
 					if col == 17:
 						# diamond
 						diamond = Diamond(col_count * tile_size, row_count * tile_size)
 						self.groups[3].add(diamond)
 					if col == 19:
 						# water block
-						water = Fluid('water', col_count * tile_size, row_count * tile_size + tile_size // 2)
+						water = Fluid('water_flow', col_count * tile_size, row_count * tile_size + tile_size // 2)
 						self.groups[1].add(water)
 					if col == 20:
+						# water block
+						water = Fluid('water_still', col_count * tile_size, row_count * tile_size)
+						self.groups[1].add(water)
+					if col == 21:
 						# tree
 						tree = Forest('tree', (col_count-1) * tile_size + 10, (row_count-2) * tile_size + 5)
 						self.groups[2].add(tree)
+					if col == 22:
+						# mushroom
+						mushroom = Forest('mushroom', col_count * tile_size, row_count * tile_size + tile_size // 4)
+						self.groups[2].add(mushroom)
+					if col == 23:
+						# bee
+						bee = Bee(col_count * tile_size, row_count * tile_size)
+						self.groups[4].add(bee)
+					if col == 24:
+						#Gate blocks
+						img = pygame.image.load('tiles/24.png')
+						rect = img.get_rect()
+						rect.x = col_count * tile_size - tile_size//4
+						rect.y = row_count * tile_size - tile_size//4
+						tile = (img, rect)
+						self.tile_list.append(tile)
+
 
 
 				col_count += 1
@@ -148,6 +170,10 @@ class Player:
 				game_over  = True
 			if pygame.sprite.spritecollide(self, self.groups[1], False):
 				game_over  = True
+			if pygame.sprite.spritecollide(self, self.groups[3], True):
+				pass
+			if pygame.sprite.spritecollide(self, self.groups[4], False):
+				game_over = True
 
 			# updating player position
 			self.rect.x += dx
@@ -156,6 +182,8 @@ class Player:
 			# 	self.rect.x = self.width
 			if self.rect.x >= WIDTH - self.width:
 				self.rect.x = WIDTH - self.width
+			if self.rect.x <= 0:
+				self.rect.x = 0
 
 
 		elif game_over:
@@ -164,7 +192,14 @@ class Player:
 				self.rect.y -= 5
 
 			self.win.blit(game_over_img, game_over_rect)
+			replay = replay_btn.draw(self.win)
+			home_btn.draw(self.win)
+			exit_btn.draw(self.win)
+			setting_btn.draw(self.win)
 
+			if replay:
+				self.reset(self.win, (10, 340), self.world, self.groups)
+				game_over = False
 
 		# displaying player on window
 		self.win.blit(self.image, self.rect)
@@ -206,12 +241,17 @@ class Fluid(pygame.sprite.Sprite):
 	def __init__(self, type_, x, y):
 		super(Fluid, self).__init__()
 
-		if type_ == 'water':
+		if type_ == 'water_flow':
 			img = pygame.image.load('tiles/19.png')
-		elif type_ == 'lava':
+			self.image = pygame.transform.scale(img, (tile_size, tile_size // 2 + tile_size // 4))
+		if type_ == 'water_still':
+			img = pygame.image.load('tiles/20.png')
+			self.image = pygame.transform.scale(img, (tile_size, tile_size))
+		elif type_ == 'lava_flow':
 			img = pygame.image.load('tiles/15.png')
+			self.image = pygame.transform.scale(img, (tile_size, tile_size // 2 + tile_size // 4))
 
-		self.image = pygame.transform.scale(img, (tile_size, tile_size // 2 + tile_size // 4))
+		
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
@@ -225,8 +265,12 @@ class Forest(pygame.sprite.Sprite):
 			self.image = pygame.transform.scale(img, (tile_size, int(tile_size * 0.50)))
 
 		if type_ == 'tree':
-			img = pygame.image.load('tiles/20.png')
+			img = pygame.image.load('tiles/21.png')
 			self.image = pygame.transform.scale(img, (3*tile_size, 3 * tile_size))
+
+		if type_ == 'mushroom':
+			img = pygame.image.load('tiles/22.png')
+			self.image = pygame.transform.scale(img, (int(tile_size * 0.80), int(tile_size * 0.80)))
 
 		self.rect = self.image.get_rect()
 		self.rect.x = x
@@ -243,8 +287,76 @@ class Diamond(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
+class Bee(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Bee, self).__init__()
+
+		img = pygame.image.load('tiles/23.png')
+		self.img_left = pygame.transform.scale(img, (48,48))
+		self.img_right = pygame.transform.flip(self.img_left, True, False)
+		self.image = self.img_left
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.pos = self.rect.y
+		self.dx = 3
+
+	def update(self, player):
+		if self.rect.x >= player.rect.x:
+			self.image = self.img_left
+		else:
+			self.image = self.img_right
+
+		if self.rect.y >= self.pos:
+			self.dx *= -1
+		if self.rect.y <= self.pos - tile_size * 3:
+			self.dx *= -1
+
+		self.rect.y += self.dx
+
+
+
 class Button(pygame.sprite.Sprite):
-	pass
+	def __init__(self, type_, x, y):
+		super(Button, self).__init__()
+
+		if type_ == 'replay':
+			img = pygame.image.load('assets/replay.png')
+		if type_ == 'home':
+			img = pygame.image.load('assets/home.png')
+		if type_ == 'exit':
+			img = pygame.image.load('assets/exit.png')
+		if type_ == 'setting':
+			img = pygame.image.load('assets/setting.png')
+		# if type_ == 'replay':
+		# 	img = pygame.image.load('assets/replay.png')
+
+		self.image = pygame.transform.scale(img, (45,42))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action
+
+replay_btn  = Button('replay', WIDTH//2 - 100, HEIGHT//2 + 20)
+home_btn  = Button('home', WIDTH//2 - 40, HEIGHT//2 + 20)
+exit_btn  = Button('exit', WIDTH//2 + 20, HEIGHT//2 + 20)
+setting_btn  = Button('setting', WIDTH//2 + 80, HEIGHT//2 + 20)
 
 
 
