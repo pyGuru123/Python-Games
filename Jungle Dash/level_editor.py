@@ -128,13 +128,17 @@ def draw_world():
 					img = tiles[index-1]
 					win.blit(img, (col * tile_size - tile_size//4, row * tile_size - tile_size//4))
 				if index == 27:
-					#treelimb blocks
+					#flower blocks
 					img = pygame.transform.scale(tiles[index-1], (2*tile_size, tile_size))
-					win.blit(img, ((col-1) * tile_size, row * tile_size))
+					win.blit(img, ((col) * tile_size, row * tile_size))
 				if index == 28:
 					#treelimb blocks
 					img = pygame.transform.scale(tiles[index-1], (5*tile_size + 20, tile_size))
 					win.blit(img, ((col-2) * tile_size + 10, row * tile_size + tile_size // 4))
+				if index == 29:
+					#slime blocks
+					img = pygame.transform.scale(tiles[index-1], (int(1.2*tile_size), tile_size))
+					win.blit(img, (col * tile_size - 10, row * tile_size))
 
 
 class Button:

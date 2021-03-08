@@ -18,6 +18,7 @@ BLUE = (30, 144, 255)
 mixer.init()
 
 pygame.mixer.music.load('sounds/Ballad for Olivia.mp3')
+pygame.mixer.music.set_volume(0.3)
 pygame.mixer.music.play(-1, 0.0, 5000)
 
 diamond_fx = pygame.mixer.Sound('sounds/341695__projectsu012__coins-1.wav')
@@ -70,6 +71,9 @@ class World:
 						# lava
 						lava = Fluid('lava_flow', col_count * tile_size, row_count * tile_size + tile_size // 2)
 						self.groups[1].add(lava)
+					if col == 16:
+						lava = Fluid('lava_still', col_count * tile_size, row_count * tile_size)
+						self.groups[1].add(lava)
 					
 					if col == 17:
 						# diamond
@@ -107,6 +111,18 @@ class World:
 						#top moving platform
 						platform = MovingPlatform('up', col_count * tile_size, row_count * tile_size)
 						self.groups[6].add(platform)
+					if col == 27:
+						#flower
+						flower = Forest('flower', (col_count) * tile_size, row_count * tile_size)
+						self.groups[2].add(flower)
+					if col == 28:
+						# bridge
+						bridge = Bridge((col_count-2) * tile_size + 10, row_count * tile_size + tile_size // 4)
+						self.groups[7].add(bridge)
+					if col == 29:
+						#Slime
+						slime = Slime(col_count * tile_size - 10, row_count * tile_size + tile_size // 4)
+						self.groups[4].add(slime)
 
 
 				col_count += 1
@@ -234,6 +250,25 @@ class Player:
 					if platform.move_x:
 						self.rect.x += platform.move_direction
 
+			for bridge in self.groups[7]:
+				# collision in x direction
+				if ( bridge.rect.colliderect(self.rect.x+dx, self.rect.y, self.width, self.height) and 
+							( bridge.rect.bottom < self.rect.bottom + 5)):
+					dx = 0
+
+				# collision in y direction
+				if bridge.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+					if abs((self.rect.top + dy) - bridge.rect.bottom) < col_threshold:
+						self.vel_y = 0
+						dy = (bridge.rect.bottom - self.rect.top)
+
+					# check if above platform
+					elif abs((self.rect.bottom + dy) - bridge.rect.bottom) < 8:
+						self.rect.bottom = bridge.rect.bottom - 12
+						self.in_air = False
+						dy = 0
+
+
 
 
 			# updating player position
@@ -318,6 +353,16 @@ class MovingPlatform(pygame.sprite.Sprite):
 			self.move_direction *= -1
 			self.move_counter *= -1
 
+class Bridge(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Bridge, self).__init__()
+
+		img = pygame.image.load('tiles/28.png')
+		self.image = pygame.transform.scale(img, (5*tile_size + 20, tile_size))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
 
 class Fluid(pygame.sprite.Sprite):
 	def __init__(self, type_, x, y):
@@ -375,6 +420,10 @@ class Forest(pygame.sprite.Sprite):
 			img = pygame.image.load('tiles/22.png')
 			self.image = pygame.transform.scale(img, (int(tile_size * 0.80), int(tile_size * 0.80)))
 
+		if type_ == 'flower':
+			img = pygame.image.load('tiles/27.png')
+			self.image = pygame.transform.scale(img, (2*tile_size, tile_size))
+
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
@@ -419,22 +468,32 @@ class Bee(pygame.sprite.Sprite):
 
 		self.rect.y += self.dx
 
-class Worm(pygame.sprite.Sprite):
+class Slime(pygame.sprite.Sprite):
 	def __init__(self, x, y):
-		super(Worm, self).__init__()
-		self.move_direction = 1
+		super(Slime, self).__init__()
+
+		img = pygame.image.load('tiles/29.png')
+		self.img_left = pygame.transform.scale(img, (int(1.2*tile_size), tile_size//2 + tile_size//4))
+		self.img_right = pygame.transform.flip(self.img_left, True, False)
+		self.imlist = [self.img_left, self.img_right]
+		self.index = 0
+
+		self.image = self.imlist[self.index]
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.move_direction = -1
 		self.move_counter = 0
 
-	def update(self):
-		self.rect.y += self.move_direction
+	def update(self, player):
+		self.rect.x += self.move_direction
 		self.move_counter += 1
 		if abs(self.move_counter) >= 50:
+			self.index = (self.index + 1) % 2
+			self.image = self.imlist[self.index]
 			self.move_direction *= -1
 			self.move_counter *= -1
-
-
-
-
 
 class Button(pygame.sprite.Sprite):
 	def __init__(self, img, scale, x, y):
