@@ -64,17 +64,6 @@ for r in range(rows):
 	c = [0] * cols
 	world_data.append(c)
 
-#create boundary
-# boundary_tile = tiles[6]
-# for tile in range(cols):
-# 	world_data[rows-1][tile] = boundary_tile
-# 	world_data[0][tile] = boundary_tile
-
-# 	if tile < rows:
-# 		world_data[tile][0] = boundary_tile
-# 		world_data[tile][cols-1] = boundary_tile
-# world_data[rows-1][cols-1] = boundary_tile
-
 def draw_text(text_, font, color, pos):
 	text = font.render(text_, True, color)
 	win.blit(text, pos)
@@ -90,7 +79,7 @@ def draw_world():
 		for col in range(cols):
 			index = world_data[row][col]
 			if index > 0:
-				if index in range(1,14):
+				if index in range(1,14) or index in (25,26):
 					#dirt block
 					img = pygame.transform.scale(tiles[index-1], (tile_size, tile_size))
 					win.blit(img, (col * tile_size, row * tile_size))
@@ -138,6 +127,14 @@ def draw_world():
 					#Bee blocks
 					img = tiles[index-1]
 					win.blit(img, (col * tile_size - tile_size//4, row * tile_size - tile_size//4))
+				if index == 27:
+					#treelimb blocks
+					img = pygame.transform.scale(tiles[index-1], (2*tile_size, tile_size))
+					win.blit(img, ((col-1) * tile_size, row * tile_size))
+				if index == 28:
+					#treelimb blocks
+					img = pygame.transform.scale(tiles[index-1], (5*tile_size + 20, tile_size))
+					win.blit(img, ((col-2) * tile_size + 10, row * tile_size + tile_size // 4))
 
 
 class Button:

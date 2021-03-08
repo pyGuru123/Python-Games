@@ -1,12 +1,32 @@
 import os
+import pickle
 import random
 import pygame
+from pygame import mixer
 from pygame.locals import *
 
 SIZE = WIDTH , HEIGHT= 1000, 650
 tile_size = 50
 
+pygame.font.init()
+score_font = pygame.font.SysFont('Bauhaus 93', 30)
+
 WHITE = (255,255,255)
+BLUE = (30, 144, 255)
+
+# load sounds
+mixer.init()
+
+pygame.mixer.music.load('sounds/Ballad for Olivia.mp3')
+pygame.mixer.music.play(-1, 0.0, 5000)
+
+diamond_fx = pygame.mixer.Sound('sounds/341695__projectsu012__coins-1.wav')
+diamond_fx.set_volume(0.5)
+jump_fx = pygame.mixer.Sound('sounds/jump.wav')
+jump_fx.set_volume(0.5)
+dead_fx = pygame.mixer.Sound('sounds/406113__daleonfire__dead.wav')
+dead_fx.set_volume(0.5)
+sounds = [diamond_fx, ]
 
 
 # loading images
@@ -77,17 +97,23 @@ class World:
 						self.groups[4].add(bee)
 					if col == 24:
 						#Gate blocks
-						img = pygame.image.load('tiles/24.png')
-						rect = img.get_rect()
-						rect.x = col_count * tile_size - tile_size//4
-						rect.y = row_count * tile_size - tile_size//4
-						tile = (img, rect)
-						self.tile_list.append(tile)
-
+						gate = ExitGate(col_count * tile_size - tile_size//4, row_count * tile_size - tile_size//4)
+						self.groups[5].add(gate)
+					if col == 25:
+						#Side moving platform
+						platform = MovingPlatform('side', col_count * tile_size, row_count * tile_size)
+						self.groups[6].add(platform)
+					if col == 26:
+						#top moving platform
+						platform = MovingPlatform('up', col_count * tile_size, row_count * tile_size)
+						self.groups[6].add(platform)
 
 
 				col_count += 1
 			row_count += 1
+
+			diamond = Diamond((WIDTH//tile_size - 3) * tile_size, tile_size // 2)
+			self.groups[3].add(diamond)
 
 	def draw(self):
 		for tile in self.tile_list:
@@ -99,15 +125,17 @@ class Player:
 	def __init__(self, win, pos, world, groups):
 		self.reset(win, pos, world, groups)
 
-	def update(self, pressed_keys, game_over):
+	def update(self, pressed_keys, game_over, level_won):
 		dx = 0
 		dy = 0
 		walk_cooldown = 3
+		col_threshold = 20
 
 
 		if not game_over:
 			if (pressed_keys[K_UP] or pressed_keys[K_SPACE]) and not self.jumped and not self.in_air:
 				self.vel_y = -15
+				jump_fx.play()
 				self.jumped = True
 			if (pressed_keys[K_UP] or pressed_keys[K_SPACE]) == False:
 				self.jumped = False
@@ -170,10 +198,43 @@ class Player:
 				game_over  = True
 			if pygame.sprite.spritecollide(self, self.groups[1], False):
 				game_over  = True
-			if pygame.sprite.spritecollide(self, self.groups[3], True):
-				pass
 			if pygame.sprite.spritecollide(self, self.groups[4], False):
 				game_over = True
+
+			# temp = self
+			# temp = temp.rect.x + 20
+			# if pygame.sprite.spritecollide(temp, self.groups[5], False):
+			# 	level_won = True
+			for gate in self.groups[5]:
+				if gate.rect.colliderect(self.rect.x - tile_size//2, self.rect.y, self.width, self.height):
+					level_won = True
+
+			if game_over:
+				dead_fx.play()
+
+			# check for collision with moving platform
+			for platform in self.groups[6]:
+				# collision in x direction
+				if platform.rect.colliderect(self.rect.x+dx, self.rect.y, self.width, self.height):
+					dx = 0
+
+				# collision in y direction
+				if platform.rect.colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+					# check if below platform
+					if abs((self.rect.top + dy) - platform.rect.bottom) < col_threshold:
+						self.vel_y = 0
+						dy = (platform.rect.bottom - self.rect.top)
+
+					# check if above platform
+					elif abs((self.rect.bottom + dy) - platform.rect.top) < col_threshold:
+						self.rect.bottom = platform.rect.top - 1
+						self.in_air = False
+						dy = 0
+					# move sideways with the platform
+					if platform.move_x:
+						self.rect.x += platform.move_direction
+
+
 
 			# updating player position
 			self.rect.x += dx
@@ -192,20 +253,12 @@ class Player:
 				self.rect.y -= 5
 
 			self.win.blit(game_over_img, game_over_rect)
-			replay = replay_btn.draw(self.win)
-			home_btn.draw(self.win)
-			exit_btn.draw(self.win)
-			setting_btn.draw(self.win)
-
-			if replay:
-				self.reset(self.win, (10, 340), self.world, self.groups)
-				game_over = False
 
 		# displaying player on window
 		self.win.blit(self.image, self.rect)
 		# pygame.draw.rect(self.win, (255, 255, 255), self.rect, 1)
 	
-		return game_over
+		return game_over, level_won
 
 	def reset(self, win, pos, world, groups):
 		x, y  = pos
@@ -236,6 +289,35 @@ class Player:
 		self.jumping = False
 		self.in_air = True
 
+class MovingPlatform(pygame.sprite.Sprite):
+	def __init__(self, type_, x, y):
+		super(MovingPlatform, self).__init__()
+
+		img = pygame.image.load('assets/moving.png')
+		self.image = pygame.transform.scale(img, (tile_size, tile_size // 2))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		direction = random.choice([-1,1])
+		self.move_direction = direction
+		self.move_counter = 0
+		self.move_x = 0
+		self.move_y = 0
+
+		if type_ == 'side':
+			self.move_x = 1
+		elif type_ == 'up':
+			self.move_y = 1
+
+	def update(self):
+		self.rect.x += self.move_direction * self.move_x
+		self.rect.y += self.move_direction * self.move_y
+		self.move_counter += 1
+		if abs(self.move_counter) >= 50:
+			self.move_direction *= -1
+			self.move_counter *= -1
+
 
 class Fluid(pygame.sprite.Sprite):
 	def __init__(self, type_, x, y):
@@ -250,11 +332,32 @@ class Fluid(pygame.sprite.Sprite):
 		elif type_ == 'lava_flow':
 			img = pygame.image.load('tiles/15.png')
 			self.image = pygame.transform.scale(img, (tile_size, tile_size // 2 + tile_size // 4))
+		elif type_ == 'lava_still':
+			img = pygame.image.load('tiles/16.png')
+			self.image = pygame.transform.scale(img, (tile_size, tile_size))
 
 		
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
+
+class ExitGate(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(ExitGate, self).__init__()
+		
+		img_list = [f'assets/gate{i+1}.png' for i in range(4)]
+		self.gate_open = pygame.image.load('assets/gate5.png')
+		self.image = pygame.image.load(random.choice(img_list))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+		self.width = self.image.get_width()
+		self.height = self.image.get_height()
+
+	def update(self, player):
+		if player.rect.colliderect(self.rect.x , self.rect.y, self.width, self.height):
+			self.image = self.gate_open
+
 
 class Forest(pygame.sprite.Sprite):
 	def __init__(self, type_, x, y):
@@ -287,6 +390,7 @@ class Diamond(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
+
 class Bee(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Bee, self).__init__()
@@ -315,24 +419,28 @@ class Bee(pygame.sprite.Sprite):
 
 		self.rect.y += self.dx
 
+class Worm(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Worm, self).__init__()
+		self.move_direction = 1
+		self.move_counter = 0
+
+	def update(self):
+		self.rect.y += self.move_direction
+		self.move_counter += 1
+		if abs(self.move_counter) >= 50:
+			self.move_direction *= -1
+			self.move_counter *= -1
+
+
+
 
 
 class Button(pygame.sprite.Sprite):
-	def __init__(self, type_, x, y):
+	def __init__(self, img, scale, x, y):
 		super(Button, self).__init__()
 
-		if type_ == 'replay':
-			img = pygame.image.load('assets/replay.png')
-		if type_ == 'home':
-			img = pygame.image.load('assets/home.png')
-		if type_ == 'exit':
-			img = pygame.image.load('assets/exit.png')
-		if type_ == 'setting':
-			img = pygame.image.load('assets/setting.png')
-		# if type_ == 'replay':
-		# 	img = pygame.image.load('assets/replay.png')
-
-		self.image = pygame.transform.scale(img, (45,42))
+		self.image = pygame.transform.scale(img, scale)
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
@@ -353,17 +461,25 @@ class Button(pygame.sprite.Sprite):
 		win.blit(self.image, self.rect)
 		return action
 
-replay_btn  = Button('replay', WIDTH//2 - 100, HEIGHT//2 + 20)
-home_btn  = Button('home', WIDTH//2 - 40, HEIGHT//2 + 20)
-exit_btn  = Button('exit', WIDTH//2 + 20, HEIGHT//2 + 20)
-setting_btn  = Button('setting', WIDTH//2 + 80, HEIGHT//2 + 20)
-
-
 
 # -------------------------------------------------------------------------------------------------
-#											 Creates Grid
+#											 Custom Functions
 def draw_lines(win):
 	for row in range(HEIGHT // tile_size + 1):
 		pygame.draw.line(win, WHITE, (0, tile_size*row), (WIDTH, tile_size*row), 2)
 	for col in range(WIDTH // tile_size):
 		pygame.draw.line(win, WHITE, (tile_size*col, 0), (tile_size*col, HEIGHT), 2)
+
+def load_level(level):
+	game_level = f'levels/level{level}_data'
+	data = None
+	if os.path.exists(game_level):
+		f = open(game_level, 'rb')
+		data = pickle.load(f)
+		f.close()
+
+	return data
+
+def draw_text(win, text, pos):
+	img = score_font.render(text, True, BLUE)
+	win.blit(img, pos)
