@@ -17,6 +17,10 @@ and pygame library.
 	> Dino Run is an implementaion of chromes dino run game in pygame.\
 	> Link to project : [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 
+* ## Jungle Dash
+	> Jungle Dash is a 2D platformer game made with pygame.\
+	> Link to project : [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
+
 * ## MineSweeper
 	> MineSweeper game written using tkinter library.\
 	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
@@ -42,6 +46,10 @@ and pygame library.
 * ## SpriteSheet Cutter
 	> SpriteSheet Cutter is a tool to cut spritsheets.\
 	> Link to project : [SpriteSheet Cutter](https://github.com/pyGuru123/Python-Games/tree/master/SpriteSheet%20Cutter)
+
+* ## Level Designer
+	> Level Designer is a tool to design levels for 2D non scrollable platformer games.\
+	> Link to project : [Level Designer](https://github.com/pyGuru123/Python-Games/tree/master/Level%20Designer)
 
 
 <br/>

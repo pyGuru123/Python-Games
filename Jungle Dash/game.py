@@ -25,7 +25,7 @@ jungle_dash = pygame.image.load('assets/jungle dash.png')
 
 
 # loading level 1
-level = 12
+level = 1
 max_level = len(os.listdir('levels/'))
 data = load_level(level)
 
