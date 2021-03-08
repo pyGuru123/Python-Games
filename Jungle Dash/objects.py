@@ -141,14 +141,14 @@ class Player:
 	def __init__(self, win, pos, world, groups):
 		self.reset(win, pos, world, groups)
 
-	def update(self, pressed_keys, game_over, level_won):
+	def update(self, pressed_keys, game_over, level_won, game_won):
 		dx = 0
 		dy = 0
 		walk_cooldown = 3
 		col_threshold = 20
 
 
-		if not game_over:
+		if not game_over and not game_won:
 			if (pressed_keys[K_UP] or pressed_keys[K_SPACE]) and not self.jumped and not self.in_air:
 				self.vel_y = -15
 				jump_fx.play()

@@ -22,6 +22,7 @@ bg2 = pygame.image.load('assets/BG2.png')
 bg = bg1
 sun = pygame.image.load('assets/sun.png')
 jungle_dash = pygame.image.load('assets/jungle dash.png')
+you_won = pygame.image.load('assets/won.png')
 
 
 # loading level 1
@@ -29,7 +30,7 @@ level = 1
 max_level = len(os.listdir('levels/'))
 data = load_level(level)
 
-player_pos = (550, 100)
+player_pos = (10, 340)
 
 
 # creating world & objects
@@ -107,6 +108,7 @@ while running:
 			game_over = False
 			game_won = False
 			score = 0
+
 	else:
 		
 		if not game_over and not game_won:
@@ -120,7 +122,7 @@ while running:
 				score += 1	
 			draw_text(win, f'{score}', ((WIDTH//tile_size - 2) * tile_size, tile_size//2 + 10))
 			
-		game_over, level_won = player.update(pressed_keys, game_over, level_won)
+		game_over, level_won = player.update(pressed_keys, game_over, level_won, game_won)
 
 		if game_over and not game_won:
 			replay = replay_btn.draw(win)
@@ -153,12 +155,14 @@ while running:
 				bg = random.choice([bg1, bg2])
 			else:
 				game_won = True
+				bg = bg1
+				win.blit(you_won, (WIDTH//4, HEIGHT // 4))
 				home = home_btn.draw(win)
 
 				if home:
 					game_over = True
 					main_menu = True
-					bg = bg1
+					level_won = False
 					level = 1
 					world = reset_level(level)
 
