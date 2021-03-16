@@ -1,13 +1,12 @@
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
+import button
+
 import pickle
 import pygame
 from pygame.locals import *
 from pprint import pprint
-
-if not os.path.exists('levels/'):
-	os.mkdir('levels/')
 
 
 # EDIT HERE ( WINDOW SIZE & TILE SIZE )
@@ -140,30 +139,6 @@ def draw_world():
 					img = pygame.transform.scale(tiles[index-1], (int(1.2*tile_size), tile_size))
 					win.blit(img, (col * tile_size - 10, row * tile_size))
 
-
-class Button:
-	def __init__(self, pos, image):
-		self.image = image
-		self.rect = self.image.get_rect()
-		self.rect.topleft = pos
-		self.clicked = False
-
-	def draw(self):
-		action = False
-
-		pos = pygame.mouse.get_pos()
-		if self.rect.collidepoint(pos):
-			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-				action = True
-				self.clicked = True
-
-		if pygame.mouse.get_pressed()[0] == 0:
-			self.clicked = False
-
-		win.blit(self.image, self.rect)
-
-		return action
-
 class Tile():
 	def __init__(self, pos, image, index):
 		image = pygame.transform.scale(image, (40,40))
@@ -198,10 +173,10 @@ for index, tile in enumerate(tiles):
 	tile_group.append(t)
 
 # #create load and save buttons
-load_button = Button((WIDTH + 10, HEIGHT - 80), load_img)
-save_button = Button((WIDTH + 110, HEIGHT - 80), save_img)
-left_button = Button((WIDTH + 30, HEIGHT - 35), left_img)
-right_button = Button((WIDTH + 140, HEIGHT - 35), right_img)
+load_button = button.Button(WIDTH + 10, HEIGHT - 80, load_img, 1)
+save_button = button.Button(WIDTH + 110, HEIGHT - 80, save_img, 1)
+left_button = button.Button(WIDTH + 30, HEIGHT - 35, left_img, 1)
+right_button = button.Button(WIDTH + 140, HEIGHT - 35, right_img, 1)
 
 initial_r = pygame.Rect(1*tile_size,1*tile_size,tile_size, tile_size)
 rect = [initial_r, [1,1]]
@@ -275,22 +250,22 @@ while running:
 			r = rect[1]
 			world_data[r[1]][r[0]] = index
 
-	if save_button.draw():
+	if save_button.draw(win):
 		#save level data
-		pickle_out = open(f'levels/level{current_level}_data', 'wb')
+		pickle_out = open(f'non_scrollable_levels/level{current_level}_data', 'wb')
 		pickle.dump(world_data, pickle_out)
 		pickle_out.close()
-	if load_button.draw():
+	if load_button.draw(win):
 		#load in level data
-		if os.path.exists(f'levels/level{current_level}_data'):
-			pickle_in = open(f'levels/level{current_level}_data', 'rb')
+		if os.path.exists(f'non_scrollable_levels/level{current_level}_data'):
+			pickle_in = open(f'non_scrollable_levels/level{current_level}_data', 'rb')
 			world_data = pickle.load(pickle_in)
 
-	if left_button.draw():
+	if left_button.draw(win):
 		current_level -= 1
 		if current_level < 1:
 			current_level = 1
-	if right_button.draw():
+	if right_button.draw(win):
 		current_level += 1
 
 	#text showing current level
