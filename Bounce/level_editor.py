@@ -1,237 +1,184 @@
 import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-
-import pickle
 import pygame
-from pygame.locals import *
-from pprint import pprint
+import pickle
+import button
 
-if not os.path.exists('levels/'):
-	os.mkdir('levels/')
-
-
-# EDIT HERE ( WINDOW SIZE & TILE SIZE )
-SIZE = WIDTH , HEIGHT= 160, 160
-tile_size = 16
-
-# Not to be edited
 pygame.init()
+
+# game window
+SCREEN_WIDTH = 192
+SCREEN_HEIGHT = 192
+MARGIN_LEFT = 450
+WIDTH = SCREEN_WIDTH + MARGIN_LEFT
+HEIGHT = SCREEN_HEIGHT
+
+ROWS = 12
+MAX_COLS = 150
+TILE_SIZE = 16
+
 clock = pygame.time.Clock()
-fps = 30
+FPS = 30
 
-cols = WIDTH // tile_size
-rows = HEIGHT // tile_size
-margin = 300
+win = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Level Designer')
 
-win_width = WIDTH + margin
-win_height = HEIGHT
+# game_variables
+scroll_left = False
+scroll_right = False
+scroll = 0
+scroll_speed = 0.5
+current_tile = 0
+current_level = 1
 
-win = pygame.display.set_mode((win_width, win_height))
-pygame.display.set_caption('Level Editor')
+# color variabes
+BLACK = (25, 25, 25)
+GREEN = (0, 255, 0)
+WHITE = (255, 255, 255)
+RED = (255, 25, 25)
+BLUE = (30, 144, 255)
 
-# load buttons
+font = pygame.font.SysFont('Futura', 24)
+
+# tile list
+world_data = []
+for row in range(ROWS):
+	col = [-1] * MAX_COLS
+	world_data.append(col)
+
+# populating last row with ground
+for i in range(MAX_COLS):
+	world_data[ROWS-1][i] = 0
+
+# load images
 save_img = pygame.image.load('assets/save_btn.png')
 load_img = pygame.image.load('assets/load_btn.png')
 left_img = pygame.image.load('assets/left.png')
 right_img = pygame.image.load('assets/right.png')
 
-# load tiles
-tiles = []
-for t in sorted(os.listdir('tiles/'), key=lambda s: int(s[:-4])):
-	tile = pygame.image.load('tiles/' + t)
-	tiles.append(tile)
+img_list = []
+for i in range(1,27):
+	img = pygame.image.load(f'tiles/{i}.png')
+	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+	img_list.append(img)
 
+def draw_grid():
+	# horizontal lines
+	for c in range(ROWS + 1):
+		pygame.draw.line(win, WHITE, (0, c * TILE_SIZE), (SCREEN_WIDTH, c * TILE_SIZE))
+	# vertical lines
+	for c in range(MAX_COLS + 1):
+		pygame.draw.line(win, WHITE, (c * TILE_SIZE - scroll, 0), (c * TILE_SIZE - scroll, SCREEN_HEIGHT))
 
-#define game variables
-clicked = False
-current_level = 1
-
-#define colours
-WHITE = (255, 255, 255)
-GREEN = (144, 201, 120)
-BLUE = (30, 144, 255)
-
-font = pygame.font.SysFont('Futura', 24)
-
-# Empty world data
-world_data = []
-for r in range(rows):
-	c = [0] * cols
-	world_data.append(c)
+def draw_world():
+	for y, row in enumerate(world_data):
+		for x, tile in enumerate(row):
+			if tile >= 0:
+				win.blit(img_list[tile], (x*TILE_SIZE - scroll, y*TILE_SIZE))
 
 def draw_text(text_, font, color, pos):
 	text = font.render(text_, True, color)
 	win.blit(text, pos)
 
-def draw_lines():
-	for row in range(rows+1):
-		pygame.draw.line(win, WHITE, (0, tile_size*row), (WIDTH, tile_size*row), 2)
-	for col in range(cols):
-		pygame.draw.line(win, WHITE, (tile_size*col, 0), (tile_size*col, HEIGHT), 2)
+# draw_buttons
+button_list = []
+b_col = 0
+b_row = 0
+for i in range(len(img_list)):
+	t_button = button.Button(SCREEN_WIDTH + (30 * b_col + 20), 30 * b_row + 20, img_list[i], 1)
+	button_list.append(t_button)
 
-def draw_world():
-	for row in range(rows):
-		for col in range(cols):
-			index = world_data[row][col]
-			if index > 0:
-				if index in range(1,25):
-					#dirt block
-					img = pygame.transform.scale(tiles[index-1], (tile_size, tile_size))
-					win.blit(img, (col * tile_size, row * tile_size))
-
-class Button:
-	def __init__(self, pos, image):
-		self.image = image
-		self.rect = self.image.get_rect()
-		self.rect.topleft = pos
-		self.clicked = False
-
-	def draw(self):
-		action = False
-
-		pos = pygame.mouse.get_pos()
-		if self.rect.collidepoint(pos):
-			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-				action = True
-				self.clicked = True
-
-		if pygame.mouse.get_pressed()[0] == 0:
-			self.clicked = False
-
-		win.blit(self.image, self.rect)
-
-		return action
-
-class Tile():
-	def __init__(self, pos, image, index):
-		# image = pygame.transform.scale(image, (40,40))
-		self.image = image
-		self.rect = self.image.get_rect()
-		self.rect.topleft = pos
-		self.clicked = False
-		self.index = index
-
-	def update(self):
-		action = False
-
-		pos = pygame.mouse.get_pos()
-		if self.rect.collidepoint(pos):
-			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-				action = self.index
-				self.clicked = True
-
-		if pygame.mouse.get_pressed()[0] == 0:
-			self.clicked = False
-
-		win.blit(self.image, self.rect)
-
-		return action
-
-tile_group = []
-for index, tile in enumerate(tiles):
-	row = index // (margin // (16 + 20) )
-	column = index %  (margin // (16 + 20) )
-	pos = (WIDTH + 10 +(column * tile_size) + 10, 10 + row * tile_size + 10)
-	t = Tile(pos, tile, index+1)
-	tile_group.append(t)
+	b_col += 1
+	if b_col == 12:
+		b_row += 1
+		b_col = 0
 
 # #create load and save buttons
-load_button = Button((WIDTH + 10, HEIGHT - 80), load_img)
-save_button = Button((WIDTH + 110, HEIGHT - 80), save_img)
-left_button = Button((WIDTH + 30, HEIGHT - 35), left_img)
-right_button = Button((WIDTH + 140, HEIGHT - 35), right_img)
+load_button = button.Button(SCREEN_WIDTH + 200, SCREEN_HEIGHT - 35, load_img, 0.8)
+save_button = button.Button(SCREEN_WIDTH + 310, SCREEN_HEIGHT - 35, save_img, 0.8)
+left_button = button.Button(SCREEN_WIDTH + 30, SCREEN_HEIGHT - 35, left_img, 0.9)
+right_button = button.Button(SCREEN_WIDTH + 140, SCREEN_HEIGHT - 35, right_img, 0.9)
 
-initial_r = pygame.Rect(1*tile_size,1*tile_size,tile_size, tile_size)
-rect = [initial_r, [1,1]]
 
 running = True
 while running:
+	win.fill((175, 207, 240))
+	draw_grid()
+	draw_world()
+
+	# draw button panel
+	pygame.draw.rect(win, BLACK, (SCREEN_WIDTH,0, MARGIN_LEFT, HEIGHT))
+	pygame.draw.line(win, WHITE, (SCREEN_WIDTH, SCREEN_HEIGHT-45), (WIDTH, SCREEN_HEIGHT-45))
+
+	b_count = 0
+	for index, i in enumerate(button_list):
+		if i.draw(win):
+			current_tile = index
+			print(current_tile)
+
+	# highlight current tile
+	pygame.draw.rect(win, GREEN, button_list[current_tile].rect, 3)
+
+	# map scroller
+	if scroll_left and scroll > 0:
+		scroll -= 5 * scroll_speed
+	if scroll_right and scroll < (MAX_COLS * TILE_SIZE) - SCREEN_WIDTH:
+		scroll += 5 * scroll_speed
+
+	# add new tiles
+	pos = pygame.mouse.get_pos()
+	x = int((pos[0] + scroll) // TILE_SIZE)
+	y = (pos[1] // TILE_SIZE)
+
+	if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
+		if pygame.mouse.get_pressed()[0] == 1:
+			if world_data[y][x] != current_tile:
+				world_data[y][x] = current_tile
+		if pygame.mouse.get_pressed()[2] == 1:
+				world_data[y][x] = -1
+
+
 	for event in pygame.event.get():
-		if event.type == QUIT:
+		if event.type == pygame.QUIT:
 			running = False
 
-		if event.type == MOUSEBUTTONDOWN and clicked == False:
-			clicked = True
-			pos = pygame.mouse.get_pos()
-			if pos[0] <= WIDTH:
-				x = pos[0] // tile_size
-				y = pos[1] // tile_size
-				if pygame.mouse.get_pressed()[0]:
-					r = rect[1]
-					if r == [x,y]:
-						world_data[y][x] += 1
-						if world_data[y][x] >= len(tiles) + 1:
-							world_data[y][x] = 0
-					else:
-						r1 = pygame.Rect(x*tile_size, y*tile_size, tile_size, tile_size)
-						r2 = [x,y]
-						rect = [r1, r2]
-				elif pygame.mouse.get_pressed()[2]:
-					r = rect[1]
-					if r == [x,y]:
-						world_data[y][x] -= 1
-						if world_data[y][x] < 0:
-							world_data[y][x] = len(tiles)
-					else:
-						r1 = pygame.Rect(x*tile_size, y*tile_size, tile_size, tile_size)
-						r2 = [x,y]
-						rect = [r1, r2]
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_LEFT:
+				scroll_left = True
+			if event.key == pygame.K_RIGHT:
+				scroll_right = True
+			if event.key == pygame.K_RSHIFT:
+				scroll_speed = 5
 
+		if event.type == pygame.KEYUP:
+			if event.key == pygame.K_LEFT:
+				scroll_left = False
+			if event.key == pygame.K_RIGHT:
+				scroll_right = False
+			if event.key == pygame.K_RSHIFT:
+				scroll_speed = 1
 
-		if event.type == KEYDOWN:
-			pos = rect[1]
-			if event.key == K_LEFT:
-				if pos[0] > 0:
-					pos[0] -= 1
-			elif event.key == K_RIGHT:
-				if pos[0] < cols-1:
-					pos[0] += 1
-			elif event.key == K_UP:
-				if pos[1] > 0:
-					pos[1] -= 1
-			elif event.key == K_DOWN:
-				if pos[1] < rows-1:
-					pos[1] += 1
-
-			rect[0] = pygame.Rect(pos[0]*tile_size, pos[1]*tile_size, tile_size, tile_size)
-			rect[1] = pos
-
-		if event.type == pygame.MOUSEBUTTONUP:
-			clicked = False
-
-	win.fill((175, 207, 240))
-	draw_lines()
-	draw_world()
-	pygame.draw.rect(win, (255,0,0), rect[0], 3)
-
-	for tile in tile_group:
-		index = tile.update()
-		if index:
-			current_tile = index
-			r = rect[1]
-			world_data[r[1]][r[0]] = index
-
-	if save_button.draw():
+	if save_button.draw(win):
 		#save level data
 		pickle_out = open(f'levels/level{current_level}_data', 'wb')
 		pickle.dump(world_data, pickle_out)
 		pickle_out.close()
-	if load_button.draw():
+	if load_button.draw(win):
 		#load in level data
 		if os.path.exists(f'levels/level{current_level}_data'):
 			pickle_in = open(f'levels/level{current_level}_data', 'rb')
 			world_data = pickle.load(pickle_in)
 
-	if left_button.draw():
+	if left_button.draw(win):
 		current_level -= 1
 		if current_level < 1:
 			current_level = 1
-	if right_button.draw():
+	if right_button.draw(win):
 		current_level += 1
 
 	#text showing current level
-	draw_text(f'Level: {current_level}', font, WHITE, (WIDTH + 70, win_height - 25))
+	draw_text(f'Level: {current_level}', font, WHITE, (SCREEN_WIDTH + 70, SCREEN_HEIGHT - 25))
 
-	pygame.display.flip()
+	clock.tick(FPS)
+	pygame.display.update()
 
 pygame.quit()
