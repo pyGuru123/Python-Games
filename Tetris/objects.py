@@ -13,14 +13,17 @@ WHITE = (255, 255, 255)
 class Tetraminos:
 	def __init__(self, matrix):
 		self.matrix = matrix
+		self.on_tetris = False
 
 		O = [[1,1],
 			 [1,1]]
 
-		I = [[1],
+		I1 = [[1],
 			 [1],
 			 [1],
 			 [1]]
+
+		I2 = [[1, 1, 1, 1]]
 
 		J = [[0,1],
 			 [0,1],
@@ -39,12 +42,12 @@ class Tetraminos:
 		Z = [[1,1,0],
 			 [0,1,1]]
 
-		self.shape = random.choice([O,I,J,L,S,T,Z])
+		self.shape = random.choice([O,I1,I2,J,L,S,T,Z])
 		self.width = len(self.shape[0])
 		self.height = len(self.shape)
 		self.x = random.randint(0,COLS-self.width)
 		self.y = 0
-		self.color = random.randint(1,7)
+		self.color = random.randint(1,4)
 
 	def create_tetramino(self):
 		self.draw_grid()
@@ -53,8 +56,9 @@ class Tetraminos:
 		move_left = False
 		if self.x > 0:
 			for y in range(self.height):
-				if self.matrix[self.y + y][self.x - 1] != 0:
-					break
+				if self.shape[y][0] == 1:
+					if self.matrix[self.y + y][self.x - 1] != 0:
+						break
 			else:
 				move_left = True
 
@@ -67,8 +71,9 @@ class Tetraminos:
 		move_right = False
 		if self.x < COLS - self.width:
 			for y in range(self.height):
-				if self.matrix[self.y + y][self.x + self.width] != 0:
-					break
+				if self.shape[y][self.width-1] == 1:
+					if self.matrix[self.y + y][self.x + self.width] != 0:
+						break
 			else:
 				move_right = True
 
@@ -85,15 +90,28 @@ class Tetraminos:
 
 	def can_move_down(self):
 		move_down = False
-		for i in range(self.width):
-			r, c = self.y+self.height, self.x + i
-			# if self.shape[self.height-1][i] == 1:
-			if self.matrix[r][c] != 0:
-				break
+		if self.y < ROWS - self.height:
+			for x in range(self.width):
+				if self.shape[self.height-1][x] == 1:
+					r, c = self.y+self.height, self.x + x
+					if self.matrix[r][c] != 0:
+						self.on_tetris = True
+						break
+			else:
+				move_down = True
 		else:
-			move_down = True
+			self.on_tetris = True
 
 		return move_down
+
+	def rotate_shape(self):
+		rotated = list(zip(*self.shape[::-1]))
+		if self.x + len(rotated[0]) < COLS:
+			self.erase_grid()
+			self.shape = rotated
+			self.width = len(self.shape[0])
+			self.height = len(self.shape)
+			self.draw_grid()
 
 	def draw_grid(self):
 		for y in range(self.height):
