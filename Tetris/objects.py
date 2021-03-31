@@ -5,6 +5,7 @@ from pprint import pprint
 SCREEN = WIDTH, HEIGHT = 300, 500
 CELL = 20
 ROWS, COLS = (HEIGHT - 100) // CELL, WIDTH // CELL
+print(ROWS, COLS)
 
 # colors
 BLACK = (0, 0, 0)
@@ -92,11 +93,15 @@ class Tetraminos:
 		move_down = False
 		if self.y < ROWS - self.height:
 			for x in range(self.width):
+				r, c = self.y+self.height, self.x + x
 				if self.shape[self.height-1][x] == 1:
-					r, c = self.y+self.height, self.x + x
 					if self.matrix[r][c] != 0:
 						self.on_tetris = True
+						move_down = False
 						break
+				else:
+					if self.matrix[r][c] != 0:
+						self.on_tetris = True
 			else:
 				move_down = True
 		else:
@@ -120,8 +125,6 @@ class Tetraminos:
 				if self.shape[y][x] == 1:
 					self.matrix[r][c] = self.color
 
-		# pprint(self.matrix)
-
 	def erase_grid(self):
 		for y in range(self.height):
 			for x in range(self.width):
@@ -129,8 +132,36 @@ class Tetraminos:
 				if self.shape[y][x] == 1:
 					self.matrix[r][c] = 0
 
+class Button(pygame.sprite.Sprite):
+	def __init__(self, img, scale, x, y):
+		super(Button, self).__init__()
+
+		self.image = pygame.transform.scale(img, scale)
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action
+		
+
 def draw_grid(win):
 		for i in range(ROWS + 1):
 			pygame.draw.line(win, WHITE, (0, CELL * i), (WIDTH, CELL * i))
 		for i in range(COLS):
 			pygame.draw.line(win, WHITE, (CELL * i, 0), (CELL * i, HEIGHT - 100))
+
+
