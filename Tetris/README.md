@@ -28,6 +28,7 @@ Double click the game.py to open the game, Click start to start playing the game
 Controls:
 * Use Left arrow key to move left and Right arrow key to move right.
 * Use Space key to rotate TetraMinos
+* Press P to pause or unpause the game 
 
 ## Contributing
 

@@ -9,37 +9,37 @@ and pygame library.
 
 ### All the Games are listed here
 
-* ## Asteroids
+* ## [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 	> Asteroids is an implementaion of Asteroids game in pygame.\
-	> Link to project : [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 
-* ## Dino Run
+
+* ## [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 	> Dino Run is an implementaion of chromes dino run game in pygame.\
-	> Link to project : [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 
-* ## Jungle Dash
+
+* ## [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
 	> Jungle Dash is a 2D platformer game made with pygame.\
-	> Link to project : [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
 
-* ## MineSweeper
+
+* ## [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
 	> MineSweeper game written using tkinter library.\
-	> Link to project : [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
 
-* ## Picture Sliding Puzzle
+* ## [Picture Sliding Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Picture%20Sliding%20Puzzle)
 	> Picture Sliding Puzzle is an implementation of 15 puzzle in tkinter library.\
-	> Link to project : [Picture Sliding Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Picture%20Sliding%20Puzzle)
 
-* ## Pong
+
+* ## [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 	> Pong game written using turtle module.\
-	> Link to project : [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 
-* ## Rock Paper Scissor
+
+* ## [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 	> Rock Paper Scissor game written using tkinter library.\
-	> Link to project : [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 
-* ## Tic Tac Toe
+* ## [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
 	> Tic Tac Toe game written using tkinter library.\
-	> Link to project : [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
+
+* ## [Tetris](https://github.com/pyGuru123/Python-Games/tree/master/Tetris)
+	> Tetris game written using pygame library.\
 
 ### Tools & Utilities
 
@@ -50,6 +50,10 @@ and pygame library.
 * ## Level Designer
 	> Level Designer is a tool to design levels for 2D non scrollable platformer games.\
 	> Link to project : [Level Designer](https://github.com/pyGuru123/Python-Games/tree/master/Level%20Designer)
+
+### Game Resources
+
+To get a complete list of free and awesome 2D game resources including Spritesheets, Sounds, Textures, HUDs, Menus and other game assets [click here](https://github.com/pyGuru123/gitMemory/blob/main/game%20resources.md)
 
 
 <br/>
