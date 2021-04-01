@@ -15,6 +15,7 @@ class Tetraminos:
 	def __init__(self, matrix):
 		self.matrix = matrix
 		self.on_tetris = False
+		self.is_dead = False
 
 		O = [[1,1],
 			 [1,1]]
@@ -107,6 +108,9 @@ class Tetraminos:
 		else:
 			self.on_tetris = True
 
+		if self.on_tetris and self.y == 0:
+			self.is_dead = True
+
 		return move_down
 
 	def rotate_shape(self):
@@ -143,7 +147,9 @@ class Button(pygame.sprite.Sprite):
 
 		self.clicked = False
 
-	def draw(self, win):
+	def draw(self, win, image=None):
+		if image:
+			self.image = image
 		action = False
 		pos = pygame.mouse.get_pos()
 		if self.rect.collidepoint(pos):
@@ -163,5 +169,3 @@ def draw_grid(win):
 			pygame.draw.line(win, WHITE, (0, CELL * i), (WIDTH, CELL * i))
 		for i in range(COLS):
 			pygame.draw.line(win, WHITE, (CELL * i, 0), (CELL * i, HEIGHT - 100))
-
-
