@@ -10,36 +10,40 @@ and pygame library.
 ### All the Games are listed here
 
 * ## [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
-	> Asteroids is an implementaion of Asteroids game in pygame.\
+	> Asteroids is an implementaion of Asteroids game in pygame.
 
 
 * ## [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
-	> Dino Run is an implementaion of chromes dino run game in pygame.\
+	> Dino Run is an implementaion of chromes dino run game in pygame.
 
 
 * ## [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
-	> Jungle Dash is a 2D platformer game made with pygame.\
+	> Jungle Dash is a 2D platformer game made with pygame.
 
 
 * ## [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
-	> MineSweeper game written using tkinter library.\
+	> MineSweeper game written using tkinter library.
+
+* ## [Piano Tiles](https://github.com/pyGuru123/Python-Games/tree/master/Piano%20Tiles)
+	> Piano Tiles musical game written using pygame library.
+
 
 * ## [Picture Sliding Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Picture%20Sliding%20Puzzle)
-	> Picture Sliding Puzzle is an implementation of 15 puzzle in tkinter library.\
+	> Picture Sliding Puzzle is an implementation of 15 puzzle in tkinter library.
 
 
 * ## [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
-	> Pong game written using turtle module.\
+	> Pong game written using turtle module.
 
 
 * ## [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
-	> Rock Paper Scissor game written using tkinter library.\
-
-* ## [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
-	> Tic Tac Toe game written using tkinter library.\
+	> Rock Paper Scissor game written using tkinter library.
 
 * ## [Tetris](https://github.com/pyGuru123/Python-Games/tree/master/Tetris)
-	> Tetris game written using pygame library.\
+	> Tetris game written using pygame library.
+
+* ## [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
+	> Tic Tac Toe game written using tkinter library.
 
 ### Tools & Utilities
 
