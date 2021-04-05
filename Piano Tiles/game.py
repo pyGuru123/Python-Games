@@ -194,18 +194,21 @@ while running:
 				start_time = None
 				game_over = False
 				game_started = False
+				start_count = True
 
 				score = 0
 				high = 0
 				overlay_index = 0
+				counter.count = 3
 				ADDTIME = 650
 				pygame.time.set_timer(ADDBLOCK, ADDTIME)
 		else:
-			img1 = score_font.render(f'Score : {score}', True, WHITE)
-			win.blit(img1, (70 - img1.get_width() / 2, 10))
+			if not start_count:
+				img1 = score_font.render(f'Score : {score}', True, WHITE)
+				win.blit(img1, (70 - img1.get_width() / 2, 10))
 
-			img2 = score_font.render(f'High : {high}', True, WHITE)
-			win.blit(img2, (200 - img2.get_width() / 2, 10))
+				img2 = score_font.render(f'High : {high}', True, WHITE)
+				win.blit(img2, (200 - img2.get_width() / 2, 10))
 
 	clock.tick(FPS)
 	pygame.display.update()
