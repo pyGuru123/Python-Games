@@ -1,0 +1,60 @@
+{
+	"1" : {
+		"Name" : "Strawberry",
+		"Info" : "The strawberry is a widely grown hybrid species of the genus Fragaria, collectively known as the strawberries, which are cultivated worldwide for their fruit. The fruit is widely appreciated for its characteristic aroma, bright red color, juicy texture, and sweetness. It is consumed in large quantities, either fresh or in such prepared foods as jam, juice, pies, ice cream, milkshakes, and chocolates. Artificial strawberry flavorings and aromas are also widely used in products such as candy, soap, lip gloss, perfume, and many others."
+		},
+	"2" : {
+		"Name" : "Guava",
+		"Info" : "Guava is a common tropical fruit cultivated in many tropical and subtropical regions. Psidium guajava (common guava, lemon guava) is a small tree in the myrtle family, native to Mexico, Central America, the Caribbean and northern South America. Although related species may also be called guavas, they belong to other species or genera, such as the pineapple guava, Feijoa sellowiana. In 2019, 55 million tonnes of guavas were produced worldwide, led by India with 45% of the total."
+		},
+	"3" : {
+		"Name" : "WaterMelon",
+		"Info" : "Watermelon is a flowering plant species of the Cucurbitaceae family. A scrambling and trailing vine-like plant, it was originally domesticated in Africa. It is a highly cultivated fruit worldwide, with more than 1,000 varieties. Watermelon is grown in favorable climates from tropical to temperate regions worldwide for its large edible fruit, which is a berry with a hard rind and no internal divisions, and is botanically called a pepo."
+		},
+	"4" : {
+		"Name" : "Orange",
+		"Info" : "The orange is the fruit of various citrus species in the family Rutaceae. Orange trees are widely grown in tropical and subtropical climates for their sweet fruit. The fruit of the orange tree can be eaten fresh, or processed for its juice or fragrant peel.  As of 1987, orange trees were found to be the most cultivated fruit tree in the world."
+		},
+	"5" : {
+		"Name" : "Carrot",
+		"Info" : "The carrot is a root vegetable, usually orange in color, though purple, black, red, white, and yellow cultivars exist. The plant probably originated in Persia and was originally cultivated for its leaves and seeds. The most commonly eaten part of the plant is the taproot, although the stems and leaves are also eaten. The domestic carrot has been selectively bred for its greatly enlarged, more palatable, less woody-textured taproot."
+		},
+	"6" : {
+		"Name" : "Tomato",
+		"Info" : "The tomato is the edible berry of the plant Solanum lycopersicum, commonly known as a tomato plant. Tomatoes are a significant source of umami flavor. The tomato is consumed in diverse ways, raw or cooked, in many dishes, sauces, salads, and drinks. While tomatoes are fruits—botanically classified as berries—they are commonly used as a vegetable ingredient or side dish."
+		},
+	"7" : {
+		"Name" : "Lemon",
+		"Info" : "The lemon, is a species of small evergreen tree in the flowering plant family Rutaceae. The tree's ellipsoidal yellow fruit is used for culinary and non-culinary purposes throughout the world, primarily for its juice, which has both culinary and cleaning uses. The pulp and rind are also used in cooking and baking. The juice of the lemon is about 5% to 6% citric acid, with a pH of around 2.2, giving it a sour taste. The distinctive sour taste of lemon juice makes it a key ingredient in drinks and foods such as lemonade and lemon meringue pie."
+		},
+	"8" : {
+		"Name" : "Blackberry",
+		"Info" : "The blackberry is an edible fruit produced by many species in the genus Rubus in the family Rosaceae. Blackberries are perennial plants which typically bear biennial stems from the perennial root system. The soft fruit is popular for use in desserts, jams, seedless jelly, and sometimes wine. It is often mixed with apples for pies and crumbles. Blackberries are also used to produce candy."
+		},
+	"9" : {
+		"Name" : "Pear",
+		"Info" : "Pears are fruits produced and consumed around the world, growing on a tree and harvested in late Summer into October. The pear tree and shrub are a species of genus Pyrus, in the family Rosaceae. Several species of pears are valued for their edible fruit and juices, while others are cultivated as trees. About 3000 known varieties of pears are grown worldwide, which vary in both shape and taste. The fruit is consumed fresh, canned, as juice, or dried."
+		},
+	"10" : {
+		"Name" : "Raspberry",
+		"Info" : "The raspberry is the edible fruit of a multitude of plant species in the genus Rubus of the rose family. Raspberries are perennial with woody stems. Raspberries are grown for the fresh fruit market and for commercial processing into individually quick frozen (IQF) fruit, purée, juice, or as dried fruit used in a variety of grocery products such as raspberry pie."
+		},
+	"11" : {
+		"Name" : "Avacado",
+		"Info" : "The avocado is classified as a member of the flowering plant family Lauraceae. The fruit is botanically a large berry containing a single large seed. The fruit of domestic varieties has a buttery flesh when ripe. Depending on the variety, avocados have green, brown, purplish, or black skin when ripe, and may be pear-shaped, egg-shaped, or spherical. Commercially, the fruits are picked while immature, and ripened after harvesting."
+		},
+	"12" : {
+		"Name" : "Coconut",
+		"Info" : "The coconut tree is a member of the palm tree family and the only living species of the genus Cocos. The term 'coconut' can refer to the whole coconut palm, the seed, or the fruit, which botanically is a drupe, not a nut. The name comes from the old Portuguese word coco, meaning 'head' or 'skull', after the three indentations on the coconut shell that resemble facial features. They are ubiquitous in coastal tropical regions and are a cultural icon of the tropics."
+		},
+	"13" : {
+		"Name" : "Peach",
+		"Info" : "The peach is a deciduous tree native to the region of Northwest China between the Tarim Basin and the north slopes of the Kunlun Mountains, where it was first domesticated and cultivated. It bears edible juicy fruits with various characteristics, most called peaches and others, nectarines. The specific name persica refers to its widespread cultivation in Persia (modern-day Iran), from where it was transplanted to Europe. It belongs to the genus Prunus, which includes the cherry, apricot, almond, and plum, in the rose family."
+		},
+	"14" : {
+		"Name" : "Kiwi",
+		"Info" : "The peach is a deciduous tree native to the region of Northwest China between the Tarim Basin and the north slopes of the Kunlun Mountains, where it was first domesticated and cultivated. It bears edible juicy fruits with various characteristics, most called peaches and others, nectarines. The specific name persica refers to its widespread cultivation in Persia (modern-day Iran), from where it was transplanted to Europe. It belongs to the genus Prunus, which includes the cherry, apricot, almond, and plum, in the rose family."
+		} 
+
+
+}
