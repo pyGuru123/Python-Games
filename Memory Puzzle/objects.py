@@ -20,7 +20,7 @@ class Board:
 
 		for r in range(ROWS):
 			for c in range(COLS):
-				index = r * ROWS + c
+				index = r * COLS + c
 				value = self.extended_imglist[index]
 				image = self.image_list[value-1]
 				x = c*TILESIZE + c * 10 + 20
@@ -55,6 +55,7 @@ class Card:
 		self.visible = False
 		self.animate = False
 		self.slide_left = True
+		self.animation_complete = False
 
 		self.rect = self.image.get_rect()
 		self.rect.x = self.pos[0]
@@ -62,19 +63,22 @@ class Card:
 
 		self.cover_x = TILESIZE
 
-	def on_click(self, win):
+	def on_click(self, win, speed=None):
 		if self.visible:
 			if self.slide_left:
+				self.animation_complete = False
 				if self.cover_x > 0:
-					self.cover_x -= 8
+					self.cover_x -= speed
 				if self.cover_x <= 0:
 					self.animate = False
 			else:
 				if self.cover_x < TILESIZE:
-					self.cover_x += 8
+					self.cover_x += speed
 				if self.cover_x >= TILESIZE:
 					self.animate = False
 					self.visible = False
+					self.slide_left = False
+					self.animation_complete = True
 
 			win.blit(self.image, self.rect)
 			rect =  (self.rect.x, self.rect.y, self.cover_x, TILESIZE)
@@ -118,17 +122,24 @@ class Button(pygame.sprite.Sprite):
 		win.blit(self.image, self.rect)
 		return action
 
-def message_box(win, font, text):
+def message_box(win, font, name, text):
 	WIDTH = 540
 	HEIGHT = 300
-	x = 30
+	x = 35
 	y = 185 # depends on message box location
 	pygame.draw.rect(win, (255,255,255), (25, 150, WIDTH, HEIGHT), border_radius=10)
 	for word in text.split(' '):
 		rendered = font.render(word, 0, (0,0,0))
 		width = rendered.get_width()
 		if x + width >= WIDTH:
-			x = 30
+			x = 35
 			y += 25
 		win.blit(rendered, (x, y))
 		x += width + 5
+
+
+	title = font.render(name, 0, (0,0,0))
+	title_width = 120
+	pygame.draw.rect(win, (255,255,255), (WIDTH // 2 - title_width // 2 + 10, 140, 
+					title_width, 30), border_radius=10)
+	win.blit(title, (WIDTH // 2 - title.get_width()//2 + 10, 145))

@@ -53,8 +53,30 @@
 		},
 	"14" : {
 		"Name" : "Kiwi",
-		"Info" : "The peach is a deciduous tree native to the region of Northwest China between the Tarim Basin and the north slopes of the Kunlun Mountains, where it was first domesticated and cultivated. It bears edible juicy fruits with various characteristics, most called peaches and others, nectarines. The specific name persica refers to its widespread cultivation in Persia (modern-day Iran), from where it was transplanted to Europe. It belongs to the genus Prunus, which includes the cherry, apricot, almond, and plum, in the rose family."
-		} 
-
-
+		"Info" : "Kiwi or Chinese gooseberry is the edible berry of several species of woody vines in the genus Actinidia. The most common cultivar group of kiwifruit is oval, about the size of a large hen's egg: 5–8 centimetres in length and 4.5–5.5 cm in diameter. It has a thin, fuzzy, fibrous, tart but edible light brown skin and light green or golden flesh with rows of tiny, black, edible seeds. The fruit has a soft texture with a sweet and unique flavour. In 2018, China produced half of the world total of kiwifruit."
+		},
+	"15" : {
+		"Name" : "Corn",
+		"Info" : "Maize, also known as corn, is a cereal grain first domesticated by indigenous peoples in southern Mexico about 10,000 years ago. Maize has become a staple food in many parts of the world, with the total production of maize surpassing that of wheat or rice. In addition to being consumed directly by humans (often in the form of masa), maize is also used for corn ethanol, animal feed and other maize products, such as corn starch and corn syrup."
+		},
+	"16" : {
+		"Name" : "Pomegranate",
+		"Info" : "The pomegranate is a fruit-bearing deciduous shrub in the family Lythraceae, that grows between 5 and 10 m tall. As intact sarcotestas or juice, pomegranates are used in baking, cooking, juice blends, meal garnishes, smoothies, and alcoholic beverages, such as cocktails and wine."
+		},
+	"17" : {
+		"Name" : "Peanut",
+		"Info" : "The peanut, also known as the groundnut is a legume crop grown mainly for its edible seeds. Peanuts are similar in taste and nutritional profile to 'tree nuts' such as walnuts and almonds, and, as a culinary nut, are often served in similar ways in Western cuisines."
+		},
+	"18" : {
+		"Name" : "Pineapple",
+		"Info" : "The pineapple is a tropical plant with an edible fruit and the most economically significant plant in the family Bromeliaceae. The flesh and juice of the pineapple are used in cuisines around the world. In many tropical countries, pineapple is prepared and sold on roadsides as a snack. It is sold whole or in halves with a stick inserted. Whole, cored slices with a cherry in the middle are a common garnish on hams in the West"
+		},
+	"19" : {
+		"Name" : "Cherry",
+		"Info" : "A cherry is the fruit of many plants of the genus Prunus, and is a fleshy drupe. The fruit of the sweet cherry is used as food and medicine. Sweet cherry is used to prevent cancer and diseases of the heart and blood vessels. It is also used to treat osteoarthritis and gout. In foods, sweet cherries are eaten as a food or flavoring."
+		},
+	"20" : {
+		"Name" : "Banana",
+		"Info" : "A banana is an elongated, edible fruit – botanically a berry – produced by several kinds of large herbaceous flowering plants in the genus Musa. In some countries, bananas used for cooking may be called 'plantains', distinguishing them from dessert bananas. The fruit is variable in size, color, and firmness, but is usually elongated and curved, with soft flesh rich in starch covered with a rind, which may be green, yellow, red, purple, or brown when ripe."
+		}
 }

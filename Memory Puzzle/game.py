@@ -1,5 +1,6 @@
 import json
 import pygame
+from random import randint
 from objects import Board, Button, message_box
 
 ### SETUP *********************************************************************
@@ -31,6 +32,14 @@ bg = pygame.image.load('Assets/bg.jpg')
 rightbar = pygame.image.load('Assets/image.jpg')
 rightbar = pygame.transform.scale(rightbar, (280, HEIGHT - 47))
 
+### Loading Sounds ************************************************************
+pygame.mixer.music.load('Sounds/Puzzle-Game-3_Looping.mp3')
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(loops=-1)
+
+card_click = pygame.mixer.Sound("Sounds/card click.wav")
+woosh = pygame.mixer.Sound("Sounds/woosh.mp3")
+
 ### Buttons *******************************************************************
 restart_img = pygame.image.load('Assets/restart.png')
 restart_btn = Button(restart_img, (40,40), 720, 230)
@@ -52,12 +61,18 @@ sys_font = pygame.font.SysFont(("Times New Roman"),20)
 board = Board(img_list)
 board.randomize_images()
 
+animated_boxes = [(randint(0,7), randint(0,9)) for i in range(10)]
+
 ### GAME VARIABLES ************************************************************
 game_screen = True
 first_card = None
 second_card = None
 first_click_time = None
 second_click_time = None
+numCards = 80
+isLoading = True
+animation_on = True
+animation_count = 0
 
 running = True
 
@@ -77,6 +92,10 @@ while running:
 
 		board.randomize_images()
 
+		isLoading = True
+		animation_on = True
+		animation_count = 0
+
 	if info_btn.draw(win):
 		game_screen = False
 		show_text = False
@@ -89,6 +108,9 @@ while running:
 	x, y = pygame.mouse.get_pos()
 
 	for event in pygame.event.get():
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				running = False
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if event.button == 1:
 				clicked = True
@@ -96,6 +118,37 @@ while running:
 
 	if game_screen:
 		### Game is on
+
+		if isLoading:
+			### Preview card animation
+			clicked = False
+
+			if animation_count <= 10:
+				for pos in animated_boxes:
+					card = board.board[pos[0]][pos[1]]
+					if card.cover_x >= TILESIZE:
+						card.visible = True
+						card.animate = True
+						card.slide_left = True
+
+					if card.cover_x <= 0:
+						card.animate = True
+						card.slide_left = False
+
+				if card.animation_complete:
+					for pos in animated_boxes:
+						card = board.board[pos[0]][pos[1]]
+						card.visible = False
+						card.animate = False
+					print(animation_count)
+					animation_count += 1
+
+					animated_boxes = [(randint(0,7), randint(0,9)) for i in range(15)]
+			else:
+				isLoading = False
+				animation_on = False
+				animation_count = 0
+
 
 		### Polling time to hide cards
 		if second_click_time:
@@ -106,6 +159,8 @@ while running:
 				if first_card.value == second_card.value:
 					first_card.is_alive = False
 					second_card.is_alive = False
+					numCards -= 2
+					woosh.play()
 
 				index = first_card.index
 				fcard = board.board[index[0]][index[1]]
@@ -133,21 +188,23 @@ while running:
 					xcord = card.rect.x
 					ycord = card.rect.y
 
-					if card.rect.collidepoint((x,y)):
-						border = True
-						if clicked:
-							card.visible = True
-							card.animate = True
-							card.slide_left = True
+					if not isLoading:
+						if card.rect.collidepoint((x,y)):
+							border = True
+							if clicked:
+								card_click.play()
+								card.visible = True
+								card.animate = True
+								card.slide_left = True
 
-							if not first_card:
-								first_card = card
-							else:
-								second_card = card
-								if second_card != first_card:
-									second_click_time = pygame.time.get_ticks()
+								if not first_card:
+									first_card = card
 								else:
-									second_card = None
+									second_card = card
+									if second_card != first_card:
+										second_click_time = pygame.time.get_ticks()
+									else:
+										second_card = None
 
 					pygame.draw.rect(win, BLACK, (xcord+5, ycord+5,TILESIZE, TILESIZE))
 
@@ -157,10 +214,14 @@ while running:
 						else:
 							pygame.draw.rect(win, WHITE, (xcord, ycord,TILESIZE, TILESIZE))
 
-						if border:
+						if border and not isLoading:
 							pygame.draw.rect(win, RED, (xcord, ycord,TILESIZE, TILESIZE), 2)
 					else:
-						card.on_click(win)
+						if isLoading:
+							speed = 5
+						else:
+							speed = 8
+						card.on_click(win, speed)
 	else:
 		for r in range(2):
 			for c in range(COLS):
@@ -175,6 +236,7 @@ while running:
 					pygame.draw.rect(win, RED, (xcord, ycord,TILESIZE, TILESIZE), 2)
 
 					if clicked:
+						card_click.play()
 						show_text = True
 						data = dct[str(card.value)]
 						name = data['Name']
@@ -186,7 +248,7 @@ while running:
 		if border:
 			pygame.draw.rect(win, BLUE, (pos[0], pos[1],TILESIZE, TILESIZE), 2)
 		if show_text:
-			message_box(win, sys_font, info)
+			message_box(win, sys_font, name, info)
 
 	pygame.display.flip()
 	clock.tick(FPS)
