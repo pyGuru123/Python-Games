@@ -29,6 +29,7 @@ for img in range(1,21):
 	img_list.append(image)
 
 bg = pygame.image.load('Assets/bg.jpg')
+game_won = pygame.image.load('Assets/won.png')
 rightbar = pygame.image.load('Assets/image.jpg')
 rightbar = pygame.transform.scale(rightbar, (280, HEIGHT - 47))
 
@@ -56,12 +57,13 @@ with open('Info/info.json') as f:
 
 ### LOADING FONTS *************************************************************
 sys_font = pygame.font.SysFont(("Times New Roman"),20)
+clicks_font = pygame.font.SysFont(("Algerian"),30)
 
 ### CREATING BOARD ************************************************************
 board = Board(img_list)
 board.randomize_images()
 
-animated_boxes = [(randint(0,7), randint(0,9)) for i in range(10)]
+animated_boxes = [(randint(0,7), randint(0,9)) for i in range(20)]
 
 ### GAME VARIABLES ************************************************************
 game_screen = True
@@ -73,6 +75,10 @@ numCards = 80
 isLoading = True
 animation_on = True
 animation_count = 0
+prev_count = 0
+
+gameWon = False
+numClicks = 0
 
 running = True
 
@@ -95,6 +101,9 @@ while running:
 		isLoading = True
 		animation_on = True
 		animation_count = 0
+		numClicks = 0
+		numCards = 80
+		gameWon = False
 
 	if info_btn.draw(win):
 		game_screen = False
@@ -118,13 +127,15 @@ while running:
 
 	if game_screen:
 		### Game is on
+		if numCards == 0:
+			gameWon = True
 
 		if isLoading:
 			### Preview card animation
 			clicked = False
 
-			if animation_count <= 10:
-				for pos in animated_boxes:
+			if animation_count < 20:
+				for index, pos in enumerate(animated_boxes):
 					card = board.board[pos[0]][pos[1]]
 					if card.cover_x >= TILESIZE:
 						card.visible = True
@@ -140,88 +151,92 @@ while running:
 						card = board.board[pos[0]][pos[1]]
 						card.visible = False
 						card.animate = False
-					print(animation_count)
+					animated_boxes = [(randint(0,7), randint(0,9)) for i in range(20)]
 					animation_count += 1
-
-					animated_boxes = [(randint(0,7), randint(0,9)) for i in range(15)]
 			else:
 				isLoading = False
 				animation_on = False
 				animation_count = 0
 
 
-		### Polling time to hide cards
-		if second_click_time:
-			current_time = pygame.time.get_ticks()
+		if not gameWon:
+			### Polling time to hide cards
+			if second_click_time:
+				current_time = pygame.time.get_ticks()
 
-			delta = current_time - second_click_time
-			if delta >= 1000:
-				if first_card.value == second_card.value:
-					first_card.is_alive = False
-					second_card.is_alive = False
-					numCards -= 2
-					woosh.play()
+				delta = current_time - second_click_time
+				if delta >= 1000:
+					if first_card.value == second_card.value:
+						first_card.is_alive = False
+						second_card.is_alive = False
+						numCards -= 2
+						woosh.play()
 
-				index = first_card.index
-				fcard = board.board[index[0]][index[1]]
-				fcard.animate = True
-				fcard.slide_left = False
-				first_card = None
+					index = first_card.index
+					fcard = board.board[index[0]][index[1]]
+					fcard.animate = True
+					fcard.slide_left = False
+					first_card = None
 
-				index = second_card.index
-				scard = board.board[index[0]][index[1]]
-				scard.animate = True
-				scard.slide_left = False
-				second_card = None
+					index = second_card.index
+					scard = board.board[index[0]][index[1]]
+					scard.animate = True
+					scard.slide_left = False
+					second_card = None
 
-				first_click_time = None
-				second_click_time = None
-			else:
-				clicked = False
+					first_click_time = None
+					second_click_time = None
+				else:
+					clicked = False
 
-		### Displaying cards
-		for r in range(ROWS):
-			for c in range(COLS):
-				border = False
-				card = board.board[r][c]
-				if card.is_alive:
-					xcord = card.rect.x
-					ycord = card.rect.y
+			### Displaying cards
+			for r in range(ROWS):
+				for c in range(COLS):
+					border = False
+					card = board.board[r][c]
+					if card.is_alive:
+						xcord = card.rect.x
+						ycord = card.rect.y
 
-					if not isLoading:
-						if card.rect.collidepoint((x,y)):
-							border = True
-							if clicked:
-								card_click.play()
-								card.visible = True
-								card.animate = True
-								card.slide_left = True
+						if not isLoading:
+							if card.rect.collidepoint((x,y)):
+								border = True
+								if clicked:
+									card_click.play()
+									numClicks += 1
+									card.visible = True
+									card.animate = True
+									card.slide_left = True
 
-								if not first_card:
-									first_card = card
-								else:
-									second_card = card
-									if second_card != first_card:
-										second_click_time = pygame.time.get_ticks()
+									if not first_card:
+										first_card = card
 									else:
-										second_card = None
+										second_card = card
+										if second_card != first_card:
+											second_click_time = pygame.time.get_ticks()
+										else:
+											second_card = None
 
-					pygame.draw.rect(win, BLACK, (xcord+5, ycord+5,TILESIZE, TILESIZE))
+						pygame.draw.rect(win, BLACK, (xcord+5, ycord+5,TILESIZE, TILESIZE))
 
-					if not card.animate:
-						if card.visible:
-							win.blit(card.image, card.rect)
+						if not card.animate:
+							if card.visible:
+								win.blit(card.image, card.rect)
+							else:
+								pygame.draw.rect(win, WHITE, (xcord, ycord,TILESIZE, TILESIZE))
+
+							if border and not isLoading:
+								pygame.draw.rect(win, RED, (xcord, ycord,TILESIZE, TILESIZE), 2)
 						else:
-							pygame.draw.rect(win, WHITE, (xcord, ycord,TILESIZE, TILESIZE))
-
-						if border and not isLoading:
-							pygame.draw.rect(win, RED, (xcord, ycord,TILESIZE, TILESIZE), 2)
-					else:
-						if isLoading:
-							speed = 5
-						else:
-							speed = 8
-						card.on_click(win, speed)
+							if isLoading:
+								speed = 5
+							else:
+								speed = 8
+							card.on_click(win, speed)
+		else:
+			win.blit(game_won, (50,100))
+			image = clicks_font.render(f'Number of Clicks : {numClicks}', 0, (0, 0, 0))
+			win.blit(image, (150, 350))
 	else:
 		for r in range(2):
 			for c in range(COLS):
