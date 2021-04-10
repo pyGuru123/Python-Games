@@ -7,7 +7,6 @@
 This repository contains a collection of small python games made by me using turtle, tkinter
 and pygame library.
 
-***
 ## All the Games are listed here
 
 * ### [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
@@ -23,7 +22,7 @@ and pygame library.
 
 
 * ### [Memory Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Memory%20Puzzle)
-	> Memory Puzzle is a simple puzzle game based on fruits.
+	> Memory Puzzle is a simple puzzle game based on fruits made with pygame.
 
 
 * ### [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
@@ -54,11 +53,11 @@ and pygame library.
 ***
 ## Tools & Utilities
 
-* ## SpriteSheet Cutter
+* ### SpriteSheet Cutter
 	> SpriteSheet Cutter is a tool to cut spritsheets.\
 	> Link to project : [SpriteSheet Cutter](https://github.com/pyGuru123/Python-Games/tree/master/SpriteSheet%20Cutter)
 
-* ## Level Designer
+* ### Level Designer
 	> Level Designer is a tool to design levels for 2D non scrollable platformer games.\
 	> Link to project : [Level Designer](https://github.com/pyGuru123/Python-Games/tree/master/Level%20Designer)
 
