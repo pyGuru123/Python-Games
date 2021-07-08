@@ -51,6 +51,26 @@ and pygame library.
 	> Tic Tac Toe game written using tkinter library.
 
 ***
+
+## Games made on/for pyrdoid3
+
+* ### [Angry Walls](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
+	> A simple hypercasual game made on pydroid3.
+
+* ### [Car Dodge 2D](https://github.com/pyGuru123/Python-Games/tree/master/Car%20Dodge%202d)
+	> A car dodge game made on pydroid3.
+
+* ### [Cave Story](https://github.com/pyGuru123/Python-Games/tree/master/Cave%20Story)
+	> A cave adventure based 2d platformer game made on pydroid3.
+
+* ### [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
+	> Collect Eggs, score points. A simple game for pydroid3.
+
+* ### [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
+	> An implementation of flappy bird on pydroid3.
+
+***
+
 ## Tools & Utilities
 
 * ### SpriteSheet Cutter
