@@ -1,16 +1,18 @@
-# Fruit Memory Puzzle
+# Car Dodge 2D
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-Fruit Memory Puzzle is a simple puzzle game where the objective is to clear all the cards by matching two cards of the same type.
+Car Dodge 2D is a simple car & obstacle dodging game made with pygame. The game is specifically meant to run on pydroid3 on android, It may not work properly in desktop.
 
-![Alt text](app.gif?raw=true "Memory Puzzle")
+Install pydroid3 on Android from here : [pydroid3 playstore](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3&hl=en_IN&gl=US)
+
+![Alt text](app.webp?raw=true "Car Dodge 2D")
 
 ## How to Download
 
-Download this project from here [Download Memory Puzzle](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Memory%20Puzzle)
+Download this project from here [Download Car Dodge 2D](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Car%20Dodge%202d)
 
 ## Requirements
 
@@ -21,12 +23,14 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install followi
 pip install pygame
 ```
 
+pygame is already installed in pydroid3, no installation required.
+
 ## Usage
 
-Double click the game.py to open the game, the game will automatically start. The game has two modes, game mode and info mode, both can be selected from the right sidebar. In game mode you have to clear all the cards by selecting same type of cards while in info mode you can get information related to a certain fruit.
+Navigate and click main.py to open the game in pydroid3, click on start to start the game. Use control icons to move the cars in all 4 directions. Click horn button to move the coming car out of the way.
 
 Controls:
-* Use Mousemotion to move & Left Mouse key to click Cards. 
+* Control icons are available in the game.
 
 ## Contributing
 
