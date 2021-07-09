@@ -1,16 +1,16 @@
-# Fruit Memory Puzzle
+# Angry Walls
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-Fruit Memory Puzzle is a simple puzzle game where the objective is to clear all the cards by matching two cards of the same type.
+Angry Walls is a simple hypercasual game made with pygame. The game is specifically meant to run on pydroid3 on android, It may not work properly in desktop.
 
-![Alt text](app.gif?raw=true "Memory Puzzle")
+![Alt text](app.webp?raw=true "Angry Walls")
 
 ## How to Download
 
-Download this project from here [Download Memory Puzzle](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Memory%20Puzzle)
+Download this project from here [Download Angry Walls](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
 
 ## Requirements
 
@@ -21,12 +21,14 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install followi
 pip install pygame
 ```
 
+pygame is already installed in pydroid3, no installation required.
+
 ## Usage
 
-Double click the game.py to open the game, the game will automatically start. The game has two modes, game mode and info mode, both can be selected from the right sidebar. In game mode you have to clear all the cards by selecting same type of cards while in info mode you can get information related to a certain fruit.
+Navigate and click main.py to open the game in pydroid3, click anywhere to start the game. The objective of the game is to create high score without touching the fallng walls & red balls.
 
 Controls:
-* Use Mousemotion to move & Left Mouse key to click Cards. 
+* Click the bird and drag left & right.
 
 ## Contributing
 
