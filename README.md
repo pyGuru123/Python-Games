@@ -66,7 +66,7 @@ and pygame library.
 * ### [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
 	> Collect Eggs, score points. A simple game for pydroid3.
 
-* ### [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
+* ### [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Flappy%20Bird)
 	> An implementation of flappy bird on pydroid3.
 
 ***
