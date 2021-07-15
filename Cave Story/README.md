@@ -29,6 +29,8 @@ pygame is already installed in pydroid3, no installation required.
 
 Navigate and click main.py to open the game in pydroid3, click start to start the game. The objective of the game is to collect the diamonds and move to next levels by going through the portal.
 
+Currently only 3 levels are available, more levels can be created using the level_editor.py file
+
 Controls:
 * Controller is avaiable at bottom.
 
