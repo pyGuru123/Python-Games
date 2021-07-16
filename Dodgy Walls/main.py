@@ -10,8 +10,8 @@ from objects import Bar, Dot, Player, Message, Particle, ScoreCard, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
-win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
-pygame.display.set_caption('Risky Walls')
+win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
+pygame.display.set_caption('Dodgy Walls')
 
 clock = pygame.time.Clock()
 FPS = 30
@@ -134,7 +134,7 @@ while running:
 
 	if score_page:
 		final_score.update()
-		if highscore and highscore == score:
+		if score and score >= highscore:
 			new_high.update()
 
 		if home_btn.draw(win):
@@ -191,7 +191,7 @@ while running:
 					dot.kill()
 					score += 1
 					if highscore <= score:
-						highscore += 1
+						highscore = score
 					score_fx.play()
 					score_msg.animate = True
 
