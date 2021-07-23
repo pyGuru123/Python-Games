@@ -4,6 +4,7 @@ import math
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
+MAX_RAD = 120
 
 pygame.font.init()
 pygame.mixer.init()
@@ -17,11 +18,12 @@ class Player:
 	def update(self, color):
 		pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
 		pygame.draw.circle(self.win, color, (self.x, self.y), 3)
-		
-		
+
 	def reset(self):
 		self.x = CENTER[0]
 		self.y = CENTER[1]
+
+		self.dx, self.dy = 1, 1
 
 class Dot(pygame.sprite.Sprite):
 	def __init__(self, x, y, win):
@@ -37,6 +39,48 @@ class Dot(pygame.sprite.Sprite):
 	def update(self):
 		pygame.draw.circle(self.win, self.color, (self.x,self.y), 6)
 		self.rect = pygame.draw.circle(self.win, self.color, (self.x,self.y), 6)
+
+class ShadowImage:
+	def __init__(self):
+		self.image = pygame.Surface((10, 100), pygame.SRCALPHA)
+		self.image.fill((255, 255, 255, 128))
+		self.rect = self.image.get_rect()
+
+	def rotate(self, angle):
+		rotated = pygame.transform.rotate(self.image, angle)
+		self.rect = rotated.get_rect()
+		return rotated
+
+
+class Shadow(pygame.sprite.Sprite):
+	def __init__(self, index, win):
+		super(Shadow, self).__init__()
+		
+		self.index = index
+		self.win = win
+		self.color = (255, 255, 255)
+		self.shadow = ShadowImage()
+
+
+		if self.index == 1:
+			self.image = self.shadow.rotate(0)
+			self.x = CENTER[0] - 5
+			self.y = CENTER[1] - MAX_RAD + 10
+		if self.index == 2:
+			self.image = self.shadow.rotate(90)
+			self.x = CENTER[0] + 10
+			self.y = CENTER[1] - 5
+		if self.index == 3:
+			self.image = self.shadow.rotate(0)
+			self.x = CENTER[0] - 5
+			self.y = CENTER[1] + 10
+		if self.index == 4:
+			self.image = self.shadow.rotate(-90)
+			self.x = CENTER[0] - MAX_RAD + 10
+			self.y = CENTER[1] - 5
+		
+	def update(self):
+		self.win.blit(self.image, (self.x,self.y))
 
 class Balls(pygame.sprite.Sprite):
 	def __init__(self, pos, type_, win):

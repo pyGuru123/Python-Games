@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Player, Balls, Dot
+from objects import Player, Balls, Dot, Shadow
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -33,6 +33,7 @@ rad_delta = 50
 
 ball_group = pygame.sprite.Group()
 dot_group = pygame.sprite.Group()
+shadow_group = pygame.sprite.Group()
 p = Player(win)
 
 ball_positions = [(CENTER[0]-105, CENTER[1]), (CENTER[0]+105, CENTER[1]),
@@ -46,13 +47,16 @@ for index, pos in enumerate(ball_positions):
 	ball = Balls(pos, type_, win)
 	ball_group.add(ball)
 
-dot_list = [(CENTER[0]-MAX_RAD+3, CENTER[1]), (CENTER[0]+MAX_RAD-3, CENTER[1]),
-			(CENTER[0], CENTER[1]-MAX_RAD+3), (CENTER[0], CENTER[1]+MAX_RAD-3)]
+dot_list = [(CENTER[0], CENTER[1]-MAX_RAD+3), (CENTER[0]+MAX_RAD-3, CENTER[1]),
+			(CENTER[0], CENTER[1]+MAX_RAD-3), (CENTER[0]-MAX_RAD+3, CENTER[1])]
 dot_index = random.choice([1,2,3,4])
 dot_pos = dot_list[dot_index-1]
 dot = Dot(*dot_pos, win)
 dot_group.add(dot)
 
+
+shadow = Shadow(dot_index, win)
+shadow_group.add(shadow)
 
 
 
@@ -79,10 +83,16 @@ while running:
 					ball.dtheta *= -1
 
 				dot_group.empty()
-				dot_index = random.choice([1,2,3,4])
+				dot_index = random.randint(1,4)
 				dot_pos = dot_list[dot_index-1]
 				dot = Dot(*dot_pos, win)
 				dot_group.add(dot)
+
+				print(dot_index)
+
+				shadow_group.empty()
+				shadow = Shadow(dot_index, win)
+				shadow_group.add(shadow)
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
@@ -98,6 +108,7 @@ while running:
 
 	if rad_delta <= 0:
 		p.update(color)
+		shadow_group.update()
 		ball_group.update()
 		dot_group.update()
 
