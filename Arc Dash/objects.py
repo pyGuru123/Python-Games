@@ -9,5 +9,83 @@ pygame.font.init()
 pygame.mixer.init()
 
 
-def draw_arc(win, rect, theta1, theta2):
-	pygame.draw.arc(win, (0,0,0), rect, theta1, theta2, 10)
+class Player:
+	def __init__(self, win):
+		self.win = win
+		self.reset()
+		
+	def update(self, color):
+		pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
+		pygame.draw.circle(self.win, color, (self.x, self.y), 3)
+		
+		
+	def reset(self):
+		self.x = CENTER[0]
+		self.y = CENTER[1]
+
+class Dot(pygame.sprite.Sprite):
+	def __init__(self, x, y, win):
+		super(Dot, self).__init__()
+		
+		self.x = x
+		self.y = y
+		self.color = (255, 255, 255)
+		self.win = win
+
+		self.rect = pygame.draw.circle(win, self.color, (x,y), 6)
+		
+	def update(self):
+		pygame.draw.circle(self.win, self.color, (self.x,self.y), 6)
+		self.rect = pygame.draw.circle(self.win, self.color, (self.x,self.y), 6)
+
+class Balls(pygame.sprite.Sprite):
+	def __init__(self, pos, type_, win):
+		super(Balls, self).__init__()
+		
+		self.initial_pos = pos
+		self.color = (0,0,0)
+		self.type = type_
+		self.win = win
+		self.reset()
+
+		self.rect = pygame.draw.circle(self.win, self.color, (self.x,self.y), 6)
+
+	def update(self):
+		dx = 0
+		x = round(CENTER[0] + self.radius * math.cos(self.angle * math.pi / 180))
+		y = round(CENTER[1] + self.radius * math.sin(self.angle * math.pi / 180))
+
+		self.angle += self.dtheta
+		if self.dtheta == 1 and self.angle >= 360:
+			self.angle = 0
+		elif self.dtheta == -1 and self.angle <= 0:
+			self.angle = 360
+
+		self.rect = pygame.draw.circle(self.win, self.color, (x,y), 6)
+
+	def reset(self):
+		self.x, self.y = self.initial_pos
+		if self.type == 1:
+
+			if self.x == CENTER[0]-105:
+				self.angle = 180
+			if self.x == CENTER[0]+105:
+				self.angle = 0
+			if self.x == CENTER[0]-45:
+				self.angle = 180
+			if self.x == CENTER[0]+45:
+				self.angle = 0
+
+			self.radius = abs(CENTER[0] - self.x) - 3
+			self.dtheta = 1
+
+		elif self.type == 2:
+			
+			if self.y == CENTER[1] - 75:
+				self.angle = 90
+			if self.y == CENTER[1] + 75:
+				self.angle = 270
+
+			self.radius = abs(CENTER[1] - self.y) - 3
+			self.dtheta = -1
+		
