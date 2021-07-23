@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Player, Balls, Dot, Shadow
+from objects import Player, Balls, Dot, Shadow, Particle
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -21,8 +21,19 @@ FPS = 60
 # COLORS
 
 RED = (255, 0, 0)
+GREEN = (0,177,64)
 BLUE = (30, 144, 255)
+ORANGE = (252,76,2)
+YELLOW = (254,221,0)
 WHITE = (255, 255, 255)
+
+color_list = [RED, GREEN, BLUE, ORANGE, YELLOW]
+color_index = 4
+color = color_list[color_index]
+
+# SOUNDS
+
+score_fx = pygame.mixer.Sound('Sounds/point.mp3')
 
 # GAME VARIABLES
 
@@ -34,6 +45,7 @@ rad_delta = 50
 ball_group = pygame.sprite.Group()
 dot_group = pygame.sprite.Group()
 shadow_group = pygame.sprite.Group()
+particle_group = pygame.sprite.Group()
 p = Player(win)
 
 ball_positions = [(CENTER[0]-105, CENTER[1]), (CENTER[0]+105, CENTER[1]),
@@ -59,9 +71,10 @@ shadow = Shadow(dot_index, win)
 shadow_group.add(shadow)
 
 
+# VARIABLES 
 
-color = RED
 clicked = False
+num_clicks = 0
 
 running = True
 while running:
@@ -80,19 +93,18 @@ while running:
 			if not clicked:
 				clicked = True
 				for ball in ball_group:
+					dir_ = random.choice([-1, 1])
 					ball.dtheta *= -1
 
-				dot_group.empty()
-				dot_index = random.randint(1,4)
-				dot_pos = dot_list[dot_index-1]
-				dot = Dot(*dot_pos, win)
-				dot_group.add(dot)
+				p.set_move(dot_index)
 
-				print(dot_index)
+				num_clicks += 1
+				if num_clicks % 5 == 0:
+					color_index += 1
+					if color_index > len(color_list) - 1:
+						color_index = 0
 
-				shadow_group.empty()
-				shadow = Shadow(dot_index, win)
-				shadow_group.add(shadow)
+					color = color_list[color_index]
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
@@ -107,10 +119,33 @@ while running:
 	pygame.draw.rect(win, color, [CENTER[0]-MAX_RAD, CENTER[1]-10, MAX_RAD*2, 20])
 
 	if rad_delta <= 0:
-		p.update(color)
+		p.update(color, shadow_group)
 		shadow_group.update()
 		ball_group.update()
 		dot_group.update()
+		particle_group.update()
+
+		for dot in dot_group:
+			if dot.rect.colliderect(p):
+				dot.kill()
+				score_fx.play()
+
+		if pygame.sprite.spritecollide(p, ball_group, False):
+			x, y = p.rect.center
+			for i in range(10):
+				particle = Particle(x, y, WHITE, win)
+				particle_group.add(particle)
+
+		if p.can_move and len(dot_group) == 0:
+			dot_index = random.randint(1,4)
+			dot_pos = dot_list[dot_index-1]
+			dot = Dot(*dot_pos, win)
+			dot_group.add(dot)
+
+			shadow_group.empty()
+			shadow = Shadow(dot_index, win)
+			shadow_group.add(shadow)
+
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
 	clock.tick(FPS)
