@@ -15,34 +15,35 @@ class Player:
 		self.win = win
 		self.reset()
 		
-	def update(self, color, shadow_group):
-		if self.x <= CENTER[0] - MAX_RAD or self.x >= CENTER[0] + MAX_RAD or \
-			self.y <= CENTER[1] - MAX_RAD or self.y >= CENTER[1] + MAX_RAD:
-				if self.dx:
-					self.dx *= -1
-				elif self.dy:
-					self.dy *= -1
+	def update(self, player_alive, color, shadow_group):
+		if player_alive:
+			if self.x <= CENTER[0] - MAX_RAD or self.x >= CENTER[0] + MAX_RAD or \
+				self.y <= CENTER[1] - MAX_RAD or self.y >= CENTER[1] + MAX_RAD:
+					if self.dx:
+						self.dx *= -1
+					elif self.dy:
+						self.dy *= -1
 
-				shadow_group.empty()
+					shadow_group.empty()
 
-		if self.index == 1 and self.y > CENTER[1]:
-				self.reset_pos()
-				self.can_move = True
-		elif self.index == 2 and self.x < CENTER[0]:
-				self.reset_pos()
-				self.can_move = True
-		elif self.index == 3 and self.y < CENTER[1]:
-				self.reset_pos()
-				self.can_move = True
-		elif self.index == 4 and self.x > CENTER[0]:
-				self.reset_pos()
-				self.can_move = True
+			if self.index == 1 and self.y > CENTER[1]:
+					self.reset_pos()
+					self.can_move = True
+			elif self.index == 2 and self.x < CENTER[0]:
+					self.reset_pos()
+					self.can_move = True
+			elif self.index == 3 and self.y < CENTER[1]:
+					self.reset_pos()
+					self.can_move = True
+			elif self.index == 4 and self.x > CENTER[0]:
+					self.reset_pos()
+					self.can_move = True
 
-		self.x += self.dx
-		self.y += self.dy
+			self.x += self.dx
+			self.y += self.dy
 
-		self.rect = pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
-		pygame.draw.circle(self.win, color, (self.x, self.y), 3)
+			self.rect = pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
+			pygame.draw.circle(self.win, color, (self.x, self.y), 3)
 
 	def set_move(self, index):
 		if self.can_move:
@@ -130,12 +131,13 @@ class Shadow(pygame.sprite.Sprite):
 		self.win.blit(self.image, (self.x,self.y))
 
 class Balls(pygame.sprite.Sprite):
-	def __init__(self, pos, type_, win):
+	def __init__(self, pos, type_, inverter, win):
 		super(Balls, self).__init__()
 		
 		self.initial_pos = pos
 		self.color = (0,0,0)
 		self.type = type_
+		self.inverter = inverter
 		self.win = win
 		self.reset()
 
@@ -181,7 +183,6 @@ class Balls(pygame.sprite.Sprite):
 			self.dtheta = -1
 
 
-
 class Particle(pygame.sprite.Sprite):
 	def __init__(self, x, y, color, win):
 		super(Particle, self).__init__()
@@ -208,3 +209,73 @@ class Particle(pygame.sprite.Sprite):
 			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
 		else:
 			self.kill()
+
+
+class Message:
+	def __init__(self, x, y, size, text, font, color, win):
+		self.win = win
+		self.color = color
+		self.x, self.y = x, y
+		if not font:
+			self.font = pygame.font.SysFont("Verdana", size)
+			anti_alias = True
+		else:
+			self.font = pygame.font.Font(font, size)
+			anti_alias = False
+		self.image = self.font.render(text, anti_alias, color)
+		self.rect = self.image.get_rect(center=(x,y))
+		self.shadow = self.font.render(text, anti_alias, (54,69,79))
+		self.shadow_rect = self.image.get_rect(center=(x+2,y+2))
+		
+	def update(self, text=None, shadow=True):
+		if text:
+			self.image = self.font.render(f"{text}", False, self.color)
+			self.rect = self.image.get_rect(center=(self.x,self.y))
+			self.shadow = self.font.render(f"{text}", False, (54,69,79))
+			self.shadow_rect = self.image.get_rect(center=(self.x+2,self.y+2))
+		if shadow:
+			self.win.blit(self.shadow, self.shadow_rect)
+		self.win.blit(self.image, self.rect)
+
+class BlinkingText(Message):
+	def __init__(self, x, y, size, text, font, color, win):
+		super(BlinkingText, self).__init__(x, y, size, text, font, color, win)
+		self.index = 0
+		self.show = True
+
+	def update(self):
+		self.index += 1
+		if self.index % 40 == 0:
+			self.show = not self.show
+
+		if self.show:
+			self.win.blit(self.image, self.rect)
+
+class Button(pygame.sprite.Sprite):
+	def __init__(self, img, scale, x, y):
+		super(Button, self).__init__()
+		
+		self.scale = scale
+		self.image = pygame.transform.scale(img, self.scale)
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def update_image(self, img):
+		self.image = pygame.transform.scale(img, self.scale)
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action
