@@ -6,11 +6,11 @@
 
 Arc Dash is a simple endless target based hypercasual arcade game made with pygame.
 
-![Alt text](app.gif?raw=true "Arc Dash")
+[![Arc Dash](https://img.youtube.com/vi/S1o160lx5GA/0.jpg)](http://www.youtube.com/watch?v=S1o160lx5GA)
 
 ## How to Download
 
-Download this project from here [DownloadArc Dash](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
+Download this project from here [Download Arc Dash](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
 
 ## Requirements
 

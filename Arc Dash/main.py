@@ -11,8 +11,7 @@ from objects import Player, Balls, Dot, Shadow, Particle, Message, BlinkingText,
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
-# | pygame.SCALED | pygame.FULLSCREEN
-win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 pygame.display.set_caption('Arc Dash')
 
 clock = pygame.time.Clock()
