@@ -4,32 +4,15 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-Fruit Memory Puzzle is a simple puzzle game where the objective is to clear all the cards by matching two cards of the same type.
 
-![Alt text](app.gif?raw=true "Memory Puzzle")
+Instructions for using the Level Editor
 
-## How to Download
+* Split the tilemap and put all the files in the tiles folder.
+* Set the number of tiles in NUM_TILES variable at line 41 in level_editor.py 
+* Set level in current_level variable at line 159 in level_editor.py
+* Run the file, click load to load level data ( currently empty ), click anywhere on the empty screen to highlight the tile.
+* Now click any asset tile to set the tile, and start creating your level.
+* Finally click save to save the level data in a pickle file.
 
-Download this project from here [Download Memory Puzzle](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Memory%20Puzzle)
 
-## Requirements
-
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install following packages :-
-* Pygame
-
-```bash
-pip install pygame
-```
-
-## Usage
-
-Double click the game.py to open the game, the game will automatically start. The game has two modes, game mode and info mode, both can be selected from the right sidebar. In game mode you have to clear all the cards by selecting same type of cards while in info mode you can get information related to a certain fruit.
-
-Controls:
-* Use Mousemotion to move & Left Mouse key to click Cards. 
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
+The Level Editor Is A Non Scrollable And Works Best With 16x16 Tiles.

@@ -29,6 +29,7 @@ Navigate and click main.py to open the game, click anywhere to start the game. T
 
 Controls:
 * Tap anywhere to change the direction.
+* press ESC to escape the game
 
 ## Contributing
 

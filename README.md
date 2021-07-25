@@ -9,6 +9,9 @@ and pygame library.
 
 ## All the Games are listed here
 
+* ### [Arc Dash](https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
+	> Arc Dash is a simple endless target based hypercasual arcade game.
+
 * ### [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 	> Asteroids is an implementaion of Asteroids game in pygame.
 
