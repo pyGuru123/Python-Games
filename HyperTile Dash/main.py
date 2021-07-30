@@ -35,6 +35,10 @@ color_list = [RED, GREEN, BLUE, ORANGE, YELLOW, PURPLE]
 color_index = 0
 color = color_list[color_index]
 
+death_color_list = [BLUE, ORANGE, YELLOW, PURPLE, RED, GREEN]
+death_color_index = 0
+death_color = color_list[color_index]
+
 # Images **********************************************************************
 
 
@@ -51,9 +55,27 @@ for i in range(8):
 p = Player(win)
 path = Path(p, tile_group, win)
 
+# FUNCTIONS *******************************************************************
+
+def get_indices():
+	if p.y < HEIGHT // 2:
+		indices = [2*index+1 for index in range(8)]
+	else:
+		indices = [2*index for index in range(8)]
+
+	return indices
+
+def generate_target_tile():
+	indices = get_indices()
+	index = random.choice(indices)
+	target_tile = tile_group.sprites()[index]
+
+	return target_tile
+
 clicked = False
 num_clicks = 0
 index = None
+target_tile = None
 
 running = True
 while running:
@@ -70,19 +92,12 @@ while running:
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if not clicked:
-				pos = event.pos
-				for tile in tile_group:
-					if tile.rect.collidepoint(pos):
-						tile.color = ORANGE
-						tile.is_deadly = True
-						type_ = tile.type
-						index = tile.index
-						x = tile.rect.centerx
-						if type_ == 1:
-							y = tile.rect.bottom
-						elif type_ == 2:
-							y = tile.rect.top
-						p.set_move(x, y, index, type_)
+				if pygame.sprite.spritecollide(p, tile_group, False):
+					index = path.index
+					tile = path.tile
+					x = path.x
+					y = path.y
+					p.set_move(x, y, index)
 
 				num_clicks += 1
 				if num_clicks % 5 == 0:
@@ -92,16 +107,21 @@ while running:
 
 					color = color_list[color_index]
 
+				target_tile = generate_target_tile()
+
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
 	if pygame.sprite.spritecollide(p, tile_group, False):
 		p.shadow()
-		path.update()
+		path.update(color)
 	else:
 		path.reset()
 	tile_group.update()
 	p.update(color)
+
+	if target_tile:
+		target_tile.highlight()
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
 	clock.tick(FPS)

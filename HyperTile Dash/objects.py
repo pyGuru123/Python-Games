@@ -35,6 +35,9 @@ class Tile(pygame.sprite.Sprite):
 
 		self.rect = pygame.draw.rect(self.win, self.color, (self.x, self.y, self.width, self.height))
 
+	def highlight(self):
+		pygame.draw.rect(self.win, (255, 70, 70), (self.x, self.y, self.width, self.height), 2)
+
 	def update(self):
 		pygame.draw.rect(self.win, (12, 12, 12), (self.x+3, self.y+3, self.width, self.height))
 		self.rect = pygame.draw.rect(self.win, self.color, (self.x, self.y, self.width, self.height))
@@ -74,10 +77,9 @@ class Player:
 		pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
 		pygame.draw.circle(self.win, (0, 0, 0), (self.x, self.y), 3)
 
-	def set_move(self, x, y, index, type_):
+	def set_move(self, x, y, index):
 		if self.can_move:
 			self.index = index
-			self.type = type_
 			dx = x - self.x
 			dy = y - self.y
 			angle = math.atan2(dy, dx)
@@ -94,8 +96,8 @@ class Player:
 		self.radius = 10
 		self.shadow_radius = 20
 
-		self.x = 5 * 20 + 7 * 10 + 20
-		self.y = TILE_Y + 60 + self.radius
+		self.x = WIDTH + 10
+		self.y = HEIGHT // 2
 		self.vel = 8
 
 		self.counter = 0
@@ -103,6 +105,7 @@ class Player:
 		self.dx = self.dy = 0
 		self.can_move = True
 
+		self.set_move(190, 170, 5)
 		self.rect = pygame.draw.circle(self.win, (0,0,0), (self.x, self.y), 10)
 
 class Path:
@@ -117,6 +120,10 @@ class Path:
 		self.points = []
 		self.counter = 0
 
+		self.tile_to_go = None
+		self.x = 0
+		self.y = 0
+
 	def reset(self):
 		self.index = -1
 		self.points = []
@@ -124,14 +131,22 @@ class Path:
 
 	def get_direction(self):
 		self.points.clear()
-		tile = self.tile_group.sprites()[self.index]
-		x = tile.rect.centerx
-		if self.player.type == 1:
-			y = tile.rect.bottom
-		elif self.player.type == 2:
-			y = tile.rect.top
-		dx = x - self.player.x
-		dy = y - self.player.y
+		position = ''
+		if self.player.y < HEIGHT // 2:
+			index = 2 * self.index + 1
+			position = 'up'
+		else:
+			index = 2 * self.index
+			position = 'down'
+		self.tile = self.tile_group.sprites()[index]
+		self.x = self.tile.rect.centerx
+		if position == 'up':
+			self.y = self.tile.rect.top
+		elif position == 'down':
+			self.y = self.tile.rect.bottom
+
+		dx = self.x - self.player.x
+		dy = self.y - self.player.y
 		angle = math.atan2(dy, dx)
 		thetax = math.cos(angle)
 		thetay = math.sin(angle)
@@ -141,13 +156,13 @@ class Path:
 			pointy = self.player.y + thetay * self.d * i
 			self.points.append((pointx, pointy))
 
-	def update(self):
+	def update(self, color):
 		if self.index == -1:
 			self.index = self.player.index
 			self.get_direction()
 
 		self.counter += 1
-		if self.counter % 25 == 0:
+		if self.counter % 15 == 0:
 			self.index += self.di
 			if self.index > 7:
 				self.index = 6
@@ -159,5 +174,5 @@ class Path:
 			self.get_direction()
 			
 		for index, point in enumerate(self.points):
-			pygame.draw.circle(self.win, (255, 255, 255), point, 5-index)
+			pygame.draw.circle(self.win, color, point, 5-index)
 
