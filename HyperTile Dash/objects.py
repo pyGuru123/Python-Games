@@ -25,57 +25,146 @@ class Tile(pygame.sprite.Sprite):
 		self.height = 60
 		self.gap = 10
 		self.color = (255, 255, 255)
-		self.is_deadly = False
+		self.is_target_tile = False
+		self.is_deadly_tile = False
 		
 		self.x = index * self.width + (index + 2) * self.gap + 9
 		if self.type == 1:
 			self.y = TILE_Y
 		elif self.type == 2:
-			self.y = HEIGHT - 1.5 * TILE_Y
+			self.y = HEIGHT - int(1.5 * TILE_Y)
 
 		self.rect = pygame.draw.rect(self.win, self.color, (self.x, self.y, self.width, self.height))
 
 	def highlight(self):
 		pygame.draw.rect(self.win, (255, 70, 70), (self.x, self.y, self.width, self.height), 2)
 
+	def check_collision(self, p):
+		if self.rect.colliderect(p.rect):
+			p.x = self.rect.x + self.width // 2
+			if self.type == 1:
+				p.y = TILE_Y + self.height + p.radius + 1
+			elif self.type == 2:
+				p.y = HEIGHT - int(1.5 * TILE_Y) - p.radius
+
+			p.dx = p.dy = 0
+			p.can_move = True
+			p.tile_type = self.type
+
+			if not p.first_tile:
+				p.first_tile = True
+
+			return True
+
+		return False
+
 	def update(self):
 		pygame.draw.rect(self.win, (12, 12, 12), (self.x+3, self.y+3, self.width, self.height))
 		self.rect = pygame.draw.rect(self.win, self.color, (self.x, self.y, self.width, self.height))
 		
-		if self.is_deadly:
+		if self.is_deadly_tile:
 			self.win.blit(skull_image, (self.x + self.width//2 - 8, self.y + self.height//2 - 8))
 
-
 class Player:
-	def __init__(self, win):
+	def __init__(self, win, tile_group):
 		self.win = win
+		self.tile_group = tile_group
 		self.reset()
+		self.reset_path_variables()
 
-	def shadow(self):
+	def reset(self):
+		self.radius = 10
+		self.shadow_radius = 20
+		self.first_tile = False
+
+		self.x = WIDTH + 10
+		self.y = HEIGHT // 2 - 100 
+		self.vel = 8
+		self.tile_type = None
+
+		self.counter = 0
+		self.dr = 1
+		self.dx = self.dy = 0
+		self.can_move = True
+		self.new_tile = True
+
+		self.set_move(159, HEIGHT - int(1.5 * TILE_Y), 4)
+		self.rect = pygame.draw.circle(self.win, (0,0,0), (self.x, self.y), 10)
+
+	def reset_path_variables(self):
+		self.path_d = 10
+		self.path_di = 1
+		self.path_index = -1
+
+		self.path_points = []
+		self.path_counter = 0
+
+		self.path_x = 0
+		self.path_y = 0
+
+	def get_path_direction(self):
+		self.path_points.clear()
+		if self.tile_type == 1:
+			index = 2 * self.path_index + 1
+			self.path_y = HEIGHT - int(1.5 * TILE_Y)
+		else:
+			index = 2 * self.path_index
+			self.path_y = TILE_Y + 60
+		self.path_target_tile = self.tile_group.sprites()[index]
+		self.path_x = self.path_target_tile.rect.centerx
+
+		dx = self.path_x - self.x
+		dy = self.path_y - self.y
+		angle = math.atan2(dy, dx)
+		thetax = math.cos(angle)
+		thetay = math.sin(angle)
+
+		for i in range(5):
+			pointx = self.x + thetax * self.path_d * i
+			pointy = self.y + thetay * self.path_d * i
+			self.path_points.append((pointx, pointy))
+
+
+	def draw_path(self, color):
+		if self.path_index == -1:
+			self.path_index = self.index
+			self.get_path_direction()
+
+		self.path_counter += 1
+		if self.path_counter % 15 == 0:
+			self.path_index += self.path_di
+			if self.path_index > 7:
+				self.path_index = 6
+				self.path_di *= -1
+			if self.path_index < 0:
+				self.path_index = 1
+				self.path_di *= -1
+
+			self.get_path_direction()
+			
+		for index, point in enumerate(self.path_points):
+			pygame.draw.circle(self.win, color, point, 5-index)
+
+	def update(self, color, player_alive):
+		if player_alive:
+			if self.can_move:
+				self.draw_shadow()
+				self.draw_path(color)
+					
+			self.x += self.dx * self.vel
+			self.y += self.dy * self.vel
+
+			self.rect = pygame.draw.circle(self.win, color, (self.x, self.y), self.radius)
+			pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
+			pygame.draw.circle(self.win, (0, 0, 0), (self.x, self.y), 3)
+
+	def draw_shadow(self):
 		pygame.draw.circle(self.win, (12, 12, 12), (self.x, self.y), self.shadow_radius)
 		self.counter += 1
 		if self.counter % 5 == 0:
 			self.shadow_radius += self.dr
 			if self.shadow_radius >= 25 or self.shadow_radius <= 16:
 				self.dr *= -1
-
-	def update(self, color):
-		if self.y + self.radius < TILE_Y + 60 - 1:
-			self.y = TILE_Y + 60 + self.radius - 1
-			self.reset_pos()
-			self.can_move = True
-		elif self.y + self.radius > HEIGHT - 1.5 * TILE_Y + 1:
-			self.y = HEIGHT - 1.5 * TILE_Y - self.radius + 1
-			self.reset_pos()
-			self.can_move = True
-
-				
-		self.x += self.dx * self.vel
-		self.y += self.dy * self.vel
-
-		self.rect = pygame.draw.circle(self.win, color, (self.x, self.y), self.radius)
-		pygame.draw.circle(self.win, (255, 255, 255), (self.x, self.y), 6)
-		pygame.draw.circle(self.win, (0, 0, 0), (self.x, self.y), 3)
 
 	def set_move(self, x, y, index):
 		if self.can_move:
@@ -87,92 +176,32 @@ class Player:
 			self.dy = math.sin(angle)
 
 			self.can_move = False
+			self.new_tile = False
+			self.path_index = -1
 
-	def reset_pos(self):
-		self.x = self.index * 20 + (self.index + 2) * 10 + 20
-		self.dx = self.dy = 0
-
-	def reset(self):
-		self.radius = 10
-		self.shadow_radius = 20
-
-		self.x = WIDTH + 10
-		self.y = HEIGHT // 2
-		self.vel = 8
-
-		self.counter = 0
-		self.dr = 1
-		self.dx = self.dy = 0
-		self.can_move = True
-
-		self.set_move(190, 170, 5)
-		self.rect = pygame.draw.circle(self.win, (0,0,0), (self.x, self.y), 10)
-
-class Path:
-	def __init__(self, p, tile_group, win):
-		self.player = p
-		self.tile_group = tile_group
+class Particle(pygame.sprite.Sprite):
+	def __init__(self, x, y, color, win):
+		super(Particle, self).__init__()
+		self.x = x
+		self.y = y
+		self.color = color
 		self.win = win
-		self.d = 10
-		self.di = 1
-		self.index = -1
-
-		self.points = []
-		self.counter = 0
-
-		self.tile_to_go = None
-		self.x = 0
-		self.y = 0
-
-	def reset(self):
-		self.index = -1
-		self.points = []
-		self.counter = 0
-
-	def get_direction(self):
-		self.points.clear()
-		position = ''
-		if self.player.y < HEIGHT // 2:
-			index = 2 * self.index + 1
-			position = 'up'
-		else:
-			index = 2 * self.index
-			position = 'down'
-		self.tile = self.tile_group.sprites()[index]
-		self.x = self.tile.rect.centerx
-		if position == 'up':
-			self.y = self.tile.rect.top
-		elif position == 'down':
-			self.y = self.tile.rect.bottom
-
-		dx = self.x - self.player.x
-		dy = self.y - self.player.y
-		angle = math.atan2(dy, dx)
-		thetax = math.cos(angle)
-		thetay = math.sin(angle)
-
-		for i in range(5):
-			pointx = self.player.x + thetax * self.d * i
-			pointy = self.player.y + thetay * self.d * i
-			self.points.append((pointx, pointy))
-
-	def update(self, color):
-		if self.index == -1:
-			self.index = self.player.index
-			self.get_direction()
-
-		self.counter += 1
-		if self.counter % 15 == 0:
-			self.index += self.di
-			if self.index > 7:
-				self.index = 6
-				self.di *= -1
-			if self.index < 0:
-				self.index = 1
-				self.di *= -1
-
-			self.get_direction()
+		self.size = random.randint(4,7)
+		xr = (-3,3)
+		yr = (-3,3)
+		f = 2
+		self.life = 40
+		self.x_vel = random.randrange(xr[0], xr[1]) * f
+		self.y_vel = random.randrange(yr[0], yr[1]) * f
+		self.lifetime = 0
 			
-		for index, point in enumerate(self.points):
-			pygame.draw.circle(self.win, color, point, 5-index)
-
+	def update (self):
+		self.size -= 0.1
+		self.lifetime += 1
+		if self.lifetime <= self.life:
+			self.x += self.x_vel
+			self.y += self.y_vel
+			s = int(self.size)
+			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
+		else:
+			self.kill()

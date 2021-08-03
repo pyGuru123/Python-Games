@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Tile, Player, Path
+from objects import Tile, Player, Particle
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -37,10 +37,24 @@ color = color_list[color_index]
 
 death_color_list = [BLUE, ORANGE, YELLOW, PURPLE, RED, GREEN]
 death_color_index = 0
-death_color = color_list[color_index]
+death_color = death_color_list[color_index]
 
-# Images **********************************************************************
+# FONTS ***********************************************************************
 
+title_font = "Fonts/Aladin-Regular.ttf"
+tap_to_play_font = "Fonts/BubblegumSans-Regular.ttf"
+score_font = "Fonts/DalelandsUncialBold-82zA.ttf"
+game_over_font = "Fonts/ghostclan.ttf"
+
+# SOUNDS **********************************************************************
+
+score_fx = pygame.mixer.Sound('Sounds/point.mp3')
+death_fx = pygame.mixer.Sound('Sounds/dead.mp3')
+score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
+
+pygame.mixer.music.load('Sounds/hk.mp3')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.5)
 
 # OBJECTS *********************************************************************
 
@@ -52,30 +66,70 @@ for i in range(8):
 	tile = Tile(i, 2, win)
 	tile_group.add(tile)
 
-p = Player(win)
-path = Path(p, tile_group, win)
+particle_group = pygame.sprite.Group()
+p = Player(win, tile_group)
 
 # FUNCTIONS *******************************************************************
 
-def get_indices():
-	if p.y < HEIGHT // 2:
+deadly_tiles_list = []
+
+def get_index():
+	if p.tile_type == 1:
 		indices = [2*index+1 for index in range(8)]
-	else:
+	elif p.tile_type == 2:
 		indices = [2*index for index in range(8)]
 
-	return indices
-
-def generate_target_tile():
-	indices = get_indices()
 	index = random.choice(indices)
-	target_tile = tile_group.sprites()[index]
+	return index
 
-	return target_tile
+def generate_target_tile(color):
+	for tile in tile_group:
+		if not tile.is_deadly_tile:
+			tile.color = WHITE
+			tile.is_target_tile = False
+
+	index = get_index()
+	tile = tile_group.sprites()[index]
+	if tile.is_deadly_tile:
+		generate_target_tile(color)
+	else:
+		tile.color = color
+		tile.is_target_tile = True
+
+	return tile
+
+
+def generate_deadly_tile(color):
+	for tile in tile_group:
+		if tile.is_deadly_tile:
+			tile.color = color
+
+	index = get_index()
+	tile = tile_group.sprites()[index]
+	if tile.is_target_tile:
+		generate_deadly_tile(color)
+	else:
+		if tile.is_deadly_tile:
+			generate_deadly_tile(color)
+		else:
+			tile.color = color
+			tile.is_deadly_tile = True
+			deadly_tiles_list.append(tile)
 
 clicked = False
 num_clicks = 0
 index = None
 target_tile = None
+auto_generate_deadly_tile = True
+
+player_alive = True
+score = 0
+highscore = 0
+
+home_page = False
+game_page = True
+score_page = False
+
 
 running = True
 while running:
@@ -92,11 +146,11 @@ while running:
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if not clicked:
-				if pygame.sprite.spritecollide(p, tile_group, False):
-					index = path.index
-					tile = path.tile
-					x = path.x
-					y = path.y
+				if p.can_move:
+					index = p.path_index
+					tile = p.path_target_tile
+					x = p.path_x
+					y = p.path_y
 					p.set_move(x, y, index)
 
 				num_clicks += 1
@@ -104,24 +158,69 @@ while running:
 					color_index += 1
 					if color_index > len(color_list) - 1:
 						color_index = 0
-
 					color = color_list[color_index]
 
-				target_tile = generate_target_tile()
+					death_color_index += 1
+					if death_color_index > len(death_color_list) - 1:
+						death_color_index = 0
+					death_color = death_color_list[death_color_index]
+					for tile in deadly_tiles_list:
+						tile.color = death_color
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
-	if pygame.sprite.spritecollide(p, tile_group, False):
-		p.shadow()
-		path.update(color)
-	else:
-		path.reset()
-	tile_group.update()
-	p.update(color)
+	if home_page:
+		pass
 
-	if target_tile:
-		target_tile.highlight()
+	if score_page:
+		tile_group.update()
+
+	if game_page:
+
+		if p.first_tile and auto_generate_deadly_tile:
+			target_tile = generate_target_tile(color)
+			generate_deadly_tile(death_color)
+			auto_generate_deadly_tile = False
+
+		p.update(color, player_alive)
+		particle_group.update()
+		tile_group.update()
+		if player_alive:
+			for tile in tile_group:
+				collision = tile.check_collision(p)
+				if collision and target_tile:
+					if tile.is_deadly_tile:
+						death_fx.play()
+						for i in range(30):
+							particle = Particle(x, y, WHITE, win)
+							particle_group.add(particle)
+						player_alive = False
+					if tile.is_target_tile:
+						score_fx.play()
+						if len(deadly_tiles_list) > 0:
+							tile = deadly_tiles_list.pop()
+							tile.color = WHITE
+							tile.is_deadly_tile = False
+						else:
+							for tile in tile_group:
+								tile.is_deadly_tile = False
+
+						target_tile = generate_target_tile(color)
+					else:
+						target_tile = generate_target_tile(color)
+						generate_deadly_tile(death_color)
+
+		if not player_alive and len(particle_group) == 0:
+			game_page = False
+			score_page = True
+			score_page_fx.play()
+
+			for tile in tile_group:
+				tile.color = WHITE
+				tile.is_target_tile = False
+				tile.is_deadly_tile = False
+
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
 	clock.tick(FPS)
