@@ -8,7 +8,17 @@ from objects import Grumpy, Pipe, Base, Score
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
 display_height = 0.80 * HEIGHT
-win = pygame.display.set_mode(SCREEN, pygame.SCALED | pygame.FULLSCREEN)
+info = pygame.display.Info()
+
+width = info.current_w
+height = info.current_h
+
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
+
+# win = pygame.display.set_mode(SCREEN, pygame.SCALED | pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 FPS = 60
 
@@ -120,6 +130,10 @@ while running:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE or \
+				event.key == pygame.K_q:
+				running = False
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if start_screen:
 				game_started = True

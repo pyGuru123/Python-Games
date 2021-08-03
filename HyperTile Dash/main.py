@@ -20,7 +20,6 @@ if width >= height:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
 else:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
-pygame.display.set_caption('Arc Dash')
 
 clock = pygame.time.Clock()
 FPS = 60

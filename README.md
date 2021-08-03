@@ -19,8 +19,14 @@ and pygame library.
 * ### [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 	> Dino Run is an implementaion of chromes dino run game in pygame.
 
+
 * ### [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
 	> Dodgy walls is a simple endless hypercasual arcade game.
+
+
+* ### [HyperTile Dash](https://github.com/pyGuru123/Python-Games/tree/master/HyperTile%20Dash)
+	> HyperTile Dash is a simple target based endless hypercasual arcade game.
+
 
 * ### [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
 	> Jungle Dash is a 2D platformer game made with pygame.

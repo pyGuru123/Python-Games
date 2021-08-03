@@ -5,7 +5,16 @@ from objects import Player, Bar, Ball, Block, ScoreCard, Message, Particle, gene
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
-win = pygame.display.set_mode(SCREEN, pygame.SCALED | pygame.FULLSCREEN)
+
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
+
 clock = pygame.time.Clock()
 FPS = 45
 
@@ -110,7 +119,7 @@ while running:
 			if event.key == pygame.K_ESCAPE:
 				running = False
 
-		if event.type == pygame.MOUSEBUTTONDOWN and home_page or score_page:
+		if event.type == pygame.MOUSEBUTTONDOWN and (home_page or score_page):
 			home_page = False
 			score_page = False
 			win_particle_group.empty()
