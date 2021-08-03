@@ -87,6 +87,7 @@ class Player:
 		self.dx = self.dy = 0
 		self.can_move = True
 		self.new_tile = True
+		self.index = None
 
 		self.set_move(159, HEIGHT - int(1.5 * TILE_Y), 4)
 		self.rect = pygame.draw.circle(self.win, (0,0,0), (self.x, self.y), 10)
@@ -212,8 +213,6 @@ class SkullCircle(pygame.sprite.Sprite):
 			self.kill()
 
 		self.angle += self.dtheta
-		# if self.angle > 360 and self.type == 2:
-		# 	self.angle = 0
 		image, self.rect = self.rotate()
 
 		pygame.draw.circle(self.win, self.color, (self.rect.centerx+1, self.rect.centery), 9)
@@ -268,9 +267,11 @@ class Message:
 		self.shadow = self.font.render(text, anti_alias, self.shadow_color)
 		self.shadow_rect = self.image.get_rect(center=(x+2,y+2))
 		
-	def update(self, text=None, shadow=True):
+	def update(self, text=None, color=None, shadow=True):
 		if text:
-			self.image = self.font.render(f"{text}", False, self.color)
+			if not color:
+				color = self.color
+			self.image = self.font.render(f"{text}", False, color)
 			self.rect = self.image.get_rect(center=(self.x,self.y))
 			self.shadow = self.font.render(f"{text}", False, self.shadow_color)
 			self.shadow_rect = self.image.get_rect(center=(self.x+2,self.y+2))

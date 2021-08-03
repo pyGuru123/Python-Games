@@ -1,4 +1,4 @@
-# Hyper Dash
+# HyperTiles Dash
 
 # Author : Prajjwal Pathak (pyguru)
 # Date : Thursday, 29 July, 2021
@@ -11,8 +11,15 @@ from objects import Tile, Player, SkullCircle, Particle, Message, BlinkingText, 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
-# | pygame.SCALED | pygame.FULLSCREEN
-win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 pygame.display.set_caption('Arc Dash')
 
 clock = pygame.time.Clock()
@@ -51,6 +58,9 @@ dash = Message(WIDTH//2+40, HEIGHT//2+40, 50, "Dash...", title_font, GREEN, win)
 tap_to_play = BlinkingText(WIDTH//2, HEIGHT-50, 20, "Tap To Play", tap_to_play_font, WHITE, win)
 
 score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+final_score = Message(WIDTH//3, HEIGHT//2 - 20, 90, "0", score_font, WHITE, win)
+best_msg = Message(WIDTH//2 + 30, HEIGHT//2 - 40, 25, "BEST", None, WHITE, win)
+high_score_msg = Message(WIDTH//2 + 20, HEIGHT//2 - 5, 35, "10", None, WHITE, win)
 
 # SOUNDS **********************************************************************
 
@@ -60,7 +70,7 @@ deadly_tile_fx = pygame.mixer.Sound('Sounds/dead.mp3')
 dash_fx = pygame.mixer.Sound('Sounds/dash.mp3')
 score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
 
-pygame.mixer.music.load('Sounds/hk.mp3')
+pygame.mixer.music.load('Sounds/cbpd.mp3')
 pygame.mixer.music.play(loops=-1)
 pygame.mixer.music.set_volume(0.5)
 
@@ -172,6 +182,13 @@ while running:
 			game_page = True
 			score_page = False
 
+			player_alive = True
+			p.reset()
+			p.reset_path_variables()
+
+			for tile in tile_group:
+				tile.color = WHITE
+
 		if event.type == pygame.MOUSEBUTTONDOWN  and game_page:
 			if not clicked:
 				if p.can_move:
@@ -208,14 +225,30 @@ while running:
 
 	if score_page:
 		tile_group.update()
+		final_score.update(score, color)
+		best_msg.update()
+		high_score_msg.update(highscore)
 
-		home_page = True
+		if home_btn.draw(win):
+			home_page = True
 			score_page = False
 			game_page = False
 			score = 0
 			score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
 			
-		replay_btn.draw(win)
+		if replay_btn.draw(win):
+			home_page = False
+			score_page = False
+			game_page = True
+			score = 0
+			score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+
+			player_alive = True
+			p.reset()
+			p.reset_path_variables()
+
+			for tile in tile_group:
+				tile.color = WHITE
 
 		if sound_btn.draw(win):
 			sound_on = not sound_on
@@ -301,8 +334,10 @@ while running:
 			score_page = True
 			score_page_fx.play()
 
+			deadly_tiles_list.clear()
+
 			for tile in tile_group:
-				tile.color = WHITE
+				tile.color = random.choice(color_list)
 				tile.is_target_tile = False
 				tile.is_deadly_tile = False
 
