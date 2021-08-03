@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Tile, Player, Particle
+from objects import Tile, Player, SkullCircle, Particle, Message, BlinkingText, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -46,15 +46,36 @@ tap_to_play_font = "Fonts/BubblegumSans-Regular.ttf"
 score_font = "Fonts/DalelandsUncialBold-82zA.ttf"
 game_over_font = "Fonts/ghostclan.ttf"
 
+HyperTile = Message(WIDTH//2, HEIGHT//2-20, 50, "HyperTiles", title_font, BLUE, win)
+dash = Message(WIDTH//2+40, HEIGHT//2+40, 50, "Dash...", title_font, GREEN, win)
+tap_to_play = BlinkingText(WIDTH//2, HEIGHT-50, 20, "Tap To Play", tap_to_play_font, WHITE, win)
+
+score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+
 # SOUNDS **********************************************************************
 
-score_fx = pygame.mixer.Sound('Sounds/point.mp3')
-death_fx = pygame.mixer.Sound('Sounds/dead.mp3')
+target_tile_fx = pygame.mixer.Sound('Sounds/target.mp3')
+empty_tile_fx = pygame.mixer.Sound('Sounds/empty.mp3')
+deadly_tile_fx = pygame.mixer.Sound('Sounds/dead.mp3')
+dash_fx = pygame.mixer.Sound('Sounds/dash.mp3')
 score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
 
 pygame.mixer.music.load('Sounds/hk.mp3')
 pygame.mixer.music.play(loops=-1)
 pygame.mixer.music.set_volume(0.5)
+
+# Button images
+
+home_img = pygame.image.load('Assets/homeBtn.png')
+replay_img = pygame.image.load('Assets/replay.png')
+sound_off_img = pygame.image.load("Assets/soundOffBtn.png")
+sound_on_img = pygame.image.load("Assets/soundOnBtn.png")
+
+# Buttons
+
+home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 50)
+replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT//2 + 45)
+sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 50)
 
 # OBJECTS *********************************************************************
 
@@ -67,6 +88,7 @@ for i in range(8):
 	tile_group.add(tile)
 
 particle_group = pygame.sprite.Group()
+skull_group = pygame.sprite.Group()
 p = Player(win, tile_group)
 
 # FUNCTIONS *******************************************************************
@@ -125,9 +147,10 @@ auto_generate_deadly_tile = True
 player_alive = True
 score = 0
 highscore = 0
+sound_on = True
 
-home_page = False
-game_page = True
+home_page = True
+game_page = False
 score_page = False
 
 
@@ -144,9 +167,16 @@ while running:
 				event.key == pygame.K_q:
 				running = False
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
+		if event.type == pygame.MOUSEBUTTONDOWN and home_page:
+			home_page = False
+			game_page = True
+			score_page = False
+
+		if event.type == pygame.MOUSEBUTTONDOWN  and game_page:
 			if not clicked:
 				if p.can_move:
+					dash_fx.play()
+
 					index = p.path_index
 					tile = p.path_target_tile
 					x = p.path_x
@@ -171,10 +201,31 @@ while running:
 			clicked = False
 
 	if home_page:
-		pass
+		tile_group.update()
+		HyperTile.update()
+		dash.update()
+		tap_to_play.update()
 
 	if score_page:
 		tile_group.update()
+
+		home_page = True
+			score_page = False
+			game_page = False
+			score = 0
+			score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+			
+		replay_btn.draw(win)
+
+		if sound_btn.draw(win):
+			sound_on = not sound_on
+			
+			if sound_on:
+				sound_btn.update_image(sound_on_img)
+				pygame.mixer.music.play(loops=-1)
+			else:
+				sound_btn.update_image(sound_off_img)
+				pygame.mixer.music.stop()
 
 	if game_page:
 
@@ -183,21 +234,51 @@ while running:
 			generate_deadly_tile(death_color)
 			auto_generate_deadly_tile = False
 
-		p.update(color, player_alive)
+		if score and score % 3 == 0 and len(skull_group) == 0 and player_alive:
+			type_ = random.randint(1, 2)
+			print(type_)
+			y = random.randint(200, HEIGHT - 190)
+			if type_ == 1:
+				x = 0			
+			elif type_ == 2:
+				x = WIDTH + 5
+			skull = SkullCircle(x, y, type_, death_color, win)
+			skull_group.add(skull)
+
+		score_msg.update(score)
 		particle_group.update()
+		skull_group.update()
+		p.update(color, player_alive)
 		tile_group.update()
+
+		if pygame.sprite.spritecollide(p, skull_group, False) and player_alive:
+			deadly_tile_fx.play()
+			x, y = p.x, p.y
+			for i in range(20):
+				particle = Particle(x, y, color, win)
+				particle_group.add(particle)
+			player_alive = False
+			skull_group.empty()
+
 		if player_alive:
 			for tile in tile_group:
 				collision = tile.check_collision(p)
 				if collision and target_tile:
 					if tile.is_deadly_tile:
-						death_fx.play()
+						deadly_tile_fx.play()
 						for i in range(30):
-							particle = Particle(x, y, WHITE, win)
+							particle = Particle(x, y, color, win)
 							particle_group.add(particle)
 						player_alive = False
 					if tile.is_target_tile:
-						score_fx.play()
+						for i in range(10):
+							particle = Particle(x, y, color, win)
+							particle_group.add(particle)
+						target_tile_fx.play()
+						score += 1
+						if highscore <= score:
+							highscore = score
+
 						if len(deadly_tiles_list) > 0:
 							tile = deadly_tiles_list.pop()
 							tile.color = WHITE
@@ -208,6 +289,10 @@ while running:
 
 						target_tile = generate_target_tile(color)
 					else:
+						for i in range(10):
+							particle = Particle(x, y, color, win)
+							particle_group.add(particle)
+						empty_tile_fx.play()
 						target_tile = generate_target_tile(color)
 						generate_deadly_tile(death_color)
 

@@ -131,7 +131,7 @@ class Player:
 			self.get_path_direction()
 
 		self.path_counter += 1
-		if self.path_counter % 15 == 0:
+		if self.path_counter % 10 == 0:
 			self.path_index += self.path_di
 			if self.path_index > 7:
 				self.path_index = 6
@@ -179,6 +179,47 @@ class Player:
 			self.new_tile = False
 			self.path_index = -1
 
+class SkullCircle(pygame.sprite.Sprite):
+	def __init__(self, x, y, type_, color, win):
+		super(SkullCircle, self).__init__()
+
+		self.x = x
+		self.y = y
+		self.type = type_
+		self.color = color
+		self.win = win
+
+		self.angle = 0
+		self.image = skull_image
+		self.rect = self.image.get_rect(center=(self.x, self.y))
+
+		if self.type == 1:
+			self.dx = 1
+			self.dtheta = -2
+		elif self.type == 2:
+			self.dx = -1
+			self.dtheta = 2
+
+	def rotate(self):
+		image = pygame.transform.rotate(self.image, self.angle)
+		rect = image.get_rect(center=self.rect.center)
+
+		return image, rect
+
+	def update(self):
+		self.rect.x += self.dx
+		if self.rect.x < -10 or self.rect.x > WIDTH + 10:
+			self.kill()
+
+		self.angle += self.dtheta
+		# if self.angle > 360 and self.type == 2:
+		# 	self.angle = 0
+		image, self.rect = self.rotate()
+
+		pygame.draw.circle(self.win, self.color, (self.rect.centerx+1, self.rect.centery), 9)
+		self.win.blit(image, self.rect)
+
+
 class Particle(pygame.sprite.Sprite):
 	def __init__(self, x, y, color, win):
 		super(Particle, self).__init__()
@@ -205,3 +246,77 @@ class Particle(pygame.sprite.Sprite):
 			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
 		else:
 			self.kill()
+
+
+class Message:
+	def __init__(self, x, y, size, text, font, color, win):
+		self.win = win
+		self.color = color
+		self.x, self.y = x, y
+		if not font:
+			self.font = pygame.font.SysFont("Verdana", size)
+			anti_alias = True
+		else:
+			self.font = pygame.font.Font(font, size)
+			anti_alias = False
+		self.image = self.font.render(text, anti_alias, color)
+		self.rect = self.image.get_rect(center=(x,y))
+		if self.color == (200, 200, 200):
+				self.shadow_color = (255, 255, 255)
+		else:
+			self.shadow_color = (54,69,79)
+		self.shadow = self.font.render(text, anti_alias, self.shadow_color)
+		self.shadow_rect = self.image.get_rect(center=(x+2,y+2))
+		
+	def update(self, text=None, shadow=True):
+		if text:
+			self.image = self.font.render(f"{text}", False, self.color)
+			self.rect = self.image.get_rect(center=(self.x,self.y))
+			self.shadow = self.font.render(f"{text}", False, self.shadow_color)
+			self.shadow_rect = self.image.get_rect(center=(self.x+2,self.y+2))
+		if shadow:
+			self.win.blit(self.shadow, self.shadow_rect)
+		self.win.blit(self.image, self.rect)
+
+class BlinkingText(Message):
+	def __init__(self, x, y, size, text, font, color, win):
+		super(BlinkingText, self).__init__(x, y, size, text, font, color, win)
+		self.index = 0
+		self.show = True
+
+	def update(self):
+		self.index += 1
+		if self.index % 40 == 0:
+			self.show = not self.show
+
+		if self.show:
+			self.win.blit(self.image, self.rect)
+
+class Button(pygame.sprite.Sprite):
+	def __init__(self, img, scale, x, y):
+		super(Button, self).__init__()
+		
+		self.scale = scale
+		self.image = pygame.transform.scale(img, self.scale)
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def update_image(self, img):
+		self.image = pygame.transform.scale(img, self.scale)
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action
