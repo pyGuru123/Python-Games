@@ -58,8 +58,8 @@ tap_to_play = BlinkingText(WIDTH//2, HEIGHT-50, 20, "Tap To Play", tap_to_play_f
 
 score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
 final_score = Message(WIDTH//3, HEIGHT//2 - 20, 90, "0", score_font, WHITE, win)
-best_msg = Message(WIDTH//2 + 30, HEIGHT//2 - 40, 25, "BEST", None, WHITE, win)
-high_score_msg = Message(WIDTH//2 + 20, HEIGHT//2 - 5, 35, "10", None, WHITE, win)
+best_msg = Message(WIDTH//2 + 45, HEIGHT//2 - 40, 25, "BEST", None, WHITE, win)
+high_score_msg = Message(WIDTH//2 + 35, HEIGHT//2 - 5, 35, "0", None, WHITE, win)
 
 # SOUNDS **********************************************************************
 
@@ -233,14 +233,14 @@ while running:
 			score_page = False
 			game_page = False
 			score = 0
-			score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+			score_msg = Message(WIDTH//2, HEIGHT//2, 50, f'{score}', score_font, (100, 100, 100), win)
 			
 		if replay_btn.draw(win):
 			home_page = False
 			score_page = False
 			game_page = True
 			score = 0
-			score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+			score_msg = Message(WIDTH//2, HEIGHT//2, 50, f'{score}', score_font, (100, 100, 100), win)
 
 			player_alive = True
 			p.reset()
@@ -339,6 +339,8 @@ while running:
 				tile.color = random.choice(color_list)
 				tile.is_target_tile = False
 				tile.is_deadly_tile = False
+
+			final_score = Message(WIDTH//3, HEIGHT//2 - 20, 90, f'{score}', score_font, WHITE, win)
 
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
