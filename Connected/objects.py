@@ -8,6 +8,8 @@ CENTER = WIDTH //2, HEIGHT // 2
 pygame.font.init()
 pygame.mixer.init()
 
+tile = pygame.image.load('Assets/tile.png')
+
 class Balls(pygame.sprite.Sprite):
 	def __init__(self, pos, radius, angle, win):
 		super(Balls, self).__init__()
@@ -49,3 +51,71 @@ class Balls(pygame.sprite.Sprite):
 
 		self.pos_list = []
 		self.step = 0
+
+class Coins(pygame.sprite.Sprite):
+	def __init__(self, y, win):
+		super(Coins, self).__init__()
+
+		self.y = y
+		self.win = win
+		self.size = 15
+
+		self.x = WIDTH + 20
+		self.dx = -1
+		self.s = 1
+
+		self.rect = pygame.draw.rect(self.win, (255, 255, 255), (self.x, self.y, self.size, self.size))
+
+	def update(self, color):
+		self.x += self.dx
+		if self.x < -20:
+			self.kill()
+
+		pygame.draw.rect(self.win, (200, 200, 200), (self.x+self.s, self.y+self.s, self.size, self.size))
+		self.rect = pygame.draw.rect(self.win, color, (self.x, self.y, self.size, self.size))
+		pygame.draw.circle(self.win, (255,255,255), self.rect.center, 2)
+
+class Tiles(pygame.sprite.Sprite):
+	def __init__(self, y, type_, win):
+		super(Tiles, self).__init__()
+
+		self.x = WIDTH+10
+		self.y = y
+		self.type = type_
+		self.win = win
+
+		self.angle = 0
+		self.dtheta = 0
+		self.dx = -1
+
+		if self.type == 1:
+			width = 60
+			height = 20
+		elif self.type == 2:
+			width = 20
+			height = 40
+		elif self.type == 3:
+			width = 40
+			height = 20
+			self.dtheta = -1
+
+
+		self.image = pygame.Surface((width, height))
+		# pygame.draw.rect(self.image, (255, 255, 255), (self.x, self.y, width, height), border_radius=5)
+		self.rect = self.image.get_rect(center=(self.x, self.y))
+
+	def rotate(self):
+		image = pygame.transform.rotozoom(self.image, self.angle, 1)
+		rect = image.get_rect(center=self.rect.center)
+
+		return image, rect
+
+	def update(self):
+		self.rect.x += self.dx
+		if self.rect.right < 0:
+			self.kill()
+		
+		self.angle += self.dtheta
+		image, self.rect = self.rotate()
+
+		self.win.blit(image, self.rect)

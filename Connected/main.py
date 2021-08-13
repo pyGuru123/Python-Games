@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Balls
+from objects import Balls, Coins, Tiles
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -42,6 +42,11 @@ color_list = [PURPLE, GREEN, BLUE, ORANGE, YELLOW, RED]
 color_index = 0
 color = color_list[color_index]
 
+# SOUNDS **********************************************************************
+
+flip_fx = pygame.mixer.Sound('Sounds/flip.mp3')
+score_fx = pygame.mixer.Sound('Sounds/point.mp3')
+
 # Groups **********************************************************************
 
 RADIUS = 70
@@ -52,11 +57,26 @@ ball_group.add(ball)
 ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, 270, win)
 ball_group.add(ball)
 
+coin_group = pygame.sprite.Group()
+y = random.randint(CENTER[1]-RADIUS, CENTER[1]+RADIUS)
+coin = Coins(y, win)
+coin_group.add(coin)
+
+tile_group = pygame.sprite.Group()
+y = random.randint(CENTER[1]-100, CENTER[1]+100)
+type_ = 3
+t = Tiles(y, type_, win)
+tile_group.add(t)
+
+# VARIABLES *******************************************************************
+
 clicked = False
 num_clicks = 0
+score = 0
 
 running = True
 while running:
+	new_coin = False
 	win.fill(GRAY)
 
 	for event in pygame.event.get():
@@ -73,6 +93,7 @@ while running:
 				clicked = True
 				for ball in ball_group:
 					ball.dtheta *= -1
+					flip_fx.play()
 
 				num_clicks += 1
 				if num_clicks % 5 == 0:
@@ -87,8 +108,26 @@ while running:
 
 	pygame.draw.circle(win, BLACK, CENTER, 80, 20)
 	ball_group.update(color)
-	# p.update()
+	coin_group.update(color)
+	tile_group.update()
 
+	if pygame.sprite.groupcollide(ball_group, coin_group, False, True):
+		new_coin = True
+		score_fx.play()
+		score += 1
+
+	if len(coin_group) == 0:
+		new_coin = True
+
+	if new_coin:
+		y = random.randint(CENTER[1]-RADIUS, CENTER[1]+RADIUS)
+		coin = Coins(y, win)
+		coin_group.add(coin)
+
+	if score % 5 == 0:
+		FPS = 120
+	else:
+		FPS = 90
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
 	clock.tick(FPS)
