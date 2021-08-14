@@ -8,8 +8,6 @@ CENTER = WIDTH //2, HEIGHT // 2
 pygame.font.init()
 pygame.mixer.init()
 
-tile = pygame.image.load('Assets/tile.png')
-
 class Balls(pygame.sprite.Sprite):
 	def __init__(self, pos, radius, angle, win):
 		super(Balls, self).__init__()
@@ -89,19 +87,19 @@ class Tiles(pygame.sprite.Sprite):
 		self.dx = -1
 
 		if self.type == 1:
-			width = 60
+			width = 50
 			height = 20
 		elif self.type == 2:
 			width = 20
-			height = 40
+			height = 50
 		elif self.type == 3:
-			width = 40
+			width = 50
 			height = 20
-			self.dtheta = -1
+			self.dtheta = 2
 
 
-		self.image = pygame.Surface((width, height))
-		# pygame.draw.rect(self.image, (255, 255, 255), (self.x, self.y, width, height), border_radius=5)
+		self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+		pygame.draw.rect(self.image, (255, 255, 255), (0, 0, width, height), border_radius=8)
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 
 	def rotate(self):
@@ -119,3 +117,93 @@ class Tiles(pygame.sprite.Sprite):
 		image, self.rect = self.rotate()
 
 		self.win.blit(image, self.rect)
+
+
+class Particle(pygame.sprite.Sprite):
+	def __init__(self, x, y, color, win):
+		super(Particle, self).__init__()
+		self.x = x
+		self.y = y
+		self.color = color
+		self.win = win
+		self.size = random.randint(4,7)
+		xr = (-3,3)
+		yr = (-3,3)
+		f = 2
+		self.life = 40
+		self.x_vel = random.randrange(xr[0], xr[1]) * f
+		self.y_vel = random.randrange(yr[0], yr[1]) * f
+		self.lifetime = 0
+			
+	def update (self):
+		self.size -= 0.1
+		self.lifetime += 1
+		if self.lifetime <= self.life:
+			self.x += self.x_vel
+			self.y += self.y_vel
+			s = int(self.size)
+			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
+		else:
+			self.kill()
+
+
+class Message:
+	def __init__(self, x, y, size, text, font, color, win):
+		self.win = win
+		self.color = color
+		self.x, self.y = x, y
+		if not font:
+			self.font = pygame.font.SysFont("Verdana", size)
+			anti_alias = True
+		else:
+			self.font = pygame.font.Font(font, size)
+			anti_alias = False
+		self.image = self.font.render(text, anti_alias, color)
+		self.rect = self.image.get_rect(center=(x,y))
+		if self.color == (200, 200, 200):
+				self.shadow_color = (255, 255, 255)
+		else:
+			self.shadow_color = (54,69,79)
+		self.shadow = self.font.render(text, anti_alias, self.shadow_color)
+		self.shadow_rect = self.image.get_rect(center=(x+2,y+2))
+		
+	def update(self, text=None, color=None, shadow=True):
+		if text:
+			if not color:
+				color = self.color
+			self.image = self.font.render(f"{text}", False, color)
+			self.rect = self.image.get_rect(center=(self.x,self.y))
+			self.shadow = self.font.render(f"{text}", False, self.shadow_color)
+			self.shadow_rect = self.image.get_rect(center=(self.x+2,self.y+2))
+		if shadow:
+			self.win.blit(self.shadow, self.shadow_rect)
+		self.win.blit(self.image, self.rect)
+
+class Button(pygame.sprite.Sprite):
+	def __init__(self, img, scale, x, y):
+		super(Button, self).__init__()
+		
+		self.scale = scale
+		self.image = pygame.transform.scale(img, self.scale)
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def update_image(self, img):
+		self.image = pygame.transform.scale(img, self.scale)
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action
