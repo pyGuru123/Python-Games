@@ -15,6 +15,8 @@ and pygame library.
 * ### [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 	> Asteroids is an implementaion of Asteroids game in pygame.
 
+* ### [Connected](https://github.com/pyGuru123/Python-Games/tree/master/Connected)
+	> Connected is a simple endless hypercasual game.
 
 * ### [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 	> Dino Run is an implementaion of chromes dino run game in pygame.
