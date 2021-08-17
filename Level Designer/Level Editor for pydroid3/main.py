@@ -7,12 +7,27 @@ from pygame.locals import *
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
-win = pygame.display.set_mode(SCREEN, pygame.SCALED | pygame.FULLSCREEN)
+
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
+pygame.display.set_caption('Connected')
+
 clock = pygame.time.Clock()
 FPS = 45
 
 TILE_SIZE = 16
 ROWS, COLS = HEIGHT // 16, WIDTH // 16
+
+# Level Variables
+
+NUM_TILES = 88              # Number of tiles you have in tiles folder
+current_level = 1           # level which you want to create / edit.
 
 # FONTS *****************************************
 
@@ -32,14 +47,16 @@ if not os.path.exists('levels/'):
 bg = pygame.image.load("Assets/bg.png")
 
 # Empty world data
+
 world_data = []
 for r in range(ROWS):
 	c = [0] * COLS
 	world_data.append(c)
 
 # load tiles
+
 tiles = []
-for t in range(1,89):
+for t in range(1,NUM_TILES+1):
 	tile = pygame.image.load(f"tiles/{t}.png")
 	tile = pygame.transform.rotate(tile, -90)
 	tiles.append(tile)
@@ -155,7 +172,6 @@ for index, tile in enumerate(tiles):
 # VARIABLES ************************************
 
 clicked = False
-current_level = 1
 pos = None
 r, c = 0, 3
 		
@@ -182,6 +198,12 @@ while running:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
+
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE or \
+				event.key == pygame.K_q:
+				running = False
+
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			pos = event.pos
 			x, y = pos[1] // TILE_SIZE, pos[0] // TILE_SIZE
