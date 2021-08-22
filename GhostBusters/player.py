@@ -13,6 +13,8 @@ class Player(pygame.sprite.Sprite):
 		self.death_list = []
 		self.hit_list = []
 
+		self.size = 24
+
 		for i in range(1,3):
 			image = pygame.image.load(f'Assets/Player/PlayerIdle{i}.png')
 			image = pygame.transform.scale(image, (24, 24))
@@ -43,8 +45,9 @@ class Player(pygame.sprite.Sprite):
 		self.hit_index = 0
 		self.fall_index = 0
 
+		self.jump_height = 15
 		self.speed = 3
-		self.vel = 15
+		self.vel = self.jump_height
 		self.mass = 1
 		self.gravity = 1
 
@@ -63,39 +66,35 @@ class Player(pygame.sprite.Sprite):
 		self.image = pygame.transform.scale(self.image, (24, 24))
 		self.rect = self.image.get_rect(center=(x, y))
 
-	def update(self, moving_left, moving_right):
-		dx = 0
-		dy = 0
+	def check_collision(self, world, dx, dy):
+		# Checking collision with ground
+		for tile in world.ground_list:
+			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
+				# above ground
+				if self.rect.y + dy <= tile[1].y:
+				# if self.vel < 0 or self.vel == self.jump_height:
+					dy = tile[1].top - self.rect.bottom
+				# print(self.vel, dy)
 
-		if moving_left:
-			dx = -self.speed
-			self.direction = -1
-		if moving_right:
-			dx = self.speed
-			self.direction = 1
-		if (not moving_left and not moving_right) and not self.jump:
-			self.direction = 0
-			self.walk_index = 0
+		# Checking collision with rocks & stones
+		for tile in world.rock_list:
+			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.size, self.size):
+				# left / right collision
+				dx = 0
+			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
+				# below ground
+				if self.vel > 0 and self.vel != self.jump_height:
+					dy = 0
+					self.jump = False
+					self.vel = self.jump_height
+				# above ground
+				elif self.vel <= 0 or self.vel == self.jump_height:
+					dy = tile[1].top - self.rect.bottom
 
-		if self.jump:
-			F = (1/2) * self.mass * self.vel
-			dy -= F
-			self.vel -= self.gravity
 
-			if self.vel < -16:
-				self.vel = 15
-				self.mass = 1
-				self.jump = False
-		else:
-			dy += self.vel
+		return dx, dy
 
-		if self.rect.bottom + dy > 200:
-			self.rect.bottom = 200
-			dy = 0
-
-		self.rect.x += dx
-		self.rect.y += dy
-
+	def update_animation(self):
 		self.counter += 1
 		if self.counter % 7 == 0:
 			if self.health <= 0:
@@ -135,5 +134,38 @@ class Player(pygame.sprite.Sprite):
 			elif self.direction == 1:
 				self.image = self.walk_right[self.walk_index]
 
+
+	def update(self, moving_left, moving_right, world):
+		self.dx = 0
+		self.dy = 0
+
+		if moving_left:
+			self.dx = -self.speed
+			self.direction = -1
+		if moving_right:
+			self.dx = self.speed
+			self.direction = 1
+		if (not moving_left and not moving_right) and not self.jump:
+			self.direction = 0
+			self.walk_index = 0
+
+		if self.jump:
+			F = (1/2) * self.mass * self.vel
+			self.dy -= F
+			self.vel -= self.gravity
+
+			if self.vel < -15:
+				self.vel = self.jump_height
+				self.jump = False
+		else:
+			self.dy += self.vel
+
+		self.dx, self.dy = self.check_collision(world, self.dx, self.dy)
+		self.rect.x += self.dx
+		self.rect.y += self.dy
+
+		self.update_animation()
+
+		
 	def draw(self, win):
 		win.blit(self.image, self.rect)

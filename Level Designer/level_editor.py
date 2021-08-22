@@ -117,7 +117,7 @@ right_button = button.Button(SCREEN_WIDTH + 120, SCREEN_HEIGHT - 35, right_img, 
 running = True
 while running:
 	draw_bg()
-	# draw_grid()
+	draw_grid()
 	draw_world()
 
 	# draw button panel

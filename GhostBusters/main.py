@@ -1,5 +1,6 @@
 import pygame
 
+from world import World, load_level
 from player import Player
 from enemies import Ghost
 from particles import Trail
@@ -10,9 +11,16 @@ pygame.init()
 WIDTH, HEIGHT = 640, 384
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('GhostBusters')
+TILE_SIZE = 16
 
 clock = pygame.time.Clock()
 FPS = 30
+
+# IMAGES **********************************************************************
+
+BG1 = pygame.transform.scale(pygame.image.load('assets/BG1.png'), (WIDTH, HEIGHT))
+BG2 = pygame.transform.scale(pygame.image.load('assets/BG2.png'), (WIDTH, HEIGHT))
+BG3 = pygame.transform.scale(pygame.image.load('assets/BG3.png'), (WIDTH, HEIGHT))
 
 # GROUPS **********************************************************************
 
@@ -21,21 +29,44 @@ bullet_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
+water_group = pygame.sprite.Group()
+diamond_group = pygame.sprite.Group()
+potion_group = pygame.sprite.Group()
+
+
+objects_group = [water_group, diamond_group, potion_group, enemy_group]
 
 # OBJECTS *********************************************************************
 
-p = Player(100, 100)
+p = Player(250, 50)
 moving_left = False
 moving_right = False
 
-g = Ghost(500, 184, win)
-enemy_group.add(g)
+# LEVEL VARIABLES **************************************************************
+
+ROWS = 24
+COLS = 40
+SCROLL_THRES = 200
+
+level = 1
+level_length = 0
+screen_scroll = 0
+
+# WORLD ***********************************************************************
+
+world_data, level_length = load_level(level)
+w = World(objects_group)
+w.generate_world(world_data, win)
 
 # MAIN GAME *******************************************************************
 
 running = True
 while running:
-	win.fill((12,12,12))
+	win.blit(BG1, (0,0))
+	win.blit(BG2, (0,-50))
+	win.blit(BG3, (0,0))
+	w.draw_world(win, screen_scroll)
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -72,20 +103,49 @@ while running:
 			if event.key == pygame.K_RIGHT:
 				moving_right = False
 			
+	# Updating Objects ********************************************************
+
+	bullet_group.update(screen_scroll, w)
+	grenade_group.update(screen_scroll, p, enemy_group, explosion_group, w)
+	explosion_group.update(screen_scroll)
+	trail_group.update()
+	water_group.update(screen_scroll)
+	water_group.draw(win)
+	diamond_group.update(screen_scroll)
+	diamond_group.draw(win)
+	potion_group.update(screen_scroll)
+	potion_group.draw(win)
+
+	enemy_group.update(screen_scroll, bullet_group, p)
+	enemy_group.draw(win)
+
 	if p.jump:
 		t = Trail(p, (220, 220, 220), win)
 		trail_group.add(t)
 
-	bullet_group.update()
-	grenade_group.update(p, enemy_group, explosion_group)
-	explosion_group.update()
-	trail_group.update()
-
-	p.update(moving_left, moving_right)
+	screen_scroll = 0
+	p.update(moving_left, moving_right, w)
 	p.draw(win)
 
-	enemy_group.update(bullet_group)
-	enemy_group.draw(win)
+	if (p.rect.right >= WIDTH - SCROLL_THRES) or p.rect.left <= SCROLL_THRES:
+		dx = p.dx
+		p.rect.x -= dx
+		screen_scroll = -dx
+
+
+	# Collision Detetction ****************************************************
+
+	if pygame.sprite.spritecollide(p, diamond_group, True):
+		pass
+
+	potion = pygame.sprite.spritecollide(p, potion_group, False)
+	if potion:
+		if p.health < 100:
+			potion[0].kill()
+			p.health += 15
+			if p.health > 100:
+				p.health = 100
+
 
 	for bullet in bullet_group:
 		enemy =  pygame.sprite.spritecollide(bullet, enemy_group, False)

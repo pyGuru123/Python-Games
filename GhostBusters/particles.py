@@ -42,12 +42,12 @@ class Explosion(pygame.sprite.Sprite):
 		
 		self.color = 150
 			
-	def update (self):
+	def update (self, screen_scroll):
 		self.size -= 0.2
 		self.lifetime += 1
 		self.color -= 2
 		if self.lifetime <= self.life:
-			self.x += self.x_vel
+			self.x += self.x_vel + screen_scroll
 			self.y += self.y_vel
 			s = int(self.size)
 			pygame.draw.rect(self.win, (self.color, self.color, self.color), (self.x, self.y,s,s))

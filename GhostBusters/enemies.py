@@ -1,6 +1,8 @@
 import pygame
 from projectiles import Bullet
 
+TILE_SIZE = 16
+
 class Ghost(pygame.sprite.Sprite):
 	def __init__(self, x, y, win):
 		super(Ghost, self).__init__()
@@ -46,13 +48,15 @@ class Ghost(pygame.sprite.Sprite):
 		self.image = self.walk_right[self.walk_index]
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 
-	def update(self, bullet_group):
+	def update(self, screen_scroll, bullet_group, p):
 		if self.health:
-			self.rect.x += self.dx
-
-			distance = self.rect.x - self.initial_pos_x 
-			if distance >= 100 or distance <= -100:
+			self.rect.x += (self.dx + screen_scroll)
+			self.x += screen_scroll
+			if abs(self.rect.x - self.x) >= 2 * TILE_SIZE:
+			# if distance >= 100 or distance <= -100:
 				self.dx *= -1
+
+		# self.rect.x += self.screen_scroll
 
 		if self.health <= 0:
 			self.on_death_bed = True
@@ -72,7 +76,7 @@ class Ghost(pygame.sprite.Sprite):
 			else:
 				self.walk_index  = (self.walk_index + 1) % len(self.walk_left)
 		if self.counter % 50 == 0:
-			if self.health > 0:
+			if self.health > 0 and (abs(p.rect.x - self.rect.x) <= 200):
 				x, y = self.rect.center
 				direction = self.dx
 				bullet = Bullet(x, y, direction, (160, 160, 160), 2, self.win)

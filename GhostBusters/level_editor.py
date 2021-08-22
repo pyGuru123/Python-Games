@@ -14,7 +14,7 @@ HEIGHT = SCREEN_HEIGHT
 
 TILE_WIDTH = 16
 TILE_HEIGHT = 16
-NUM_TILES = 48
+NUM_TILES = 60
 
 ROWS = SCREEN_HEIGHT // TILE_HEIGHT
 COLS = SCREEN_WIDTH // TILE_WIDTH
@@ -62,7 +62,6 @@ right_img = pygame.image.load('assets/right.png')
 img_list = []
 for i in range(1,NUM_TILES+1):
 	img = pygame.image.load(f'Tiles/{i}.png')
-	# img = pygame.transform.scale(img, (TILE_WIDTH, TILE_SIZE))
 	img_list.append(img)
 
 
@@ -127,7 +126,6 @@ while running:
 	for index, i in enumerate(button_list):
 		if i.draw(win):
 			current_tile = index
-			print(current_tile)
 
 	# highlight current tile
 	pygame.draw.rect(win, RED, button_list[current_tile].rect, 3)
@@ -174,6 +172,12 @@ while running:
 
 	if save_button.draw(win):
 		#save level data
+		if os.path.exists(f'levels/level{current_level}_backup_data'):
+			with open(f'levels/level{current_level}_backup_data', 'rb') as pickle_in:
+				data = pickle.load(pickle_in)
+			with open(f'levels/level{current_level}_backup_data', 'wb') as pickle_out:
+				pickle.dump(data, pickle_out)
+
 		pickle_out = open(f'levels/level{current_level}_data', 'wb')
 		pickle.dump(world_data, pickle_out)
 		pickle_out.close()
