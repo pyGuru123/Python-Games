@@ -1,5 +1,7 @@
 import pygame
 
+WIDTH, HEIGHT = 640, 384
+
 class Player(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Player, self).__init__()
@@ -161,6 +163,10 @@ class Player(pygame.sprite.Sprite):
 			self.dy += self.vel
 
 		self.dx, self.dy = self.check_collision(world, self.dx, self.dy)
+
+		if self.rect.left + self.dx < 0 or self.rect.right + self.dx > WIDTH:
+			self.dx = 0
+
 		self.rect.x += self.dx
 		self.rect.y += self.dy
 

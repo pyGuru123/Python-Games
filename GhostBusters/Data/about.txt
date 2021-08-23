@@ -1,0 +1,3 @@
+This game is created by Prajjwal Pathak ( @pyGuru ). This is a small platformer game
+and the source code for this game can be found at
+https://github.com/pyGuru123/Python-Games/tree/master/GhostBusters

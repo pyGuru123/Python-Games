@@ -38,6 +38,10 @@ class World:
 					if tile in (8, 9, 10, 13, 15, 16, 17, 23, 24, 30, 31, 37, 38, 39, 40, 46, 47, 48, 49):
 						self.decor_list.append(tile_data)
 
+					if tile == 12:
+						exit = Exit(x*TILE_SIZE, y*TILE_SIZE, tile_data)
+						self.objects_group[4].add(exit)
+
 					if tile == 41:
 						water = Water(x*TILE_SIZE, y*TILE_SIZE, tile_data)
 						self.objects_group[0].add(water)
@@ -114,6 +118,21 @@ class Diamond(pygame.sprite.Sprite):
 class Potion(pygame.sprite.Sprite):
 	def __init__(self, x, y, tile_data):
 		super(Potion, self).__init__()
+
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Exit(pygame.sprite.Sprite):
+	def __init__(self, x, y, tile_data):
+		super(Exit, self).__init__()
 
 		self.image = tile_data[0]
 		self.rect = tile_data[1]

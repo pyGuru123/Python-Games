@@ -53,10 +53,7 @@ class Ghost(pygame.sprite.Sprite):
 			self.rect.x += (self.dx + screen_scroll)
 			self.x += screen_scroll
 			if abs(self.rect.x - self.x) >= 2 * TILE_SIZE:
-			# if distance >= 100 or distance <= -100:
 				self.dx *= -1
-
-		# self.rect.x += self.screen_scroll
 
 		if self.health <= 0:
 			self.on_death_bed = True
@@ -75,6 +72,7 @@ class Ghost(pygame.sprite.Sprite):
 					self.hit = False
 			else:
 				self.walk_index  = (self.walk_index + 1) % len(self.walk_left)
+				
 		if self.counter % 50 == 0:
 			if self.health > 0 and (abs(p.rect.x - self.rect.x) <= 200):
 				x, y = self.rect.center
