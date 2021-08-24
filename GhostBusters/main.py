@@ -30,7 +30,7 @@ title_font = "Fonts/Aladin-Regular.ttf"
 instructions_font = 'Fonts/BubblegumSans-Regular.ttf'
 # about_font = 'Fonts/DalelandsUncialBold-82zA.ttf'
 
-ghostbusters = Message(WIDTH//2, HEIGHT//2 - 80, 90, "GhostBusters", title_font, (255, 255, 255), win)
+ghostbusters = Message(WIDTH//2, HEIGHT//2 - 90, 90, "GhostBusters", title_font, (255, 255, 255), win)
 
 t = Text(instructions_font, 18)
 font_color = (12, 12, 12)
@@ -40,7 +40,7 @@ controls = t.render('Controls', font_color)
 exit = t.render('Exit', font_color)
 main_menu = t.render('Main Menu', font_color)
 
-about_font = pygame.font.SysFont('Verdana', 16)
+about_font = pygame.font.SysFont('Times New Roman', 20)
 with open('Data/about.txt') as f:
 	info = f.read().replace('\n', ' ')
 
@@ -49,11 +49,11 @@ with open('Data/about.txt') as f:
 ButtonBG = pygame.image.load('Assets/ButtonBG.png')
 bwidth = ButtonBG.get_width()
 
-play_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2, ButtonBG, 0.5, play)
-about_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 30, ButtonBG, 0.5, about)
-controls_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 60, ButtonBG, 0.5, controls)
-exit_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 90, ButtonBG, 0.5, exit)
-main_menu_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 120, ButtonBG, 0.5, main_menu)
+play_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2, ButtonBG, 0.5, play, 10)
+about_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 35, ButtonBG, 0.5, about, 10)
+controls_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 70, ButtonBG, 0.5, controls, 10)
+exit_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 105, ButtonBG, 0.5, exit, 10)
+main_menu_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 130, ButtonBG, 0.5, main_menu, 20)
 
 # GROUPS **********************************************************************
 
@@ -69,6 +69,11 @@ exit_group = pygame.sprite.Group()
 
 objects_group = [water_group, diamond_group, potion_group, enemy_group, exit_group]
 
+p_image = pygame.transform.scale(pygame.image.load('Assets/Player/PlayerIdle1.png'), (32,32))
+p_rect = p_image.get_rect(center=(470, 200))
+p_dy = 1
+p_ctr = 1
+
 # LEVEL VARIABLES **************************************************************
 
 ROWS = 24
@@ -83,7 +88,7 @@ dx = 0
 
 # RESET ***********************************************************************
 
-def reset_level():
+def reset_level(level):
 	trail_group.empty()
 	bullet_group.empty()
 	grenade_group.empty()
@@ -123,6 +128,9 @@ while running:
 		win.blit(BG2, ((x*WIDTH) - bg_scroll * 0.7, 0))
 		win.blit(BG3, ((x*WIDTH) - bg_scroll * 0.8, 0))
 
+	if not game_start:
+		win.blit(MOON, (-40, 150))
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -161,9 +169,18 @@ while running:
 
 	if main_menu:
 		ghostbusters.update()
+		trail_group.update()
+		win.blit(p_image, p_rect)
+		p_rect.y += p_dy
+		p_ctr += p_dy
+		if p_ctr > 15 or p_ctr < -15:
+			p_dy *= -1
+		t = Trail(p_rect.center, (220, 220, 220), win)
+		trail_group.add(t)
+
 
 		if play_btn.draw(win):
-			world_data, level_length, w = reset_level()
+			world_data, level_length, w = reset_level(level)
 			p, moving_left, moving_right = reset_player()
 
 			game_start = True
@@ -180,7 +197,7 @@ while running:
 		if exit_btn.draw(win):
 			running = False
 
-	if about_page:
+	elif about_page:
 		MessageBox(win, about_font, 'GhostBusters', info)
 		if main_menu_btn.draw(win):
 			about_page = False
@@ -188,7 +205,7 @@ while running:
 			main_menu = True
 
 			
-	if game_start:
+	elif game_start:
 		win.blit(MOON, (-40, -10))
 		w.draw_world(win, screen_scroll)
 
@@ -211,7 +228,7 @@ while running:
 		enemy_group.draw(win)
 
 		if p.jump:
-			t = Trail(p, (220, 220, 220), win)
+			t = Trail(p.rect.center, (220, 220, 220), win)
 			trail_group.add(t)
 
 		screen_scroll = 0
@@ -239,6 +256,15 @@ while running:
 
 		if pygame.sprite.spritecollide(p, exit_group, False):
 			level += 1
+			health = p.health
+
+			world_data, level_length, w = reset_level(level)
+			p, moving_left, moving_right = reset_player() 
+			p.health = health
+
+			screen_scroll = 0
+			bg_scroll = 0
+
 
 		potion = pygame.sprite.spritecollide(p, potion_group, False)
 		if potion:
@@ -279,7 +305,7 @@ while running:
 			pygame.draw.circle(win, (0, 0, 0), (20 + 15*i, 40), 1)
 		
 		if p.health <= 0:
-			world_data, level_length, w = reset_level()
+			world_data, level_length, w = reset_level(level)
 			p, moving_left, moving_right = reset_player() 
 
 			screen_scroll = 0

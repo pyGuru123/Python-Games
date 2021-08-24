@@ -172,8 +172,8 @@ while running:
 
 	if save_button.draw(win):
 		#save level data
-		if os.path.exists(f'levels/level{current_level}_backup_data'):
-			with open(f'levels/level{current_level}_backup_data', 'rb') as pickle_in:
+		if os.path.exists(f'levels/level{current_level}_data'):
+			with open(f'levels/level{current_level}_data', 'rb') as pickle_in:
 				data = pickle.load(pickle_in)
 			with open(f'levels/level{current_level}_backup_data', 'wb') as pickle_out:
 				pickle.dump(data, pickle_out)

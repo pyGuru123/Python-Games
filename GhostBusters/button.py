@@ -1,7 +1,7 @@
 import pygame 
 
 class Button():
-	def __init__(self,x, y, image, scale, text):
+	def __init__(self,x, y, image, scale, text=None, xoff=None):
 		self.width = int(image.get_width() * scale)
 		self.height = int(image.get_height() * scale)
 		self.image = pygame.transform.scale(image, (self.width, self.height))
@@ -11,7 +11,10 @@ class Button():
 		self.text = None
 		if text:
 			self.text = text
-			self.xoff = self.text.get_width() // 2
+			if xoff:
+				self.xoff = xoff
+			else:
+				self.xoff = self.text.get_width() // 2
 			self.yoff = self.text.get_height() // 2
 
 		self.clicked = False
@@ -34,6 +37,6 @@ class Button():
 		#draw button
 		surface.blit(self.image, (self.rect.x, self.rect.y))
 		if self.text:
-			self.image.blit(self.text, (self.width//2 - 10, self.height//2 - self.yoff))
+			self.image.blit(self.text, (self.width//2 - self.xoff, self.height//2 - self.yoff))
 
 		return action

@@ -2,13 +2,12 @@ import pygame
 import random
 
 class Trail(pygame.sprite.Sprite):
-	def __init__(self, player, color, win):
+	def __init__(self, pos, color, win):
 		super(Trail, self).__init__()
-		self.p = player
 		self.color = color
 		self.win = win
 
-		self.x, self.y = self.p.rect.center
+		self.x, self.y = pos
 		self.y += 10
 		self.dx = random.randint(0,20) / 10 - 1
 		self.dy = -2

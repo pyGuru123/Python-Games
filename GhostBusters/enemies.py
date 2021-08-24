@@ -1,3 +1,4 @@
+import random
 import pygame
 from projectiles import Bullet
 
@@ -39,7 +40,7 @@ class Ghost(pygame.sprite.Sprite):
 		self.hit_index = 0
 		self.counter = 0
 
-		self.dx = 1
+		self.dx = random.choice([-1, 1])
 		self.alive = True
 		self.health = 100
 		self.hit = False
