@@ -4,13 +4,13 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
 
-GhostBusters is a simple endless hypercasual arcade game made with pygame.
+GhostBusters is a small platformer game made with pygame. The game uses tiles based physics along with scrolling and parallax animations.
 
 ![Alt text](app.png?raw=true "GhostBusters")
 
 ## How to Download
 
-Download this project from here [Download Connected](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/GhostBusters)
+Download this project from here [Download GhostBusters](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/GhostBusters)
 
 ## Requirements
 

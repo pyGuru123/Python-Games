@@ -21,38 +21,32 @@ and pygame library.
 * ### [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
 	> Dino Run is an implementaion of chromes dino run game in pygame.
 
-
 * ### [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
 	> Dodgy walls is a simple endless hypercasual arcade game.
 
+* ### [GhostBusters](https://github.com/pyGuru123/Python-Games/tree/master/GhostBusters)
+	> GhostBusters is a scrollable platformer game with parallax.
 
 * ### [HyperTile Dash](https://github.com/pyGuru123/Python-Games/tree/master/HyperTile%20Dash)
 	> HyperTile Dash is a simple target based endless hypercasual arcade game.
 
-
 * ### [Jungle Dash](https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
 	> Jungle Dash is a 2D platformer game made with pygame.
-
 
 * ### [Memory Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Memory%20Puzzle)
 	> Memory Puzzle is a simple puzzle game based on fruits made with pygame.
 
-
 * ### [MineSweeper](https://github.com/pyGuru123/Python-Games/tree/master/MineSweeper)
 	> MineSweeper game written using tkinter library.
-
 
 * ### [Piano Tiles](https://github.com/pyGuru123/Python-Games/tree/master/Piano%20Tiles)
 	> Piano Tiles musical game written using pygame library.
 
-
 * ### [Picture Sliding Puzzle](https://github.com/pyGuru123/Python-Games/tree/master/Picture%20Sliding%20Puzzle)
 	> Picture Sliding Puzzle is an implementation of 15 puzzle in tkinter library.
 
-
 * ### [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 	> Pong game written using turtle module.
-
 
 * ### [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 	> Rock Paper Scissor game written using tkinter library.
