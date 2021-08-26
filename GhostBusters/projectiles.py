@@ -4,6 +4,10 @@ from particles import Explosion
 
 WIDTH, HEIGHT = 640, 384
 
+pygame.mixer.init()
+grenade_blast_fx = pygame.mixer.Sound('Sounds/grenade blast.wav')
+grenade_blast_fx.set_volume(0.6)
+
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, x, y, direction, color, type_, win):
 		super(Bullet, self).__init__()
@@ -86,6 +90,7 @@ class Grenade(pygame.sprite.Sprite):
 		if self.speed == 0:
 			self.timer -= 1
 			if self.timer <= 0:
+				grenade_blast_fx.play()
 				for _ in range(30):
 					explosion = Explosion(self.x, self.y, self.win)
 					explosion_group.add(explosion)

@@ -15,7 +15,7 @@ win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME)
 TILE_SIZE = 16
 
 clock = pygame.time.Clock()
-FPS = 30
+FPS = 45
 
 # IMAGES **********************************************************************
 
@@ -30,7 +30,14 @@ title_font = "Fonts/Aladin-Regular.ttf"
 instructions_font = 'Fonts/BubblegumSans-Regular.ttf'
 # about_font = 'Fonts/DalelandsUncialBold-82zA.ttf'
 
-ghostbusters = Message(WIDTH//2, HEIGHT//2 - 90, 90, "GhostBusters", title_font, (255, 255, 255), win)
+ghostbusters = Message(WIDTH//2 + 50, HEIGHT//2 - 90, 90, "GhostBusters", title_font, (255, 255, 255), win)
+left_key = Message(WIDTH//2 + 10, HEIGHT//2 - 90, 20, "Press left arrow key to go left", instructions_font, (255, 255, 255), win)
+right_key = Message(WIDTH//2 + 10, HEIGHT//2 - 65, 20, "Press right arrow key to go right", instructions_font, (255, 255, 255), win)
+up_key = Message(WIDTH//2 + 10, HEIGHT//2 - 45, 20, "Press up arrow key to jump", instructions_font, (255, 255, 255), win)
+space_key = Message(WIDTH//2 + 10, HEIGHT//2 - 25, 20, "Press space key to shoot", instructions_font, (255, 255, 255), win)
+g_key = Message(WIDTH//2 + 10, HEIGHT//2 - 5, 20, "Press g key to throw grenade", instructions_font, (255, 255, 255), win)
+
+
 
 t = Text(instructions_font, 18)
 font_color = (12, 12, 12)
@@ -54,6 +61,22 @@ about_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 35, ButtonBG, 0.5, about, 1
 controls_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 70, ButtonBG, 0.5, controls, 10)
 exit_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 105, ButtonBG, 0.5, exit, 10)
 main_menu_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 130, ButtonBG, 0.5, main_menu, 20)
+
+# MUSIC ***********************************************************************
+
+# pygame.mixer.music.load('Sounds/mixkit-complex-desire-1093.mp3')
+# pygame.mixer.music.play(loops=-1)
+# pygame.mixer.music.set_volume(0.5)
+
+diamond_fx = pygame.mixer.Sound('Sounds/point.mp3')
+diamond_fx.set_volume(0.6)
+bullet_fx = pygame.mixer.Sound('Sounds/bullet.wav')
+jump_fx = pygame.mixer.Sound('Sounds/jump.mp3')
+health_fx = pygame.mixer.Sound('Sounds/health.wav')
+menu_click_fx = pygame.mixer.Sound('Sounds/menu.mp3')
+next_level_fx = pygame.mixer.Sound('Sounds/level.mp3')
+grenade_throw_fx = pygame.mixer.Sound('Sounds/grenade throw.wav')
+grenade_throw_fx.set_volume(0.6)
 
 # GROUPS **********************************************************************
 
@@ -119,6 +142,7 @@ def reset_player():
 main_menu = True
 about_page = False
 controls_page = False
+exit_page = False
 game_start = False
 running = True
 while running:
@@ -148,11 +172,13 @@ while running:
 			if event.key == pygame.K_UP:
 				if not p.jump:
 					p.jump = True
+					jump_fx.play()
 			if event.key == pygame.K_SPACE:
 				x, y = p.rect.center
 				direction = p.direction
 				bullet = Bullet(x, y, direction, (240, 240, 240), 1, win)
 				bullet_group.add(bullet)
+				bullet_fx.play()
 
 				p.attack = True
 			if event.key == pygame.K_g:
@@ -160,6 +186,7 @@ while running:
 					p.grenades -= 1
 					grenade = Grenade(p.rect.centerx, p.rect.centery, p.direction, win)
 					grenade_group.add(grenade)
+					grenade_throw_fx.play()
 
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_LEFT:
@@ -180,6 +207,7 @@ while running:
 
 
 		if play_btn.draw(win):
+			menu_click_fx.play()
 			world_data, level_length, w = reset_level(level)
 			p, moving_left, moving_right = reset_player()
 
@@ -187,22 +215,40 @@ while running:
 			main_menu = False
 
 		if about_btn.draw(win):
+			menu_click_fx.play()
 			about_page = True
 			main_menu = False
 
 		if controls_btn.draw(win):
+			menu_click_fx.play()
 			controls_page = True
 			main_menu = False
 
 		if exit_btn.draw(win):
+			menu_click_fx.play()
 			running = False
 
 	elif about_page:
 		MessageBox(win, about_font, 'GhostBusters', info)
 		if main_menu_btn.draw(win):
+			menu_click_fx.play()
 			about_page = False
-			game_start = False
 			main_menu = True
+
+	elif controls_page:
+		left_key.update()
+		right_key.update()
+		up_key.update()
+		space_key.update()
+		g_key.update()
+
+		if main_menu_btn.draw(win):
+			menu_click_fx.play()
+			controls_page = False
+			main_menu = True
+
+	elif exit_page:
+		pass
 
 			
 	elif game_start:
@@ -252,9 +298,11 @@ while running:
 			p.health = 0
 
 		if pygame.sprite.spritecollide(p, diamond_group, True):
+			diamond_fx.play()
 			pass
 
 		if pygame.sprite.spritecollide(p, exit_group, False):
+			next_level_fx.play()
 			level += 1
 			health = p.health
 
@@ -271,6 +319,7 @@ while running:
 			if p.health < 100:
 				potion[0].kill()
 				p.health += 15
+				health_fx.play()
 				if p.health > 100:
 					p.health = 100
 

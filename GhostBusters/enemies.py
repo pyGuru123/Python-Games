@@ -4,6 +4,9 @@ from projectiles import Bullet
 
 TILE_SIZE = 16
 
+pygame.mixer.init()
+bullet_fx = pygame.mixer.Sound('Sounds/ghost_shot.mp3')
+
 class Ghost(pygame.sprite.Sprite):
 	def __init__(self, x, y, win):
 		super(Ghost, self).__init__()
@@ -80,6 +83,7 @@ class Ghost(pygame.sprite.Sprite):
 				direction = self.dx
 				bullet = Bullet(x, y, direction, (160, 160, 160), 2, self.win)
 				bullet_group.add(bullet)
+				bullet_fx.play()
 
 		if self.alive:
 			if self.on_death_bed:
