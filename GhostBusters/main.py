@@ -36,7 +36,7 @@ right_key = Message(WIDTH//2 + 10, HEIGHT//2 - 65, 20, "Press right arrow key to
 up_key = Message(WIDTH//2 + 10, HEIGHT//2 - 45, 20, "Press up arrow key to jump", instructions_font, (255, 255, 255), win)
 space_key = Message(WIDTH//2 + 10, HEIGHT//2 - 25, 20, "Press space key to shoot", instructions_font, (255, 255, 255), win)
 g_key = Message(WIDTH//2 + 10, HEIGHT//2 - 5, 20, "Press g key to throw grenade", instructions_font, (255, 255, 255), win)
-
+game_won_msg = Message(WIDTH//2 + 10, HEIGHT//2 - 5, 20, "You have won the game", instructions_font, (255, 255, 255), win)
 
 
 t = Text(instructions_font, 18)
@@ -64,9 +64,9 @@ main_menu_btn = Button(WIDTH//2 - bwidth//4, HEIGHT//2 + 130, ButtonBG, 0.5, mai
 
 # MUSIC ***********************************************************************
 
-# pygame.mixer.music.load('Sounds/mixkit-complex-desire-1093.mp3')
-# pygame.mixer.music.play(loops=-1)
-# pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.load('Sounds/mixkit-complex-desire-1093.mp3')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.5)
 
 diamond_fx = pygame.mixer.Sound('Sounds/point.mp3')
 diamond_fx.set_volume(0.6)
@@ -102,6 +102,7 @@ p_ctr = 1
 ROWS = 24
 COLS = 40
 SCROLL_THRES = 200
+MAX_LEVEL = 3
 
 level = 1
 level_length = 0
@@ -144,6 +145,7 @@ about_page = False
 controls_page = False
 exit_page = False
 game_start = False
+game_won = True
 running = True
 while running:
 	win.fill((0,0,0))
@@ -213,6 +215,7 @@ while running:
 
 			game_start = True
 			main_menu = False
+			game_won = False
 
 		if about_btn.draw(win):
 			menu_click_fx.play()
@@ -249,6 +252,14 @@ while running:
 
 	elif exit_page:
 		pass
+
+	elif game_won:
+		game_won_msg.update()
+		if main_menu_btn.draw(win):
+			menu_click_fx.play()
+			controls_page = False
+			main_menu = True
+			level = 1
 
 			
 	elif game_start:
@@ -296,6 +307,7 @@ while running:
 
 		if pygame.sprite.spritecollide(p, water_group, False):
 			p.health = 0
+			level = 1
 
 		if pygame.sprite.spritecollide(p, diamond_group, True):
 			diamond_fx.play()
@@ -304,14 +316,17 @@ while running:
 		if pygame.sprite.spritecollide(p, exit_group, False):
 			next_level_fx.play()
 			level += 1
-			health = p.health
+			if level <= MAX_LEVEL:
+				health = p.health
 
-			world_data, level_length, w = reset_level(level)
-			p, moving_left, moving_right = reset_player() 
-			p.health = health
+				world_data, level_length, w = reset_level(level)
+				p, moving_left, moving_right = reset_player() 
+				p.health = health
 
-			screen_scroll = 0
-			bg_scroll = 0
+				screen_scroll = 0
+				bg_scroll = 0
+			else:
+				game_won = True
 
 
 		potion = pygame.sprite.spritecollide(p, potion_group, False)
