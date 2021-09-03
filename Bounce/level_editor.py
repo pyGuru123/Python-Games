@@ -166,7 +166,12 @@ while running:
 		#load in level data
 		if os.path.exists(f'levels/level{current_level}_data'):
 			pickle_in = open(f'levels/level{current_level}_data', 'rb')
-			world_data = pickle.load(pickle_in)
+			data = pickle.load(pickle_in)
+			print(len(data[0]))
+			world_data = [[0 for j in range(MAX_COLS)] for i in range(ROWS)]
+			for y in range(ROWS):
+				for x in range(MAX_COLS):
+					world_data[y][x] = data[y][x]
 
 	if left_button.draw(win):
 		current_level -= 1

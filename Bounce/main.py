@@ -21,23 +21,50 @@ TILE_SIZE = 16
 
 BLUE = (175, 207, 240)
 
-# Objects *********************************************************************
+# GROUPS **********************************************************************
 
-objects_list = []
+spikes_group = pygame.sprite.Group()
+inflator_group = pygame.sprite.Group()
+deflator_group = pygame.sprite.Group()
 
-# Load Level ******************************************************************
+
+objects_groups = [spikes_group, inflator_group, deflator_group]
+collision_groups = [inflator_group, deflator_group]
+
+# RESET ***********************************************************************
+
 level = 1
-world_data, level_length = load_level(level)
 
-p = Ball(50, 50)
-w = World(objects_list)
-w.generate_world(world_data, win)
+def reset_level(level):
+	spikes_group.empty()
+	inflator_group.empty()
+	deflator_group.empty()
+
+	# LOAD LEVEL WORLD
+
+	world_data, level_length = load_level(level)
+	w = World(objects_groups)
+	w.generate_world(world_data, win)
+
+	return world_data, level_length, w
+
+def reset_player():
+	p = Ball(WIDTH//2, 50)
+	moving_left = False
+	moving_right = False
+
+	return p, moving_left, moving_right
+
+world_data, level_length, w = reset_level(level)
+p, moving_left, moving_right = reset_player()
 
 # VARIABLES *******************************************************************
 
 moving_left = False
 moving_right = False
 screen_scroll = 0
+level_scroll = 0
+SCROLL_THRES = 80
 
 running = True
 while running:
@@ -69,8 +96,31 @@ while running:
 				moving_right = False
 
 	w.draw_world(win, screen_scroll)
-	p.update(moving_left, moving_right)
+
+	spikes_group.update(screen_scroll)
+	spikes_group.draw(win)
+	inflator_group.update(screen_scroll)
+	inflator_group.draw(win)
+	deflator_group.update(screen_scroll)
+	deflator_group.draw(win)
+
+	screen_scroll = 0
+	p.update(moving_left, moving_right, w, collision_groups)
 	p.draw(win)
+
+	if ((p.rect.right >= WIDTH - SCROLL_THRES) and level_scroll < (level_length * 16) - WIDTH) \
+			or ((p.rect.left <= SCROLL_THRES) and level_scroll > 0):
+			dx = p.dx
+			p.rect.x -= dx
+			screen_scroll = -dx
+			level_scroll += dx
+
+	if pygame.sprite.spritecollide(p, spikes_group, False):
+		world_data, level_length, w = reset_level(level)
+		p, moving_left, moving_right = reset_player()
+		screen_scroll = 0
+		level_scroll = 0
+
 
 	pygame.draw.rect(win, (255, 255,255), (0, 0, WIDTH, HEIGHT), 2, border_radius=5)
 	clock.tick(FPS)

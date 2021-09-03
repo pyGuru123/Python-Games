@@ -14,6 +14,9 @@ class World:
 		self.objects_group = objects_group
 
 		self.wall_list = []
+		self.left_ramp = []
+		self.right_ramp = []
+		self.water_list = []
 
 	def generate_world(self, data, win):
 		for y, row in enumerate(data):
@@ -25,13 +28,86 @@ class World:
 					rect.y = y * TILE_SIZE
 					tile_data = (img, rect)
 
-					if tile in (1, 2, 3, 4, 5):
+					if tile == 1:
 						self.wall_list.append(tile_data)
+					if tile in (4, 7):
+						self.left_ramp.append(tile_data)
+					if tile in (5, 8):
+						self.right_ramp.append(tile_data)
+					if tile == 6:
+						self.water_list.append(tile_data)
+					if tile in (11, 21):
+						spike = Spikes(x*TILE_SIZE, y*TILE_SIZE, tile_data)
+						self.objects_group[0].add(spike)
+					if tile == 23:
+						inflator = Inflator(x*TILE_SIZE, y*TILE_SIZE, tile_data)
+						self.objects_group[1].add(inflator)
+					if tile in (12, 13, 22):
+						deflator = Deflator(x*TILE_SIZE, y*TILE_SIZE, tile_data)
+						self.objects_group[2].add(deflator)
 
 	def draw_world(self, win, screen_scroll):
 		for tile in self.wall_list:
 			tile[1][0] += screen_scroll
 			win.blit(tile[0], tile[1])
+		for tile in self.left_ramp:
+			tile[1][0] += screen_scroll
+			win.blit(tile[0], tile[1])
+		for tile in self.right_ramp:
+			tile[1][0] += screen_scroll
+			win.blit(tile[0], tile[1])
+		for tile in self.water_list:
+			tile[1][0] += screen_scroll
+			win.blit(tile[0], tile[1])
+
+
+
+class Spikes(pygame.sprite.Sprite):
+	def __init__(self, x, y, tile_data):
+		super(Spikes, self).__init__()
+
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+class Inflator(pygame.sprite.Sprite):
+	def __init__(self, x, y, tile_data):
+		super(Inflator, self).__init__()
+
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+class Deflator(pygame.sprite.Sprite):
+	def __init__(self, x, y, tile_data):
+		super(Deflator, self).__init__()
+
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
 
 
 
