@@ -15,6 +15,7 @@ HEIGHT = SCREEN_HEIGHT
 ROWS = 12
 MAX_COLS = 100
 TILE_SIZE = 16
+NUM_TILES = 28
 
 clock = pygame.time.Clock()
 FPS = 30
@@ -56,7 +57,7 @@ left_img = pygame.image.load('assets/left.png')
 right_img = pygame.image.load('assets/right.png')
 
 img_list = []
-for i in range(1,27):
+for i in range(1,NUM_TILES + 1):
 	img = pygame.image.load(f'tiles/{i}.png')
 	img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
 	img_list.append(img)

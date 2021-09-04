@@ -1,6 +1,7 @@
 import pygame
 
 SIZE = WIDTH, HEIGHT = 192, 192
+TILE_SIZE = 16
 
 class Ball(pygame.sprite.Sprite):
 	def __init__(self, x, y):
@@ -21,38 +22,102 @@ class Ball(pygame.sprite.Sprite):
 
 		self.jump = False
 		self.fluffy = False
+		self.in_water = False
+		self.on_ramp = False
 
 	def inflate(self):
-		x, y = self.rect.center
-		self.fluffy = True
-		self.image = self.inflated_img
-		self.rect = self.image.get_rect(center=(x,y))
-		self.gravity = 2
+		if not self.fluffy:
+			x, y = self.rect.center
+			self.image = self.inflated_img
+			self.rect = self.image.get_rect(center=(x,y))
+
+			self.fluffy = True
+			self.jump = True
+			self.vel = -2
+			self.gravity = 0
 
 	def deflate(self):
 		x, y = self.rect.center
 		self.fluffy = False
 		self.image = self.original_img
 		self.rect = self.image.get_rect(center=(x,y))
+		self.vel = self.jump_height
 		self.gravity = 1
 
 	def check_collision(self, dx, dy, world, groups):
 		self.size = self.image.get_width()
 
+		for tile in groups[0]:
+			x = self.rect.x
+			if tile.rect.x > x:
+				delta = -5
+			else:
+				delta = 3
+
+			if tile.rect.colliderect(x + dx + delta, self.rect.y, self.size, self.size):
+				# left / right collision
+				dx = 0
+				self.inflate()
+			elif tile.rect.colliderect(x, self.rect.bottom + dy, self.size, self.size):
+				# above ground
+				if self.vel <= 0 or self.vel == self.jump_height:
+					dy = tile.rect.top - self.rect.bottom
+				self.inflate()
+
+		for tile in groups[1]:
+			if tile.rect.colliderect(x + dx, self.rect.y, self.size, self.size):
+				# left / right collision
+				dx = 0
+				self.deflate()
+			elif tile.rect.colliderect(x, self.rect.bottom + dy, self.size, self.size):
+				if self.vel > 0 and self.vel != self.jump_height:
+					dy = tile.rect.bottom - self.rect.top
+					self.jump = False
+					self.vel = self.jump_height
+				self.deflate()
 
 		for tile in world.water_list:
-			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
+			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.size, self.size):
+				self.in_water = True
+
+			elif tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
+				self.in_water = True
+
+			else :
+				if self.in_water:
+					self.in_water = False
+
+					if self.fluffy:
+						self.gravity = 2
+						dy = (tile[1].top - self.rect.bottom) // 10
+					else:
+						self.gravity = 1
+
+			if self.in_water:
 				if self.fluffy:
-					self.vel = 3
-					dy = -self.vel
 					self.gravity = 0
+					# dy = -1
 				else:
 					self.gravity = 2
-			else:
-				if self.fluffy:
-					self.vel = self.jump_height
-					self.gravity = 2
-					# dy = - (tile[1].top - self.rect.y)
+
+		# Checking collision with ramps
+		for ramp in world.ramp_list:
+			if self.rect.colliderect(ramp.rect):
+				rel_x = self.rect.x - ramp.rect.x
+				if ramp.type == 1:
+					height = TILE_SIZE - rel_x
+				elif ramp.type == 2:
+					height = rel_x + self.rect.width
+
+				height = min(height, TILE_SIZE)
+				height = max(height, 0)
+
+				y = ramp.rect.bottom - height - 1
+				if rel_x == 1:
+					y == self.rect.bottom + 1
+				self.rect.bottom = y
+
+				dy = 0
 
 		# Checking collision with walls
 		for tile in world.wall_list:
@@ -62,30 +127,14 @@ class Ball(pygame.sprite.Sprite):
 			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
 				# below ground
 				if self.vel > 0 and self.vel != self.jump_height:
-					dy = tile[1].bottom - self.rect.top
+					dy = 0
 					self.jump = False
+					self.vel = self.jump_height
 				# above ground
 				elif self.vel <= 0 or self.vel == self.jump_height:
 					dy = tile[1].top - self.rect.bottom
 
 		
-		for tile in groups[0]:
-			x = self.rect.x
-			if tile.rect.x > x:
-				delta = -5
-			else:
-				delta = 5
-			if tile.rect.colliderect(x + dx + delta, self.rect.y, self.size, self.size):
-				# left / right collision
-				dx = 0
-				self.inflate()
-				self.jump = True
-			if tile.rect.colliderect(x, self.rect.bottom + dy, self.size, self.size):
-				# above ground
-				if self.vel <= 0 or self.vel == self.jump_height:
-					dy = tile.rect.top - self.rect.bottom
-				self.inflate()
-				self.jump = True
 
 		return dx, dy
 
@@ -125,3 +174,4 @@ class Ball(pygame.sprite.Sprite):
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+		pygame.draw.rect(win, (255, 255, 255), self.rect, 1)

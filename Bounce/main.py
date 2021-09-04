@@ -27,7 +27,6 @@ spikes_group = pygame.sprite.Group()
 inflator_group = pygame.sprite.Group()
 deflator_group = pygame.sprite.Group()
 
-
 objects_groups = [spikes_group, inflator_group, deflator_group]
 collision_groups = [inflator_group, deflator_group]
 

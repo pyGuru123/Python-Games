@@ -14,8 +14,7 @@ class World:
 		self.objects_group = objects_group
 
 		self.wall_list = []
-		self.left_ramp = []
-		self.right_ramp = []
+		self.ramp_list = []
 		self.water_list = []
 
 	def generate_world(self, data, win):
@@ -31,9 +30,11 @@ class World:
 					if tile == 1:
 						self.wall_list.append(tile_data)
 					if tile in (4, 7):
-						self.left_ramp.append(tile_data)
+						ramp = Ramp(x*TILE_SIZE, y*TILE_SIZE, 1, tile_data)
+						self.ramp_list.append(ramp)
 					if tile in (5, 8):
-						self.right_ramp.append(tile_data)
+						ramp = Ramp(x*TILE_SIZE, y*TILE_SIZE, 2, tile_data)
+						self.ramp_list.append(ramp)
 					if tile == 6:
 						self.water_list.append(tile_data)
 					if tile in (11, 21):
@@ -50,17 +51,28 @@ class World:
 		for tile in self.wall_list:
 			tile[1][0] += screen_scroll
 			win.blit(tile[0], tile[1])
-		for tile in self.left_ramp:
-			tile[1][0] += screen_scroll
-			win.blit(tile[0], tile[1])
-		for tile in self.right_ramp:
-			tile[1][0] += screen_scroll
-			win.blit(tile[0], tile[1])
+		for ramp in self.ramp_list:
+			ramp.update(screen_scroll)
+			ramp.draw(win)
 		for tile in self.water_list:
 			tile[1][0] += screen_scroll
 			win.blit(tile[0], tile[1])
 
+class Ramp(pygame.sprite.Sprite):
+	def __init__(self, x, y, type_, tile_data):
+		super(Ramp, self).__init__()
 
+		self.type = type_
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
 
 class Spikes(pygame.sprite.Sprite):
 	def __init__(self, x, y, tile_data):
