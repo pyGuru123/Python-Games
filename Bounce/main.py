@@ -5,7 +5,7 @@ from player import Ball
 from world import World, load_level
 
 pygame.init()
-WIDTH, HEIGHT = 192, 192
+WIDTH, HEIGHT = 192, 208
 win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME)
 pygame.display.set_caption('Bounce')
 

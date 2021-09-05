@@ -12,28 +12,18 @@ class Enemy(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
-		self.speed = 2
-		if self.type == 1:
-			self.vel = (self.speed, 0)
-		elif self.type == 2:
-			self.vel = (0, self.speed)
-
-		self.dir = 1
+		self.vel = 2
 
 	def update(self, screen_scroll):
-		dx = (self.vel[0] * self.dir) + screen_scroll
-		dy = (self.vel[1] * self.dir)
+		if self.type == 1:
+			self.rect.x += self.vel + screen_scroll
+		elif self.type == 2:
+			self.rect.x += screen_scroll
+			self.rect.y += self.vel
 
-		for wall in self.wall_list:
-			if self.type == 1 and wall[1].colliderect(self.rect.x + dx, self.rect.y, self.size, self.size):
-				self.dir *= -1
-				dx = 0
-			if self.type == 2 and wall[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
-				self.dir *= -1
-				dy = 0
-				
-		self.rect.x += dx
-		self.rect.y += dy
+		for wall in self.wall_list:			
+			if wall[1].colliderect(self.rect):
+				self.vel *= -1
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)

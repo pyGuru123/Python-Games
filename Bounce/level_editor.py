@@ -168,7 +168,6 @@ while running:
 		if os.path.exists(f'levels/level{current_level}_data'):
 			pickle_in = open(f'levels/level{current_level}_data', 'rb')
 			data = pickle.load(pickle_in)
-			print(len(data[0]))
 			world_data = [[0 for j in range(MAX_COLS)] for i in range(ROWS)]
 			for y in range(ROWS):
 				for x in range(MAX_COLS):
