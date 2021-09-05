@@ -26,8 +26,9 @@ BLUE = (175, 207, 240)
 spikes_group = pygame.sprite.Group()
 inflator_group = pygame.sprite.Group()
 deflator_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 
-objects_groups = [spikes_group, inflator_group, deflator_group]
+objects_groups = [spikes_group, inflator_group, deflator_group, enemy_group]
 collision_groups = [inflator_group, deflator_group]
 
 # RESET ***********************************************************************
@@ -38,6 +39,7 @@ def reset_level(level):
 	spikes_group.empty()
 	inflator_group.empty()
 	deflator_group.empty()
+	enemy_group.empty()
 
 	# LOAD LEVEL WORLD
 
@@ -102,6 +104,8 @@ while running:
 	inflator_group.draw(win)
 	deflator_group.update(screen_scroll)
 	deflator_group.draw(win)
+	enemy_group.update(screen_scroll)
+	enemy_group.draw(win)
 
 	screen_scroll = 0
 	p.update(moving_left, moving_right, w, collision_groups)
@@ -115,6 +119,12 @@ while running:
 			level_scroll += dx
 
 	if pygame.sprite.spritecollide(p, spikes_group, False):
+		world_data, level_length, w = reset_level(level)
+		p, moving_left, moving_right = reset_player()
+		screen_scroll = 0
+		level_scroll = 0
+
+	if pygame.sprite.spritecollide(p, enemy_group, False):
 		world_data, level_length, w = reset_level(level)
 		p, moving_left, moving_right = reset_player()
 		screen_scroll = 0

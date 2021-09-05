@@ -1,7 +1,9 @@
 import pygame
 import pickle
 
-NUM_TILES = 26
+from enemies import Enemy
+
+NUM_TILES = 28
 TILE_SIZE = 16
 
 img_list = []
@@ -46,6 +48,12 @@ class World:
 					if tile in (12, 13, 22):
 						deflator = Deflator(x*TILE_SIZE, y*TILE_SIZE, tile_data)
 						self.objects_group[2].add(deflator)
+					if tile == 27:
+						enemy = Enemy(x*TILE_SIZE, y*TILE_SIZE, 1, self.wall_list)
+						self.objects_group[3].add(enemy)
+					if tile == 28:
+						enemy = Enemy(x*TILE_SIZE, y*TILE_SIZE, 2, self.wall_list)
+						self.objects_group[3].add(enemy)
 
 	def draw_world(self, win, screen_scroll):
 		for tile in self.wall_list:
