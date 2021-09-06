@@ -42,6 +42,9 @@ class World:
 					if tile in (11, 21):
 						spike = Spikes(x*TILE_SIZE, y*TILE_SIZE, tile_data)
 						self.objects_group[0].add(spike)
+					if tile == 16:
+						exit = Exit(x*TILE_SIZE, y*TILE_SIZE)
+						self.objects_group[4].add(exit)
 					if tile == 23:
 						inflator = Inflator(x*TILE_SIZE, y*TILE_SIZE, tile_data)
 						self.objects_group[1].add(inflator)
@@ -129,7 +132,34 @@ class Deflator(pygame.sprite.Sprite):
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
+class Exit(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Exit, self).__init__()
 
+		self.image = pygame.image.load('Assets/Exit/tile0.png')
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.index = 0
+		self.open = False
+		self.counter = 0
+
+	def update(self, screen_scroll):
+		if self.open:
+			self.counter += 1
+			if self.counter % 10 == 0:
+				if self.index < 11:
+					self.index += 1
+					self.image = pygame.image.load(f'Assets/Exit/tile{self.index}.png')
+
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+# Level Loading Function ******************************************************
 
 def load_level(level):
 	file = f'Levels/level{level}_data'

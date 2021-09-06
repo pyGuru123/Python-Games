@@ -23,27 +23,21 @@ class Ball(pygame.sprite.Sprite):
 		self.jump = False
 		self.fluffy = False
 		self.in_water = False
-		self.on_ramp = False
 
 	def inflate(self):
 		if not self.fluffy:
 			x, y = self.rect.center
 			self.image = self.inflated_img
 			self.rect = self.image.get_rect(center=(x,y))
-
 			self.fluffy = True
-			self.jump = True
-			self.vel = -2
-			self.gravity = 0
 
 	def deflate(self):
 		if self.fluffy:
 			x, y = self.rect.center
-			self.fluffy = False
 			self.image = self.original_img
 			self.rect = self.image.get_rect(center=(x,y))
 			self.vel = self.jump_height
-			self.gravity = 1
+			self.fluffy = False
 
 	def check_collision(self, dx, dy, world, groups):
 		self.size = self.image.get_width()
@@ -84,30 +78,32 @@ class Ball(pygame.sprite.Sprite):
 					self.deflate()
 
 		# Checking collision with water tiles **************************************
-		water_collision = False
+
 		for tile in world.water_list:
 			if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.size, self.size):
 				self.in_water = True
-				water_collision = True
+				t = tile
+				break
 
 			elif tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
 				self.in_water = True
-				water_collision = True
+				t = tile
+				break
+		else:
+			self.in_water = False
 
+		if self.in_water:
+			if self.fluffy:
+				dy = (t[1].top - self.rect.bottom) // 8
+				self.gravity = 2
 			else:
-				if self.in_water:
-					self.in_water = False
+				self.gravity = 2
+		else:
+			if self.fluffy:
+				self.gravity = 2
+			else:
+				self.gravity = 1
 
-					if self.fluffy:
-						self.gravity = 2
-						dy = (tile[1].top - self.rect.bottom) // 8
-					else:
-						self.gravity = 2
-
-		# if not water_collision:
-		# 	self.in_water = False
-		# 	if not self.fluffy:
-		# 		self.gravity = 1
 
 		# Checking collision with ramps ********************************************
 		for ramp in world.ramp_list:
@@ -122,7 +118,6 @@ class Ball(pygame.sprite.Sprite):
 				height = max(height, 1)
 
 				y = ramp.rect.bottom - height - 2
-				print(y)
 				self.rect.bottom = y
 
 				dy = 0
@@ -184,4 +179,3 @@ class Ball(pygame.sprite.Sprite):
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
-		pygame.draw.rect(win, (255, 255, 255), self.rect, 1)
