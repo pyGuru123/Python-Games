@@ -3,6 +3,7 @@ import pygame
 
 from player import Ball
 from world import World, load_level
+from texts import Message
 
 pygame.init()
 WIDTH, HEIGHT = 192, 212
@@ -20,6 +21,20 @@ TILE_SIZE = 16
 # COLORS **********************************************************************
 
 BLUE = (175, 207, 240)
+BLUE2 = (0, 0, 255)
+WHITE = (255, 255, 255)
+
+# FONTS ***********************************************************************
+
+health_font = "Fonts/ARCADECLASSIC.TTF"
+
+
+health_text = Message(40, WIDTH + 10, 19, "x3", health_font, WHITE, win)
+
+# LOADING IMAGES **************************************************************
+
+ball_image = pygame.image.load('Assets/ball.png')
+
 
 # GROUPS **********************************************************************
 
@@ -28,8 +43,11 @@ inflator_group = pygame.sprite.Group()
 deflator_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 exit_group = pygame.sprite.Group()
+checkpoint_group = pygame.sprite.Group()
+health_group = pygame.sprite.Group()
 
-objects_groups = [spikes_group, inflator_group, deflator_group, enemy_group, exit_group]
+objects_groups = [spikes_group, inflator_group, deflator_group, enemy_group, exit_group, 
+					checkpoint_group, health_group]
 collision_groups = [inflator_group, deflator_group]
 
 # RESET ***********************************************************************
@@ -37,11 +55,8 @@ collision_groups = [inflator_group, deflator_group]
 level = 1
 
 def reset_level_data(level):
-	spikes_group.empty()
-	inflator_group.empty()
-	deflator_group.empty()
-	enemy_group.empty()
-	exit_group.empty()
+	for group in objects_groups:
+		group.empty()
 
 	# LOAD LEVEL WORLD
 
@@ -51,24 +66,34 @@ def reset_level_data(level):
 
 	return world_data, level_length, w
 
-def reset_player_data():
-	p = Ball(WIDTH//2, 50)
+def reset_player_data(level):
+	if level == 1:
+		x = WIDTH // 2
+		y = 50
+	if level == 2:
+		x = 64
+		y = 50
+
+	p = Ball(x, y)
 	moving_left = False
 	moving_right = False
 
 	return p, moving_left, moving_right
 
 world_data, level_length, w = reset_level_data(level)
-p, moving_left, moving_right = reset_player_data()
+p, moving_left, moving_right = reset_player_data(level)
 
 # VARIABLES *******************************************************************
 
 moving_left = False
 moving_right = False
+SCROLL_THRES = 80
 screen_scroll = 0
 level_scroll = 0
-SCROLL_THRES = 80
 reset_level = False
+MAX_LEVEL = 2
+checkpoint = None
+health = 3
 
 running = True
 while running:
@@ -99,16 +124,21 @@ while running:
 			if event.key == pygame.K_RIGHT:
 				moving_right = False
 
-	w.draw_world(win, screen_scroll)
+	w.update(screen_scroll)
+	w.draw(win)
 
 	spikes_group.update(screen_scroll)
 	spikes_group.draw(win)
+	health_group.update(screen_scroll)
+	health_group.draw(win)
 	inflator_group.update(screen_scroll)
 	inflator_group.draw(win)
 	deflator_group.update(screen_scroll)
 	deflator_group.draw(win)
 	exit_group.update(screen_scroll)
 	exit_group.draw(win)
+	checkpoint_group.update(screen_scroll)
+	checkpoint_group.draw(win)
 	enemy_group.update(screen_scroll)
 	enemy_group.draw(win)
 
@@ -123,26 +153,64 @@ while running:
 			screen_scroll = -dx
 			level_scroll += dx
 
-	exit = exit_group.sprites()[0]
-	if not exit.open:
-		if abs(p.rect.x - exit.rect.x) <= 80:
-			exit.open = True
+	if len(exit_group) > 0:
+		exit = exit_group.sprites()[0]
+		if not exit.open:
+			if abs(p.rect.x - exit.rect.x) <= 80:
+				exit.open = True
+
+		if p.rect.colliderect(exit.rect) and exit.index == 11:
+			checkpoint = None
+			if level < MAX_LEVEL:
+				level += 1
+				reset_level = True
+
+	cp = pygame.sprite.spritecollide(p, checkpoint_group, False)
+	if cp:
+		checkpoint = cp[0]
+		if not checkpoint.catched:
+			checkpoint.catched = True
+			checkpoint_pos = p.rect.center
+			checkpoint_screen_scroll = screen_scroll
+			checkpoint_level_scroll = level_scroll
 
 	if pygame.sprite.spritecollide(p, spikes_group, False):
 		reset_level = True
+
+	if pygame.sprite.spritecollide(p, health_group, True):
+		health += 1
 
 	if pygame.sprite.spritecollide(p, enemy_group, False):
 		reset_level = True
 
 	if reset_level:
-		world_data, level_length, w = reset_level_data(level)
-		p, moving_left, moving_right = reset_player_data()
-		screen_scroll = 0
-		level_scroll = 0
-		reset_level = False
+		if health > 0:
+			if checkpoint:
+				checkpoint_dx = level_scroll - checkpoint_level_scroll
+				w.update(checkpoint_dx)
+				for group in objects_groups:
+					group.update(checkpoint_dx)
+				p.rect.center = checkpoint_pos
+				level_scroll = checkpoint_level_scroll
+			else:
+				world_data, level_length, w = reset_level_data(level)
+				p, moving_left, moving_right = reset_player_data(level)
+				level_scroll = 0
 
+			screen_scroll = 0
+			reset_level = False
+			health -= 1
+		else:
+			running = False
 
-	pygame.draw.rect(win, (255, 255,255), (0, 0, WIDTH, HEIGHT), 2, border_radius=5)
+	# Drawing info bar
+	pygame.draw.rect(win, (25, 25, 25), (0, HEIGHT-20, WIDTH, 20))
+	pygame.draw.rect(win, (255, 255,255), (0, 0, WIDTH, HEIGHT), 1, border_radius=5)
+	pygame.draw.rect(win, (255, 255,255), (0, 0, WIDTH, WIDTH), 2, border_radius=5)
+
+	win.blit(ball_image, (5, WIDTH + 2))
+	health_text.update(f'x{health}', shadow=False)
+
 	clock.tick(FPS)
 	pygame.display.update()
 

@@ -128,8 +128,8 @@ class Ball(pygame.sprite.Sprite):
 				# left / right collision
 				dx = 0
 			if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.size, self.size):
-				# below ground
 				if not self.fluffy:
+					# below ground
 					if self.vel > 0 and self.vel != self.jump_height:
 						dy = 0
 						self.jump = False

@@ -45,6 +45,12 @@ class World:
 					if tile == 16:
 						exit = Exit(x*TILE_SIZE, y*TILE_SIZE)
 						self.objects_group[4].add(exit)
+					if tile == 19:
+						checkpoint = Checkpoint(x*TILE_SIZE, y*TILE_SIZE)
+						self.objects_group[5].add(checkpoint)
+					if tile == 20:
+						life = Life(x*TILE_SIZE, y*TILE_SIZE, tile_data)
+						self.objects_group[6].add(life)
 					if tile == 23:
 						inflator = Inflator(x*TILE_SIZE, y*TILE_SIZE, tile_data)
 						self.objects_group[1].add(inflator)
@@ -58,16 +64,54 @@ class World:
 						enemy = Enemy(x*TILE_SIZE, y*TILE_SIZE, 2, self.wall_list)
 						self.objects_group[3].add(enemy)
 
-	def draw_world(self, win, screen_scroll):
+	def update(self, screen_scroll):
 		for tile in self.wall_list:
 			tile[1][0] += screen_scroll
-			win.blit(tile[0], tile[1])
 		for ramp in self.ramp_list:
 			ramp.update(screen_scroll)
-			ramp.draw(win)
 		for tile in self.water_list:
 			tile[1][0] += screen_scroll
+
+	def draw(self, win):
+		for tile in self.wall_list:
 			win.blit(tile[0], tile[1])
+		for ramp in self.ramp_list:
+			ramp.draw(win)
+		for tile in self.water_list:
+			win.blit(tile[0], tile[1])
+
+
+class Asset(pygame.sprite.Sprite):
+	def __init__(self, x, y, tile_data):
+		super(Asset, self).__init__()
+
+		self.image = tile_data[0]
+		self.rect = tile_data[1]
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, screen_scroll):
+		self.rect.x += screen_scroll
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Spikes(Asset):
+	def __init__(self, x, y, tile_data):
+		super(Spikes, self).__init__(x, y, tile_data)
+
+class Inflator(Asset):
+	def __init__(self, x, y, tile_data):
+		super(Inflator, self).__init__(x, y, tile_data)
+
+class Deflator(Asset):
+	def __init__(self, x, y, tile_data):
+		super(Deflator, self).__init__(x, y, tile_data)
+
+class Life(Asset):
+	def __init__(self, x, y, tile_data):
+		super(Life, self).__init__(x, y, tile_data)
+
 
 class Ramp(pygame.sprite.Sprite):
 	def __init__(self, x, y, type_, tile_data):
@@ -85,52 +129,28 @@ class Ramp(pygame.sprite.Sprite):
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
-class Spikes(pygame.sprite.Sprite):
-	def __init__(self, x, y, tile_data):
-		super(Spikes, self).__init__()
+class Checkpoint(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Checkpoint, self).__init__()
 
-		self.image = tile_data[0]
-		self.rect = tile_data[1]
+		self.checkpoint_orig = pygame.image.load('Assets/checkpoint1.png')
+		self.checkpoint_catched = pygame.image.load('Assets/checkpoint2.png')
+		self.image = self.checkpoint_orig
+		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
 
+		self.catched = False
+
 	def update(self, screen_scroll):
+		if self.catched:
+			self.image = self.checkpoint_catched
+
 		self.rect.x += screen_scroll
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
-
-class Inflator(pygame.sprite.Sprite):
-	def __init__(self, x, y, tile_data):
-		super(Inflator, self).__init__()
-
-		self.image = tile_data[0]
-		self.rect = tile_data[1]
-		self.rect.x = x
-		self.rect.y = y
-
-	def update(self, screen_scroll):
-		self.rect.x += screen_scroll
-
-	def draw(self, win):
-		win.blit(self.image, self.rect)
-
-
-class Deflator(pygame.sprite.Sprite):
-	def __init__(self, x, y, tile_data):
-		super(Deflator, self).__init__()
-
-		self.image = tile_data[0]
-		self.rect = tile_data[1]
-		self.rect.x = x
-		self.rect.y = y
-
-	def update(self, screen_scroll):
-		self.rect.x += screen_scroll
-
-	def draw(self, win):
-		win.blit(self.image, self.rect)
 
 class Exit(pygame.sprite.Sprite):
 	def __init__(self, x, y):
@@ -148,7 +168,7 @@ class Exit(pygame.sprite.Sprite):
 	def update(self, screen_scroll):
 		if self.open:
 			self.counter += 1
-			if self.counter % 10 == 0:
+			if self.counter % 5 == 0:
 				if self.index < 11:
 					self.index += 1
 					self.image = pygame.image.load(f'Assets/Exit/tile{self.index}.png')

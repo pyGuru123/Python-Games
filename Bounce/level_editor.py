@@ -114,8 +114,7 @@ while running:
 	for index, i in enumerate(button_list):
 		if i.draw(win):
 			current_tile = index
-			print(current_tile)
-
+			
 	# highlight current tile
 	pygame.draw.rect(win, GREEN, button_list[current_tile].rect, 3)
 
