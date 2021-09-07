@@ -85,7 +85,7 @@ button_list = []
 b_col = 0
 b_row = 0
 for i in range(len(img_list)):
-	t_button = button.Button(SCREEN_WIDTH + (30 * b_col + 20), 30 * b_row + 20, img_list[i], 1)
+	t_button = button.Button(img_list[i], False, SCREEN_WIDTH + (30 * b_col + 20), 30 * b_row + 20,)
 	button_list.append(t_button)
 
 	b_col += 1
@@ -93,11 +93,11 @@ for i in range(len(img_list)):
 		b_row += 1
 		b_col = 0
 
-# #create load and save buttons
-load_button = button.Button(SCREEN_WIDTH + 200, SCREEN_HEIGHT - 35, load_img, 0.8)
-save_button = button.Button(SCREEN_WIDTH + 310, SCREEN_HEIGHT - 35, save_img, 0.8)
-left_button = button.Button(SCREEN_WIDTH + 30, SCREEN_HEIGHT - 35, left_img, 0.9)
-right_button = button.Button(SCREEN_WIDTH + 140, SCREEN_HEIGHT - 35, right_img, 0.9)
+#create load and save buttons
+load_button = button.Button(load_img, False, SCREEN_WIDTH + 200, SCREEN_HEIGHT - 35)
+save_button = button.Button(save_img, False, SCREEN_WIDTH + 310, SCREEN_HEIGHT - 35)
+left_button = button.Button(left_img, False, SCREEN_WIDTH + 30, SCREEN_HEIGHT - 35)
+right_button = button.Button(right_img, False, SCREEN_WIDTH + 140, SCREEN_HEIGHT - 35)
 
 
 running = True

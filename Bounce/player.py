@@ -115,7 +115,7 @@ class Ball(pygame.sprite.Sprite):
 					height = rel_x + self.rect.width
 
 				height = min(height, TILE_SIZE)
-				height = max(height, 1)
+				height = max(height, 0)
 
 				y = ramp.rect.bottom - height - 2
 				self.rect.bottom = y
