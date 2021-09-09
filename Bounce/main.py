@@ -3,8 +3,8 @@ import pygame
 
 from player import Ball
 from world import World, load_level
-from texts import Message
-from button import Button
+from texts import Text, Message
+from button import Button, LevelButton
 
 pygame.init()
 WIDTH, HEIGHT = 192, 212
@@ -18,6 +18,7 @@ FPS = 30
 ROWS = 12
 MAX_COLS = 150
 TILE_SIZE = 16
+MAX_LEVEL = 4
 
 # COLORS **********************************************************************
 
@@ -29,8 +30,9 @@ WHITE = (255, 255, 255)
 
 health_font = "Fonts/ARCADECLASSIC.TTF"
 
-
+level_text = Text(health_font, 24)
 health_text = Message(40, WIDTH + 10, 19, "x3", health_font, WHITE, win)
+select_level_text = Message(WIDTH//2, 20, 24, "Select  Level", health_font, BLUE2, win)
 
 # SOUNDS **********************************************************************
 
@@ -50,6 +52,10 @@ splash_img = pygame.transform.scale(pygame.image.load('Assets/splash_logo.png'),
 bounce_img = pygame.image.load('Assets/menu_logo.png')
 game_lost_img = pygame.image.load('Assets/lose.png')
 game_lost_img = pygame.transform.scale(game_lost_img, (WIDTH//2, 80))
+level_locked_img = pygame.image.load('Assets/level_locked.png')
+level_locked_img = pygame.transform.scale(level_locked_img, (40, 40))
+level_unlocked_img = pygame.image.load('Assets/level_unlocked.png')
+level_unlocked_img = pygame.transform.scale(level_unlocked_img, (40, 40))
 
 
 play_img = pygame.image.load('Assets/play.png')
@@ -58,11 +64,24 @@ menu_img = pygame.image.load('Assets/menu.png')
 sound_on_img = pygame.image.load('Assets/SoundOnBtn.png')
 sound_off_img = pygame.image.load('Assets/SoundOffBtn.png')
 
+
+# BUTTONS *********************************************************************
+
 play_btn = Button(play_img, False, 45, 130)
 sound_btn = Button(sound_on_img, False, 45, 170)
 restart_btn = Button(restart_img, False, 45, 130)
 menu_btn = Button(menu_img, False, 45, 170)
 
+# LEVEL TEXT & BUTTONS ********************************************************
+
+level_btns = []
+for level in range(MAX_LEVEL):
+	text = level_text.render(f'{level+1}', (255, 255, 255))
+	r = level // 3
+	c = level % 3
+	print(r, c)
+	btn = LevelButton(level_locked_img, (40, 40), 20 + c * 55, 50 + r * 55, text)
+	level_btns.append(btn)
 
 # GROUPS **********************************************************************
 
@@ -116,9 +135,9 @@ moving_right = False
 SCROLL_THRES = 80
 screen_scroll = 0
 level_scroll = 0
-level = 4
+level = 1
+next_level = False
 reset_level = False
-MAX_LEVEL = 4
 
 checkpoint = None
 health = 3
@@ -127,6 +146,7 @@ sound_on = True
 
 logo_page = True
 home_page = False
+level_page = False
 game_page = False
 restart_page = False
 
@@ -172,13 +192,8 @@ while running:
 		if play_btn.draw(win):
 			click_fx.play()
 			home_page = False
-			game_page = True
-			screen_scroll = 0
-			level_scroll = 0
-			health = 3
-			world_data, level_length, w = reset_level_data(level)
-			p, moving_left, moving_right = reset_player_data(level)
-
+			level_page = True
+			
 		if sound_btn.draw(win):
 			click_fx.play()
 			sound_on = not sound_on
@@ -190,6 +205,25 @@ while running:
 				sound_btn.update_image(sound_off_img)
 				pygame.mixer.music.stop()
 
+	if level_page:
+		select_level_text.update(shadow=False)
+		for index, btn in enumerate(level_btns):
+			if index < level:
+				if not btn.unlocked:
+					btn.unlocked = True
+					btn.update_image(level_unlocked_img)
+			if btn.draw(win):
+				if index < level:
+					click_fx.play()
+					level_page = False
+					game_page = True
+					level = index + 1
+					screen_scroll = 0
+					level_scroll = 0
+					health = 3
+					world_data, level_length, w = reset_level_data(level)
+					p, moving_left, moving_right = reset_player_data(level)
+
 	if restart_page:
 		win.blit(game_lost_img, (45,20))
 		if restart_btn.draw(win):
@@ -199,6 +233,7 @@ while running:
 			level_scroll = 0
 			screen_scroll = 0
 			health = 3
+			checkpoint = None
 			restart_page = False
 			game_page = True
 
@@ -241,7 +276,7 @@ while running:
 		if len(exit_group) > 0:
 			exit = exit_group.sprites()[0]
 			if not exit.open:
-				if abs(p.rect.x - exit.rect.x) <= 80:
+				if abs(p.rect.x - exit.rect.x) <= 80 and len(health_group) == 0:
 					exit.open = True
 
 			if p.rect.colliderect(exit.rect) and exit.index == 11:
@@ -279,6 +314,8 @@ while running:
 					world_data, level_length, w = reset_level_data(level)
 					p, moving_left, moving_right = reset_player_data(level)
 					level_scroll = 0
+					health = 3
+					checkpoint = None
 					next_level = False
 
 				elif checkpoint:
