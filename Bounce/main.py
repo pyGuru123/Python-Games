@@ -34,6 +34,7 @@ level_text = Text(health_font, 24)
 health_text = Message(40, WIDTH + 10, 19, "x3", health_font, WHITE, win)
 select_level_text = Message(WIDTH//2, 20, 24, "Select  Level", health_font, BLUE2, win)
 current_level_text = Message(WIDTH - 40, WIDTH + 10, 20, "Level 1", health_font, WHITE, win)
+you_win = Message(WIDTH //2, HEIGHT//2, 40, "You  Win", health_font, BLUE2, win)
 
 # SOUNDS **********************************************************************
 
@@ -64,6 +65,7 @@ restart_img = pygame.image.load('Assets/restart.png')
 menu_img = pygame.image.load('Assets/menu.png')
 sound_on_img = pygame.image.load('Assets/SoundOnBtn.png')
 sound_off_img = pygame.image.load('Assets/SoundOffBtn.png')
+game_won_img = pygame.image.load('Assets/game won.png')
 
 
 # BUTTONS *********************************************************************
@@ -126,6 +128,8 @@ def reset_player_data(level):
 		x, y = 48, 50
 	if level == 7:
 		x, y = 78, 80
+	if level == 8:
+		x, y = 112,100
 
 	p = Ball(x, y)
 	moving_left = False
@@ -155,6 +159,7 @@ home_page = False
 level_page = False
 game_page = False
 restart_page = False
+win_page = False
 
 running = True
 while running:
@@ -248,6 +253,15 @@ while running:
 			home_page = True
 			restart_page = False
 
+	if win_page:
+		win.blit(game_won_img, (45, 20))
+		you_win.update()
+		if menu_btn.draw(win):
+			click_fx.play()
+			home_page = True
+			win_page = False
+			restart_page = False
+
 
 	if game_page:
 		w.update(screen_scroll)
@@ -288,11 +302,14 @@ while running:
 			if p.rect.colliderect(exit.rect) and exit.index == 11:
 				checkpoint = None
 				checkpoint_fx.play()
+				level += 1
 				if level < MAX_LEVEL:
-					level += 1
 					checkpoint = False
 					reset_level = True
 					next_level = True
+				else:
+					checkpoint = None
+					win_page = True
 
 		cp = pygame.sprite.spritecollide(p, checkpoint_group, False)
 		if cp:
