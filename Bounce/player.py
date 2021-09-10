@@ -13,6 +13,8 @@ class Ball(pygame.sprite.Sprite):
 		self.inflated_img = pygame.image.load('Assets/ball2.png')
 		self.image = self.original_img
 		self.rect = self.image.get_rect(center=(x, y))
+		self.rect.x = x
+		self.rect.y = y
 
 		self.jump_height = 15
 		self.speed = 3

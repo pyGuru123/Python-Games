@@ -94,8 +94,8 @@ for i in range(len(img_list)):
 		b_col = 0
 
 #create load and save buttons
-load_button = button.Button(load_img, False, SCREEN_WIDTH + 200, SCREEN_HEIGHT - 35)
-save_button = button.Button(save_img, False, SCREEN_WIDTH + 310, SCREEN_HEIGHT - 35)
+load_button = button.Button(load_img, (56, 30), SCREEN_WIDTH + 220, SCREEN_HEIGHT - 35)
+save_button = button.Button(save_img, (56, 30), SCREEN_WIDTH + 310, SCREEN_HEIGHT - 35)
 left_button = button.Button(left_img, False, SCREEN_WIDTH + 30, SCREEN_HEIGHT - 35)
 right_button = button.Button(right_img, False, SCREEN_WIDTH + 140, SCREEN_HEIGHT - 35)
 

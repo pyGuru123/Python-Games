@@ -18,7 +18,7 @@ FPS = 30
 ROWS = 12
 MAX_COLS = 150
 TILE_SIZE = 16
-MAX_LEVEL = 4
+MAX_LEVEL = 8
 
 # COLORS **********************************************************************
 
@@ -33,6 +33,7 @@ health_font = "Fonts/ARCADECLASSIC.TTF"
 level_text = Text(health_font, 24)
 health_text = Message(40, WIDTH + 10, 19, "x3", health_font, WHITE, win)
 select_level_text = Message(WIDTH//2, 20, 24, "Select  Level", health_font, BLUE2, win)
+current_level_text = Message(WIDTH - 40, WIDTH + 10, 20, "Level 1", health_font, WHITE, win)
 
 # SOUNDS **********************************************************************
 
@@ -79,7 +80,6 @@ for level in range(MAX_LEVEL):
 	text = level_text.render(f'{level+1}', (255, 255, 255))
 	r = level // 3
 	c = level % 3
-	print(r, c)
 	btn = LevelButton(level_locked_img, (40, 40), 20 + c * 55, 50 + r * 55, text)
 	level_btns.append(btn)
 
@@ -113,13 +113,19 @@ def reset_level_data(level):
 
 def reset_player_data(level):
 	if level == 1:
-		x, y = WIDTH // 2, 50
-	if level == 2:
 		x, y = 64, 50
+	if level == 2:
+		x, y = 65, 50
 	if level == 3:
 		x, y = 64, 50
 	if level == 4:
 		x, y = 63, 50
+	if level == 5:
+		x, y = 64, 50
+	if level == 6:
+		x, y = 48, 50
+	if level == 7:
+		x, y = 78, 80
 
 	p = Ball(x, y)
 	moving_left = False
@@ -347,6 +353,7 @@ while running:
 
 		win.blit(ball_image, (5, WIDTH + 2))
 		health_text.update(f'x{health}', shadow=False)
+		current_level_text.update(f'Level {level}', shadow=False)
 
 	clock.tick(FPS)
 	pygame.display.update()

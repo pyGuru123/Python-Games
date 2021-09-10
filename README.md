@@ -15,6 +15,9 @@ and pygame library.
 * ### [Asteroids](https://github.com/pyGuru123/Python-Games/tree/master/Asteroids)
 	> Asteroids is an implementaion of Asteroids game in pygame.
 
+* ### [Bounce](https://github.com/pyGuru123/Python-Games/tree/master/Bounce)
+	> Bounce is an clone of the original Nokia's Bounce game
+
 * ### [Connected](https://github.com/pyGuru123/Python-Games/tree/master/Connected)
 	> Connected is a simple endless hypercasual game.
 
