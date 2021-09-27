@@ -69,19 +69,34 @@ class Enemy(pygame.sprite.Sprite):
 	def __init__(self, x, y, type_):
 		super(Enemy, self).__init__()
 
+		self.type == type_
 		self.image_list = []
 		for i in range(2):
 			if type_ == 1:
-				img = pygame.image.load(f'Assets/chopper1-{i+1}.png')
-				img = pygame.transform.scale(img, (100, 136))
+				img = pygame.image.load(f'Assets/Enemies/enemy1-{i+1}.png')
 			if type_ == 2:
-				img = pygame.image.load(f'Assets/chopper2-{i+1}.png')
-				img = pygame.transform.scale(img, (100, 114))
+				img = pygame.image.load(f'Assets/Enemies/enemy2-{i+1}.png')
+			if type_ == 3:
+				img = pygame.image.load(f'Assets/Enemies/enemy3-{i+1}.png')
+			if type_ == 4:
+				img = pygame.image.load(f'Assets/Enemies/enemy4-{i+1}.png')
+			if type_ == 5:
+				img = pygame.image.load(f'Assets/Choppers/chopper1-{i+1}.png')
+			if type_ == 6:
+				img = pygame.image.load(f'Assets/Choppers/chopper2-{i+1}.png')
+
+			w, h = img.get_width(), img.get_height()
+			height = (100 * h) // w
+			img = pygame.transform.scale(img, (100, height))
+
 			self.image_list.append(img)
 
 		self.index = 0
 		self.image = self.image_list[self.index]
 		self.rect = self.image.get_rect(center=(x, y))
+
+		self.frame_dict = {1:3, 2:3, 3:3, 4:3, 5:5, 6:4}
+		self.frame_fps = self.frame_dict[type_]
 
 		self.counter = 0
 		self.speed = 2
@@ -95,7 +110,7 @@ class Enemy(pygame.sprite.Sprite):
 			self.kill()
 
 		self.counter += 1
-		if self.counter >= 5:
+		if self.counter >= self.frame_fps:
 			self.index = (self.index + 1) % len(self.image_list)
 			self.image = self.image_list[self.index]
 			self.counter = 0

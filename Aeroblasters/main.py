@@ -27,7 +27,7 @@ BLUE = (30, 144,255)
 
 bg = Background(win)
 p = Player(144, HEIGHT - 100)
-e = Enemy(144, 100, 2)
+e = Enemy(144, 100, 6)
 
 moving_left = False
 moving_right = False
