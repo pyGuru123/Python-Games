@@ -63,3 +63,42 @@ class Player:
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+
+
+class Enemy(pygame.sprite.Sprite):
+	def __init__(self, x, y, type_):
+		super(Enemy, self).__init__()
+
+		self.image_list = []
+		for i in range(2):
+			if type_ == 1:
+				img = pygame.image.load(f'Assets/chopper1-{i+1}.png')
+				img = pygame.transform.scale(img, (100, 136))
+			if type_ == 2:
+				img = pygame.image.load(f'Assets/chopper2-{i+1}.png')
+				img = pygame.transform.scale(img, (100, 114))
+			self.image_list.append(img)
+
+		self.index = 0
+		self.image = self.image_list[self.index]
+		self.rect = self.image.get_rect(center=(x, y))
+
+		self.counter = 0
+		self.speed = 2
+
+	def shoot(self):
+		pass
+
+	def update(self):
+		self.rect.y += self.speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+		self.counter += 1
+		if self.counter >= 5:
+			self.index = (self.index + 1) % len(self.image_list)
+			self.image = self.image_list[self.index]
+			self.counter = 0
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)

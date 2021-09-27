@@ -1,7 +1,7 @@
 # Aeroblasters
 
 import pygame
-from objects import Background, Player
+from objects import Background, Player, Enemy
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -27,6 +27,7 @@ BLUE = (30, 144,255)
 
 bg = Background(win)
 p = Player(144, HEIGHT - 100)
+e = Enemy(144, 100, 2)
 
 moving_left = False
 moving_right = False
@@ -66,6 +67,8 @@ while running:
 
 	p.update(moving_left, moving_right)
 	p.draw(win)
+	e.update()
+	e.draw(win)
 
 	pygame.draw.rect(win, WHITE, (0,0, WIDTH, HEIGHT), 5, border_radius=4)
 	clock.tick(FPS)
