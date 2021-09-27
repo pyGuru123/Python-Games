@@ -47,7 +47,18 @@ while running:
 			if event.key == pygame.K_RIGHT:
 				moving_right = True
 
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			x = event.pos[0]
+			if x <= WIDTH // 2:
+				moving_left = True
+			if x >= WIDTH // 2:
+				moving_right = True
+
 		if event.type == pygame.KEYUP:
+			moving_left = False
+			moving_right = False
+
+		if event.type == pygame.MOUSEBUTTONUP:
 			moving_left = False
 			moving_right = False
 

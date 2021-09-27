@@ -33,9 +33,7 @@ class Background:
 
 class Player:
 	def __init__(self, x, y):
-		self.x = x
-		self.y = y
-
+		
 		self.image_list = []
 		for i in range(2):
 			img = pygame.image.load(f'Assets/player{i+1}.png')
