@@ -1,7 +1,7 @@
 # Aeroblasters
 
 import pygame
-from objects import Background
+from objects import Background, Player
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -16,7 +16,7 @@ else:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 
 clock = pygame.time.Clock()
-FPS = 30
+FPS = 60
 
 # COLORS **********************************************************************
 
@@ -26,6 +26,10 @@ BLUE = (30, 144,255)
 # Loading Images
 
 bg = Background(win)
+p = Player(144, HEIGHT - 100)
+
+moving_left = False
+moving_right = False
 
 running = True
 while running:
@@ -37,7 +41,20 @@ while running:
 			if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
 				running = False
 
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_LEFT:
+				moving_left = True
+			if event.key == pygame.K_RIGHT:
+				moving_right = True
+
+		if event.type == pygame.KEYUP:
+			moving_left = False
+			moving_right = False
+
 	bg.update(3)
+
+	p.update(moving_left, moving_right)
+	p.draw(win)
 
 	pygame.draw.rect(win, WHITE, (0,0, WIDTH, HEIGHT), 5, border_radius=4)
 	clock.tick(FPS)
