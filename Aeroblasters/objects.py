@@ -69,7 +69,7 @@ class Enemy(pygame.sprite.Sprite):
 	def __init__(self, x, y, type_):
 		super(Enemy, self).__init__()
 
-		self.type == type_
+		self.type = type_
 		self.image_list = []
 		for i in range(2):
 			if type_ == 1:
@@ -93,7 +93,9 @@ class Enemy(pygame.sprite.Sprite):
 
 		self.index = 0
 		self.image = self.image_list[self.index]
-		self.rect = self.image.get_rect(center=(x, y))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
 
 		self.frame_dict = {1:3, 2:3, 3:3, 4:3, 5:5, 6:4}
 		self.frame_fps = self.frame_dict[type_]
