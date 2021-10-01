@@ -46,6 +46,7 @@ class Player:
 
 		self.counter = 0
 		self.speed = 3
+		self.health = 100
 		self.width = self.image.get_width()
 
 	def update(self, moving_left, moving_right):
@@ -79,10 +80,8 @@ class Enemy(pygame.sprite.Sprite):
 			if type_ == 3:
 				img = pygame.image.load(f'Assets/Enemies/enemy3-{i+1}.png')
 			if type_ == 4:
-				img = pygame.image.load(f'Assets/Enemies/enemy4-{i+1}.png')
-			if type_ == 5:
 				img = pygame.image.load(f'Assets/Choppers/chopper1-{i+1}.png')
-			if type_ == 6:
+			if type_ == 5:
 				img = pygame.image.load(f'Assets/Choppers/chopper2-{i+1}.png')
 
 			w, h = img.get_width(), img.get_height()
@@ -97,25 +96,84 @@ class Enemy(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
-		self.frame_dict = {1:3, 2:3, 3:3, 4:3, 5:5, 6:4}
+		self.frame_dict = {1:3, 2:3, 3:3, 4:5, 5:4}
 		self.frame_fps = self.frame_dict[type_]
 
 		self.counter = 0
-		self.speed = 2
+		self.bullet_counter = 0
+		self.speed = 1
+		self.health = 100
 
-	def shoot(self):
-		pass
+	def shoot(self, enemy_bullet_group):
+		if self.type in (1, 4, 5):
+			x, y = self.rect.center
+			b = Bullet(x, y, self.type)
+			enemy_bullet_group.add(b)
+		if self.type in (2, 3):
+			x, y = self.rect.center
+			b = Bullet(x-25, y+10, self.type)
+			enemy_bullet_group.add(b)
+			b = Bullet(x+25, y+10, self.type)
+			enemy_bullet_group.add(b)
 
-	def update(self):
+
+	def update(self, enemy_bullet_group):
 		self.rect.y += self.speed
 		if self.rect.top >= HEIGHT:
 			self.kill()
+
+		if self.health <= 0:
+			self.kill()
+
+		self.bullet_counter += 1
+		if self.bullet_counter >= 60:
+			self.shoot(enemy_bullet_group)
+			self.bullet_counter = 0
 
 		self.counter += 1
 		if self.counter >= self.frame_fps:
 			self.index = (self.index + 1) % len(self.image_list)
 			self.image = self.image_list[self.index]
 			self.counter = 0
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+class Bullet(pygame.sprite.Sprite):
+	def __init__(self, x, y, type_):
+		super(Bullet, self).__init__()
+		self.type = type_
+
+		if type_ == 1:
+			self.image = pygame.image.load(f'Assets/Bullets/1.png')
+			self.image = pygame.transform.scale(self.image, (20, 40))
+		if type_ == 2:
+			self.image = pygame.image.load(f'Assets/Bullets/2.png')
+			self.image = pygame.transform.scale(self.image, (15, 30))
+		if type_ == 3:
+			self.image = pygame.image.load(f'Assets/Bullets/3.png')
+			self.image = pygame.transform.scale(self.image, (20, 40))
+		if type_ in (4, 5):
+			self.image = pygame.image.load('Assets/Bullets/4.png')
+			self.image = pygame.transform.scale(self.image, (20, 20))
+		if type_ == 6:
+			self.image = pygame.image.load('Assets/Bullets/red_fire.png')
+			self.image = pygame.transform.scale(self.image, (15, 30))
+
+		self.rect = self.image.get_rect(center=(x, y))
+		if type_ == 6:
+			self.speed = -3
+		else:
+			self.speed = 3
+
+		self.damage_dict = {1:5, 2:10, 3:15, 4:25, 5:25, 6:20}
+		self.damage = self.damage_dict[type_]
+
+	def update(self):
+		self.rect.y += self.speed
+		if self.rect.bottom <= 0:
+			self.kill()
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
