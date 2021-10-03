@@ -47,23 +47,30 @@ class Player:
 		self.counter = 0
 		self.speed = 3
 		self.health = 100
+		self.alive = True
 		self.width = self.image.get_width()
 
+
 	def update(self, moving_left, moving_right):
-		if moving_left and self.rect.x > 2:
-			self.rect.x -= self.speed
+		if self.alive:
+			if moving_left and self.rect.x > 2:
+				self.rect.x -= self.speed
 
-		if moving_right and self.rect.x < WIDTH - self.width:
-			self.rect.x += self.speed
+			if moving_right and self.rect.x < WIDTH - self.width:
+				self.rect.x += self.speed
 
-		self.counter += 1
-		if self.counter >= 2:
-			self.index = (self.index + 1) % len(self.image_list)
-			self.image = self.image_list[self.index]
-			self.counter = 0
+			if self.health <= 0:
+				self.alive = False
+
+			self.counter += 1
+			if self.counter >= 2:
+				self.index = (self.index + 1) % len(self.image_list)
+				self.image = self.image_list[self.index]
+				self.counter = 0
 
 	def draw(self, win):
-		win.blit(self.image, self.rect)
+		if self.alive:
+			win.blit(self.image, self.rect)
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -117,12 +124,16 @@ class Enemy(pygame.sprite.Sprite):
 			enemy_bullet_group.add(b)
 
 
-	def update(self, enemy_bullet_group):
+	def update(self, enemy_bullet_group, explosion_group):
 		self.rect.y += self.speed
 		if self.rect.top >= HEIGHT:
 			self.kill()
 
 		if self.health <= 0:
+			x, y = self.rect.center
+			explosion = Explosion(x, y, 2)
+			explosion_group.add(explosion)
+
 			self.kill()
 
 		self.bullet_counter += 1
@@ -143,8 +154,7 @@ class Enemy(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, x, y, type_):
 		super(Bullet, self).__init__()
-		self.type = type_
-
+		
 		if type_ == 1:
 			self.image = pygame.image.load(f'Assets/Bullets/1.png')
 			self.image = pygame.transform.scale(self.image, (20, 40))
@@ -174,6 +184,44 @@ class Bullet(pygame.sprite.Sprite):
 		self.rect.y += self.speed
 		if self.rect.bottom <= 0:
 			self.kill()
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+class Explosion(pygame.sprite.Sprite):
+	def __init__(self, x, y, type_):
+		super(Explosion, self).__init__()
+
+		self.img_list = []
+		if type_ == 1:
+			self.length = 3
+		elif type_ == 2:
+			self.length = 8
+
+		for i in range(self.length):
+			img = pygame.image.load(f'Assets/Explosion{type_}/{i+1}.png')
+			w, h = img.get_size()
+			width = int(w * 0.40)
+			height = int(h * 0.40)
+			img = pygame.transform.scale(img, (width, height))
+			self.img_list.append(img)
+
+		self.index = 0
+		self.image = self.img_list[self.index]
+		self.rect = self.image.get_rect(center=(x, y))
+
+		self.counter = 0
+
+	def update(self):
+		self.counter += 1
+		if self.counter >= 7:
+			self.index += 1
+			if self.index >= len(self.img_list):
+				self.kill()
+			else:
+				self.image = self.img_list[self.index]
+				self.counter = 0
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)

@@ -2,7 +2,7 @@
 
 import random
 import pygame
-from objects import Background, Player, Enemy, Bullet
+from objects import Background, Player, Enemy, Bullet, Explosion
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -32,6 +32,16 @@ p = Player(144, HEIGHT - 100)
 enemy_group = pygame.sprite.Group()
 player_bullet_group = pygame.sprite.Group()
 enemy_bullet_group = pygame.sprite.Group()
+explosion_group = pygame.sprite.Group()
+
+# Functions
+
+def shoot_bullet():
+	x, y = p.rect.center[0], p.rect.y
+	b = Bullet(x-30, y, 6)
+	player_bullet_group.add(b)
+	b = Bullet(x+30, y, 6)
+	player_bullet_group.add(b)
 
 # Variables
 level = 1
@@ -57,17 +67,15 @@ while running:
 			if event.key == pygame.K_RIGHT:
 				moving_right = True
 			if event.key == pygame.K_SPACE:
-				x, y = p.rect.center[0], p.rect.y
-				b = Bullet(x-30, y, 6)
-				player_bullet_group.add(b)
-				b = Bullet(x+30, y, 6)
-				player_bullet_group.add(b)
+				shoot_bullet()
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			x = event.pos[0]
-			if x <= WIDTH // 2:
+			x, y = event.pos
+			if p.rect.collidepoint((x,y)):
+				shoot_bullet()
+			elif x <= WIDTH // 2:
 				moving_left = True
-			if x >= WIDTH // 2:
+			elif x > WIDTH // 2:
 				moving_right = True
 
 		if event.type == pygame.KEYUP:
@@ -96,23 +104,44 @@ while running:
 	player_bullet_group.draw(win)
 	enemy_bullet_group.update()
 	enemy_bullet_group.draw(win)
+	explosion_group.update()
+	explosion_group.draw(win)
 
-	enemy_group.update(enemy_bullet_group)
+	enemy_group.update(enemy_bullet_group, explosion_group)
 	enemy_group.draw(win)
 
 	player_hit = pygame.sprite.spritecollide(p, enemy_bullet_group, False)
 	for bullet in player_hit:
 		p.health -= bullet.damage
-		print(p.health)
+		
+		x, y = bullet.rect.center
+		explosion = Explosion(x, y, 1)
+		explosion_group.add(explosion)
+
 		bullet.kill()
 
 	for bullet in player_bullet_group:
 		planes_hit = pygame.sprite.spritecollide(bullet, enemy_group, False)
 		for plane in planes_hit:
 			plane.health -= bullet.damage
+
+			x, y = bullet.rect.center
+			explosion = Explosion(x, y, 1)
+			explosion_group.add(explosion)
+
 			bullet.kill()
 
+	player_collide = pygame.sprite.spritecollide(p, enemy_group, True)
+	if player_collide:
+		x, y = p.rect.center
+		explosion = Explosion(x, y, 2)
+		explosion_group.add(explosion)
 
+		x, y = player_collide[0].rect.center
+		explosion = Explosion(x, y, 2)
+		explosion_group.add(explosion)
+		
+		p.alive = False
 
 	pygame.draw.rect(win, WHITE, (0,0, WIDTH, HEIGHT), 5, border_radius=4)
 	clock.tick(FPS)
