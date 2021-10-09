@@ -183,7 +183,7 @@ class Bullet(pygame.sprite.Sprite):
 		else:
 			self.speed = 3
 
-		if self.dx is None:
+		if self.dx == None:
 			self.dx = 0
 
 		self.damage_dict = {1:5, 2:10, 3:15, 4:25, 5: 25, 6:20}
@@ -191,7 +191,7 @@ class Bullet(pygame.sprite.Sprite):
 
 
 	def update(self):
-		self.rect.x += (self.dx / 2)
+		self.rect.x += self.dx
 		self.rect.y += self.speed
 		if self.rect.bottom <= 0:
 			self.kill()

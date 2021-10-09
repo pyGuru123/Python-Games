@@ -118,7 +118,7 @@ while running:
 		generate_fuel = True
 
 	if delta_time >= plane_frequency // 2 and generate_fuel:
-		x = random.randint(10, WIDTH - 50)
+		x = random.randint(50, WIDTH - 50)
 		fuel = Fuel(x, -30)
 		fuel_group.add(fuel)
 		generate_fuel = False
@@ -181,10 +181,11 @@ while running:
 			explosion = Explosion(x, y, 2)
 			explosion_group.add(explosion)
 			
+			p.health = 0
 			p.alive = False
 
 		if pygame.sprite.spritecollide(p, fuel_group, True):
-			current_fuel += 10
+			current_fuel += 20
 			if current_fuel >= 100:
 				current_fuel = 100
 
@@ -193,9 +194,11 @@ while running:
 
 
 	fuel_color = RED if current_fuel <= 40 else GREEN
-	pygame.draw.rect(win, fuel_color, (30, 30, current_fuel, 10), border_radius=4)
-	pygame.draw.rect(win, WHITE, (30, 30, 100, 10), 2, border_radius=4)
-	win.blit(plane_img, (10, 20))
+	pygame.draw.rect(win, fuel_color, (30, 20, current_fuel, 10), border_radius=4)
+	pygame.draw.rect(win, WHITE, (30, 20, 100, 10), 2, border_radius=4)
+	pygame.draw.rect(win, BLUE, (30, 32, p.health, 10), border_radius=4)
+	pygame.draw.rect(win, WHITE, (30, 32, 100, 10), 2, border_radius=4)
+	win.blit(plane_img, (10, 15))
 
 	pygame.draw.rect(win, WHITE, (0,0, WIDTH, HEIGHT), 5, border_radius=4)
 	clock.tick(FPS)
