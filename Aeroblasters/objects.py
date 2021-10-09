@@ -2,29 +2,30 @@ import pygame
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 
-class Background:
+class Background():
 	def __init__(self, win):
 		self.win = win
 
 		self.image = pygame.image.load('Assets/bg.png')
 		self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
 		self.rect = self.image.get_rect()
-		
+
 		self.reset()
 		self.move = True
-		
+
 	def update(self, speed):
-		if self.move: 
+		if self.move:
 			self.y1 += speed
 			self.y2 += speed
+
 			if self.y1 >= HEIGHT:
 				self.y1 = -HEIGHT
 			if self.y2 >= HEIGHT:
 				self.y2 = -HEIGHT
-			
-		self.win.blit(self.image, (self.x, self.y1))
-		self.win.blit(self.image, (self.x, self.y2))
-		
+
+		self.win.blit(self.image, (self.x,self.y1))
+		self.win.blit(self.image, (self.x,self.y2))
+
 	def reset(self):
 		self.x = 0
 		self.y1 = 0
@@ -33,7 +34,7 @@ class Background:
 
 class Player:
 	def __init__(self, x, y):
-		
+
 		self.image_list = []
 		for i in range(2):
 			img = pygame.image.load(f'Assets/player{i+1}.png')
@@ -50,8 +51,7 @@ class Player:
 		self.alive = True
 		self.width = self.image.get_width()
 
-
-	def update(self, moving_left, moving_right):
+	def update(self, moving_left, moving_right, explosion_group):
 		if self.alive:
 			if moving_left and self.rect.x > 2:
 				self.rect.x -= self.speed
@@ -60,6 +60,10 @@ class Player:
 				self.rect.x += self.speed
 
 			if self.health <= 0:
+				x, y = self.rect.center
+				explosion = Explosion(x, y, 2)
+				explosion_group.add(explosion)
+
 				self.alive = False
 
 			self.counter += 1
@@ -107,9 +111,9 @@ class Enemy(pygame.sprite.Sprite):
 		self.frame_fps = self.frame_dict[type_]
 
 		self.counter = 0
-		self.bullet_counter = 0
 		self.speed = 1
 		self.health = 100
+		self.bullet_counter = 0
 
 	def shoot(self, enemy_bullet_group):
 		if self.type in (1, 4, 5):
@@ -152,17 +156,19 @@ class Enemy(pygame.sprite.Sprite):
 
 
 class Bullet(pygame.sprite.Sprite):
-	def __init__(self, x, y, type_):
+	def __init__(self, x, y, type_, dx=None):
 		super(Bullet, self).__init__()
-		
+
+		self.dx = dx
+
 		if type_ == 1:
-			self.image = pygame.image.load(f'Assets/Bullets/1.png')
+			self.image = pygame.image.load('Assets/Bullets/1.png')
 			self.image = pygame.transform.scale(self.image, (20, 40))
 		if type_ == 2:
-			self.image = pygame.image.load(f'Assets/Bullets/2.png')
+			self.image = pygame.image.load('Assets/Bullets/2.png')
 			self.image = pygame.transform.scale(self.image, (15, 30))
 		if type_ == 3:
-			self.image = pygame.image.load(f'Assets/Bullets/3.png')
+			self.image = pygame.image.load('Assets/Bullets/3.png')
 			self.image = pygame.transform.scale(self.image, (20, 40))
 		if type_ in (4, 5):
 			self.image = pygame.image.load('Assets/Bullets/4.png')
@@ -172,26 +178,34 @@ class Bullet(pygame.sprite.Sprite):
 			self.image = pygame.transform.scale(self.image, (15, 30))
 
 		self.rect = self.image.get_rect(center=(x, y))
-		if type_ == 6:
+		if type_ == 6 or self.dx in range(-3, 4):
 			self.speed = -3
 		else:
 			self.speed = 3
 
-		self.damage_dict = {1:5, 2:10, 3:15, 4:25, 5:25, 6:20}
+		if self.dx is None:
+			self.dx = 0
+
+		self.damage_dict = {1:5, 2:10, 3:15, 4:25, 5: 25, 6:20}
 		self.damage = self.damage_dict[type_]
 
+
 	def update(self):
+		self.rect.x += (self.dx / 2)
 		self.rect.y += self.speed
 		if self.rect.bottom <= 0:
 			self.kill()
+		if self.rect.top >= HEIGHT:
+			self.kill()
 
-	def draw(self, win):
+	def draw(win):
 		win.blit(self.image, self.rect)
 
 
 class Explosion(pygame.sprite.Sprite):
 	def __init__(self, x, y, type_):
 		super(Explosion, self).__init__()
+
 
 		self.img_list = []
 		if type_ == 1:
@@ -203,7 +217,7 @@ class Explosion(pygame.sprite.Sprite):
 			img = pygame.image.load(f'Assets/Explosion{type_}/{i+1}.png')
 			w, h = img.get_size()
 			width = int(w * 0.40)
-			height = int(h * 0.40)
+			height = int(w * 0.40)
 			img = pygame.transform.scale(img, (width, height))
 			self.img_list.append(img)
 
@@ -217,11 +231,45 @@ class Explosion(pygame.sprite.Sprite):
 		self.counter += 1
 		if self.counter >= 7:
 			self.index += 1
-			if self.index >= len(self.img_list):
+			if self.index >= self.length:
 				self.kill()
 			else:
 				self.image = self.img_list[self.index]
 				self.counter = 0
+
+		
+	def draw(win):
+		win.blit(self.image, self.rect)
+
+
+class Fuel(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Fuel, self).__init__()
+
+		self.image = pygame.image.load('Assets/fuel.png')
+		self.image = pygame.transform.scale(self.image, (30,30))
+		self.rect = self.image.get_rect(center=(x, y))
+
+	def update(self):
+		self.rect.y += 1
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Powerup(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Powerup, self).__init__()
+
+		self.image = pygame.image.load('Assets/powerup.png')
+		self.image = pygame.transform.scale(self.image, (30,30))
+		self.rect = self.image.get_rect(center=(x, y))
+
+	def update(self):
+		self.rect.y += 1
+		if self.rect.top >= HEIGHT:
+			self.kill()
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
