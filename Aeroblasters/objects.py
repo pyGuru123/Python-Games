@@ -48,6 +48,8 @@ class Player:
 		self.counter = 0
 		self.speed = 3
 		self.health = 100
+		self.fuel = 100
+		self.powerup = 0
 		self.alive = True
 		self.width = self.image.get_width()
 
@@ -247,7 +249,6 @@ class Fuel(pygame.sprite.Sprite):
 		super(Fuel, self).__init__()
 
 		self.image = pygame.image.load('Assets/fuel.png')
-		self.image = pygame.transform.scale(self.image, (30,30))
 		self.rect = self.image.get_rect(center=(x, y))
 
 	def update(self):
@@ -263,7 +264,6 @@ class Powerup(pygame.sprite.Sprite):
 		super(Powerup, self).__init__()
 
 		self.image = pygame.image.load('Assets/powerup.png')
-		self.image = pygame.transform.scale(self.image, (30,30))
 		self.rect = self.image.get_rect(center=(x, y))
 
 	def update(self):

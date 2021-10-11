@@ -29,7 +29,6 @@ GREEN = (0, 255, 0)
 # IMAGES **********************************************************************
 
 plane_img = pygame.image.load('Assets/plane.png')
-plane_img = pygame.transform.scale(plane_img, (30, 30))
 
 # GROUPS & OBJECTS ************************************************************
 
@@ -46,14 +45,13 @@ powerup_group = pygame.sprite.Group()
 # FUNCTIONS *******************************************************************
 
 def shoot_bullet():
-	global powerup
 	x, y = p.rect.center[0], p.rect.y
 
-	if powerup > 0:
+	if p.powerup > 0:
 		for dx in range(-3, 4):
 			b = Bullet(x, y, 4, dx)
 			player_bullet_group.add(b)
-		powerup -= 1
+		p.powerup -= 1
 	else:
 		b = Bullet(x-30, y, 6)
 		player_bullet_group.add(b)
@@ -69,8 +67,6 @@ start_time = pygame.time.get_ticks()
 moving_left = False
 moving_right = False
 
-current_fuel = 100
-powerup = 5
 generate_fuel = False
 
 running = True
@@ -115,16 +111,8 @@ while running:
 		e = Enemy(x, -150, 5)
 		enemy_group.add(e)
 		start_time = current_time
-		generate_fuel = True
 
-	if delta_time >= plane_frequency // 2 and generate_fuel:
-		x = random.randint(50, WIDTH - 50)
-		fuel = Fuel(x, -30)
-		fuel_group.add(fuel)
-		generate_fuel = False
-
-	current_fuel -= 0.05
-
+	p.fuel -= 0.05
 	bg.update(1)
 
 	p.update(moving_left, moving_right, explosion_group)
@@ -160,10 +148,14 @@ while running:
 			for plane in planes_hit:
 				plane.health -= bullet.damage
 				if plane.health <= 0:
-					if random.random() >= 0.9:
-						x, y = plane.rect.center
+					x, y = plane.rect.center
+					rand = random.random()
+					if rand >= 0.9:
 						power = Powerup(x, y)
 						powerup_group.add(power)
+					elif rand >= 0.3:
+						fuel = Fuel(x, y)
+						fuel_group.add(fuel)
 
 				x, y = bullet.rect.center
 				explosion = Explosion(x, y, 1)
@@ -185,16 +177,15 @@ while running:
 			p.alive = False
 
 		if pygame.sprite.spritecollide(p, fuel_group, True):
-			current_fuel += 20
-			if current_fuel >= 100:
-				current_fuel = 100
+			p.fuel += 25
+			if p.fuel >= 100:
+				p.fuel = 100
 
 		if pygame.sprite.spritecollide(p, powerup_group, True):
-			powerup += 2
+			p.powerup += 2
 
-
-	fuel_color = RED if current_fuel <= 40 else GREEN
-	pygame.draw.rect(win, fuel_color, (30, 20, current_fuel, 10), border_radius=4)
+	fuel_color = RED if p.fuel <= 40 else GREEN
+	pygame.draw.rect(win, fuel_color, (30, 20, p.fuel, 10), border_radius=4)
 	pygame.draw.rect(win, WHITE, (30, 20, 100, 10), 2, border_radius=4)
 	pygame.draw.rect(win, BLUE, (30, 32, p.health, 10), border_radius=4)
 	pygame.draw.rect(win, WHITE, (30, 32, 100, 10), 2, border_radius=4)
