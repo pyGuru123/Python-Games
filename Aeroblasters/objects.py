@@ -162,6 +162,9 @@ class Bullet(pygame.sprite.Sprite):
 		super(Bullet, self).__init__()
 
 		self.dx = dx
+		powerup_bullet = False
+		if self.dx in range(-3, 4):
+			powerup_bullet = True
 
 		if type_ == 1:
 			self.image = pygame.image.load('Assets/Bullets/1.png')
@@ -180,7 +183,7 @@ class Bullet(pygame.sprite.Sprite):
 			self.image = pygame.transform.scale(self.image, (15, 30))
 
 		self.rect = self.image.get_rect(center=(x, y))
-		if type_ == 6 or self.dx in range(-3, 4):
+		if type_ == 6 or powerup_bullet:
 			self.speed = -3
 		else:
 			self.speed = 3
@@ -190,6 +193,8 @@ class Bullet(pygame.sprite.Sprite):
 
 		self.damage_dict = {1:5, 2:10, 3:15, 4:25, 5: 25, 6:20}
 		self.damage = self.damage_dict[type_]
+		if powerup_bullet:
+			self.damage = 25
 
 
 	def update(self):
