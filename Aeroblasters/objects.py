@@ -41,6 +41,10 @@ class Player:
 			img = pygame.transform.scale(img, (100, 86))
 			self.image_list.append(img)
 
+		self.x, self.y = x, y
+		self.reset(self.x, self.y)
+
+	def reset(self, x, y):
 		self.index = 0
 		self.image = self.image_list[self.index]
 		self.rect = self.image.get_rect(center=(x, y))
@@ -278,3 +282,33 @@ class Powerup(pygame.sprite.Sprite):
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+
+
+class Button(pygame.sprite.Sprite):
+	def __init__(self, img, scale, x, y):
+		super(Button, self).__init__()
+		
+		self.scale = scale
+		self.image = pygame.transform.scale(img, self.scale)
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.clicked = False
+
+	def update_image(self, img):
+		self.image = pygame.transform.scale(img, self.scale)
+
+	def draw(self, win):
+		action = False
+		pos = pygame.mouse.get_pos()
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] and not self.clicked:
+				action = True
+				self.clicked = True
+
+			if not pygame.mouse.get_pressed()[0]:
+				self.clicked = False
+
+		win.blit(self.image, self.rect)
+		return action

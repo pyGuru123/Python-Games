@@ -2,7 +2,8 @@
 
 import random
 import pygame
-from objects import Background, Player, Enemy, Bullet, Explosion, Fuel, Powerup
+from objects import Background, Player, Enemy, Bullet, Explosion, Fuel, \
+					Powerup, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -25,10 +26,26 @@ WHITE = (255, 255, 255)
 BLUE = (30, 144,255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+BLACK = (25, 25, 25)
 
 # IMAGES **********************************************************************
 
 plane_img = pygame.image.load('Assets/plane.png')
+logo_img = pygame.image.load('Assets/logo.png')
+fighter_img = pygame.image.load('Assets/fighter.png')
+clouds_img = pygame.image.load('Assets/clouds.png')
+clouds_img = pygame.transform.scale(clouds_img, (WIDTH, 350))
+
+home_img = pygame.image.load('Assets/Buttons/homeBtn.png')
+replay_img = pygame.image.load('Assets/Buttons/replay.png')
+sound_off_img = pygame.image.load("Assets/Buttons/soundOffBtn.png")
+sound_on_img = pygame.image.load("Assets/Buttons/soundOnBtn.png")
+
+# BUTTONS *********************************************************************
+
+home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 120)
+replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT//2 + 115)
+sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 120)
 
 # GROUPS & OBJECTS ************************************************************
 
@@ -58,16 +75,29 @@ def shoot_bullet():
 		b = Bullet(x+30, y, 6)
 		player_bullet_group.add(b)
 
+def reset():
+	enemy_group.empty()
+	player_bullet_group.empty()
+	enemy_bullet_group.empty()
+	explosion_group.empty()
+	fuel_group.empty()
+	powerup_group.empty()
+
+	p.reset(p.x, p.y)
+
 # VARIABLES *******************************************************************
 
 level = 1
+plane_destroy_count = 0
 plane_frequency = 5000
 start_time = pygame.time.get_ticks()
 
 moving_left = False
 moving_right = False
 
-generate_fuel = False
+home_page = True
+game_page = False
+score_page = False
 
 running = True
 while running:
@@ -88,13 +118,17 @@ while running:
 				shoot_bullet()
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			x, y = event.pos
-			if p.rect.collidepoint((x,y)):
-				shoot_bullet()
-			elif x <= WIDTH // 2:
-				moving_left = True
-			elif x > WIDTH // 2:
-				moving_right = True
+			if home_page:
+				home_page = False
+				game_page = True
+			elif game_page:
+				x, y = event.pos
+				if p.rect.collidepoint((x,y)):
+					shoot_bullet()
+				elif x <= WIDTH // 2:
+					moving_left = True
+				elif x > WIDTH // 2:
+					moving_right = True
 
 		if event.type == pygame.KEYUP:
 			moving_left = False
@@ -104,92 +138,147 @@ while running:
 			moving_left = False
 			moving_right = False
 
-	current_time = pygame.time.get_ticks()
-	delta_time = current_time - start_time
-	if delta_time >= plane_frequency:
-		x = random.randint(10, WIDTH - 100)
-		e = Enemy(x, -150, 5)
-		enemy_group.add(e)
-		start_time = current_time
+	if home_page:
+		win.fill(BLACK)
+		win.blit(logo_img, (30, 80))
+		win.blit(fighter_img, (WIDTH//2 - 50, HEIGHT//2))
+		pygame.draw.circle(win, WHITE, (WIDTH//2, HEIGHT//2 + 50), 50, 2)
 
-	p.fuel -= 0.05
-	bg.update(1)
+	if score_page:
+		win.fill(BLACK)
+		win.blit(logo_img, (30, 50))
 
-	p.update(moving_left, moving_right, explosion_group)
-	p.draw(win)
+		if home_btn.draw(win):
+			home_page = True
+			game_page = False
+			score_page = False
+			reset()
 
-	player_bullet_group.update()
-	player_bullet_group.draw(win)
-	enemy_bullet_group.update()
-	enemy_bullet_group.draw(win)
-	explosion_group.update()
-	explosion_group.draw(win)
-	fuel_group.update()
-	fuel_group.draw(win)
-	powerup_group.update()
-	powerup_group.draw(win)
+			plane_destroy_count = 0
+			level = 1
 
-	enemy_group.update(enemy_bullet_group, explosion_group)
-	enemy_group.draw(win)
+		if replay_btn.draw(win):
+			score_page = False
+			game_page = True
+			reset()
 
-	if p.alive:
-		player_hit = pygame.sprite.spritecollide(p, enemy_bullet_group, False)
-		for bullet in player_hit:
-			p.health -= bullet.damage
-			
-			x, y = bullet.rect.center
-			explosion = Explosion(x, y, 1)
-			explosion_group.add(explosion)
+			plane_destroy_count = 0
 
-			bullet.kill()
+		sound_btn.draw(win)
 
-		for bullet in player_bullet_group:
-			planes_hit = pygame.sprite.spritecollide(bullet, enemy_group, False)
-			for plane in planes_hit:
-				plane.health -= bullet.damage
-				if plane.health <= 0:
-					x, y = plane.rect.center
-					rand = random.random()
-					if rand >= 0.9:
-						power = Powerup(x, y)
-						powerup_group.add(power)
-					elif rand >= 0.3:
-						fuel = Fuel(x, y)
-						fuel_group.add(fuel)
+	if game_page:
 
+		current_time = pygame.time.get_ticks()
+		delta_time = current_time - start_time
+		if delta_time >= plane_frequency:
+			if level == 1:
+				type = 1
+			elif level == 2:
+				type = 2
+			elif level == 3:
+				type = 3
+			elif level == 4:
+				type = random.randint(4, 5)
+			elif level == 5:
+				type = random.randint(1, 5)
+
+			x = random.randint(10, WIDTH - 100)
+			e = Enemy(x, -150, type)
+			enemy_group.add(e)
+			start_time = current_time
+
+		if plane_destroy_count:
+			if plane_destroy_count % 5 == 0 and level < 5:
+				level += 1
+				plane_destroy_count = 0
+
+		p.fuel -= 0.05
+		bg.update(1)
+		win.blit(clouds_img, (0, 70))
+
+		p.update(moving_left, moving_right, explosion_group)
+		p.draw(win)
+
+		player_bullet_group.update()
+		player_bullet_group.draw(win)
+		enemy_bullet_group.update()
+		enemy_bullet_group.draw(win)
+		explosion_group.update()
+		explosion_group.draw(win)
+		fuel_group.update()
+		fuel_group.draw(win)
+		powerup_group.update()
+		powerup_group.draw(win)
+
+		enemy_group.update(enemy_bullet_group, explosion_group)
+		enemy_group.draw(win)
+
+		if p.alive:
+			player_hit = pygame.sprite.spritecollide(p, enemy_bullet_group, False)
+			for bullet in player_hit:
+				p.health -= bullet.damage
+				
 				x, y = bullet.rect.center
 				explosion = Explosion(x, y, 1)
 				explosion_group.add(explosion)
 
 				bullet.kill()
 
-		player_collide = pygame.sprite.spritecollide(p, enemy_group, True)
-		if player_collide:
-			x, y = p.rect.center
-			explosion = Explosion(x, y, 2)
-			explosion_group.add(explosion)
+			for bullet in player_bullet_group:
+				planes_hit = pygame.sprite.spritecollide(bullet, enemy_group, False)
+				for plane in planes_hit:
+					plane.health -= bullet.damage
+					if plane.health <= 0:
+						x, y = plane.rect.center
+						rand = random.random()
+						if rand >= 0.9:
+							power = Powerup(x, y)
+							powerup_group.add(power)
+						elif rand >= 0.3:
+							fuel = Fuel(x, y)
+							fuel_group.add(fuel)
 
-			x, y = player_collide[0].rect.center
-			explosion = Explosion(x, y, 2)
-			explosion_group.add(explosion)
-			
-			p.health = 0
-			p.alive = False
+						plane_destroy_count += 1
 
-		if pygame.sprite.spritecollide(p, fuel_group, True):
-			p.fuel += 25
-			if p.fuel >= 100:
-				p.fuel = 100
+					x, y = bullet.rect.center
+					explosion = Explosion(x, y, 1)
+					explosion_group.add(explosion)
 
-		if pygame.sprite.spritecollide(p, powerup_group, True):
-			p.powerup += 2
+					bullet.kill()
 
-	fuel_color = RED if p.fuel <= 40 else GREEN
-	pygame.draw.rect(win, fuel_color, (30, 20, p.fuel, 10), border_radius=4)
-	pygame.draw.rect(win, WHITE, (30, 20, 100, 10), 2, border_radius=4)
-	pygame.draw.rect(win, BLUE, (30, 32, p.health, 10), border_radius=4)
-	pygame.draw.rect(win, WHITE, (30, 32, 100, 10), 2, border_radius=4)
-	win.blit(plane_img, (10, 15))
+			player_collide = pygame.sprite.spritecollide(p, enemy_group, True)
+			if player_collide:
+				x, y = p.rect.center
+				explosion = Explosion(x, y, 2)
+				explosion_group.add(explosion)
+
+				x, y = player_collide[0].rect.center
+				explosion = Explosion(x, y, 2)
+				explosion_group.add(explosion)
+				
+				p.health = 0
+				p.alive = False
+
+			if pygame.sprite.spritecollide(p, fuel_group, True):
+				p.fuel += 25
+				if p.fuel >= 100:
+					p.fuel = 100
+
+			if pygame.sprite.spritecollide(p, powerup_group, True):
+				p.powerup += 2
+
+		if not p.alive or p.fuel <= -10:
+			if len(explosion_group) == 0:
+				game_page = False
+				score_page = True
+				reset()
+
+		fuel_color = RED if p.fuel <= 40 else GREEN
+		pygame.draw.rect(win, fuel_color, (30, 20, p.fuel, 10), border_radius=4)
+		pygame.draw.rect(win, WHITE, (30, 20, 100, 10), 2, border_radius=4)
+		pygame.draw.rect(win, BLUE, (30, 32, p.health, 10), border_radius=4)
+		pygame.draw.rect(win, WHITE, (30, 32, 100, 10), 2, border_radius=4)
+		win.blit(plane_img, (10, 15))
 
 	pygame.draw.rect(win, WHITE, (0,0, WIDTH, HEIGHT), 5, border_radius=4)
 	clock.tick(FPS)
