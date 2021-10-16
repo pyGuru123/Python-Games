@@ -3,7 +3,7 @@
 import random
 import pygame
 from objects import Background, Player, Enemy, Bullet, Explosion, Fuel, \
-					Powerup, Button
+					Powerup, Button, Message, BlinkingText
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -26,7 +26,7 @@ WHITE = (255, 255, 255)
 BLUE = (30, 144,255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLACK = (25, 25, 25)
+BLACK = (0, 0, 20)
 
 # IMAGES **********************************************************************
 
@@ -41,11 +41,32 @@ replay_img = pygame.image.load('Assets/Buttons/replay.png')
 sound_off_img = pygame.image.load("Assets/Buttons/soundOffBtn.png")
 sound_on_img = pygame.image.load("Assets/Buttons/soundOnBtn.png")
 
+
 # BUTTONS *********************************************************************
 
 home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 120)
 replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT//2 + 115)
 sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 120)
+
+
+# FONTS ***********************************************************************
+
+game_over_font = 'Fonts/ghostclan.ttf'
+tap_to_play_font = 'Fonts/BubblegumSans-Regular.ttf'
+score_font = 'Fonts/DalelandsUncialBold-82zA.ttf'
+final_score_font = 'Fonts/DroneflyRegular-K78LA.ttf'
+
+game_over_msg = Message(WIDTH//2, 230, 30, 'Game Over', game_over_font, WHITE, win)
+score_msg = Message(WIDTH-50, 28, 30, '0', final_score_font, RED, win)
+final_score_msg = Message(WIDTH//2, 280, 30, '0', final_score_font, RED, win)
+tap_to_play_msg = tap_to_play = BlinkingText(WIDTH//2, HEIGHT-60, 25, "Tap To Play",
+				 tap_to_play_font, WHITE, win)
+
+
+# SOUNDS **********************************************************************
+
+
+
 
 # GROUPS & OBJECTS ************************************************************
 
@@ -95,9 +116,11 @@ start_time = pygame.time.get_ticks()
 moving_left = False
 moving_right = False
 
-home_page = True
+home_page = False
 game_page = False
-score_page = False
+score_page = True
+
+score = 0
 
 running = True
 while running:
@@ -142,11 +165,14 @@ while running:
 		win.fill(BLACK)
 		win.blit(logo_img, (30, 80))
 		win.blit(fighter_img, (WIDTH//2 - 50, HEIGHT//2))
-		pygame.draw.circle(win, WHITE, (WIDTH//2, HEIGHT//2 + 50), 50, 2)
+		pygame.draw.circle(win, WHITE, (WIDTH//2, HEIGHT//2 + 50), 50, 4)
+		tap_to_play_msg.update()
 
 	if score_page:
 		win.fill(BLACK)
 		win.blit(logo_img, (30, 50))
+		game_over_msg.update()
+		final_score_msg.update(score)
 
 		if home_btn.draw(win):
 			home_page = True
@@ -156,6 +182,7 @@ while running:
 
 			plane_destroy_count = 0
 			level = 1
+			score = 0
 
 		if replay_btn.draw(win):
 			score_page = False
@@ -163,6 +190,7 @@ while running:
 			reset()
 
 			plane_destroy_count = 0
+			score = 0
 
 		sound_btn.draw(win)
 
@@ -272,6 +300,9 @@ while running:
 				game_page = False
 				score_page = True
 				reset()
+
+		score += 1
+		score_msg.update(score)
 
 		fuel_color = RED if p.fuel <= 40 else GREEN
 		pygame.draw.rect(win, fuel_color, (30, 20, p.fuel, 10), border_radius=4)
