@@ -9,7 +9,9 @@ Aeroblasters is a simple 2d vertical plane shooter game made using python and py
 
 Install pydroid3 on Android from here : [pydroid3 playstore](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3&hl=en_IN&gl=US)
 
-![Alt text](app.png?raw=true "Aeroblasters")
+<p align='center'>
+  <img src='app.png' width=200 height=300>
+</p>
 
 ## How to Download
 
