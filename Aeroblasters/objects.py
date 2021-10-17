@@ -2,6 +2,8 @@ import pygame
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 
+pygame.mixer.init()
+
 class Background():
 	def __init__(self, win):
 		self.win = win

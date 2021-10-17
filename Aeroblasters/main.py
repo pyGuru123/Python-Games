@@ -1,5 +1,8 @@
 # Aeroblasters
 
+# Author : Prajjwal Pathak (pyguru)
+# Date : Thursday, 30 September, 2021
+
 import random
 import pygame
 from objects import Background, Player, Enemy, Bullet, Explosion, Fuel, \
@@ -65,7 +68,15 @@ tap_to_play_msg = tap_to_play = BlinkingText(WIDTH//2, HEIGHT-60, 25, "Tap To Pl
 
 # SOUNDS **********************************************************************
 
+player_bullet_fx = pygame.mixer.Sound('Sounds/gunshot.wav')
+chopper_fx = pygame.mixer.Sound('Sounds/chopper.mp3')
+click_fx = pygame.mixer.Sound('Sounds/click.mp3')
+collision_fx = pygame.mixer.Sound('Sounds/mini_exp.mp3')
+blast_fx = pygame.mixer.Sound('Sounds/blast.wav')
 
+pygame.mixer.music.load('Sounds/Defrini - Spookie.mp3')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.1)
 
 
 # GROUPS & OBJECTS ************************************************************
@@ -95,6 +106,7 @@ def shoot_bullet():
 		player_bullet_group.add(b)
 		b = Bullet(x+30, y, 6)
 		player_bullet_group.add(b)
+	player_bullet_fx.play()
 
 def reset():
 	enemy_group.empty()
@@ -108,7 +120,7 @@ def reset():
 
 # VARIABLES *******************************************************************
 
-level = 1
+level = 4
 plane_destroy_count = 0
 plane_frequency = 5000
 start_time = pygame.time.get_ticks()
@@ -116,9 +128,9 @@ start_time = pygame.time.get_ticks()
 moving_left = False
 moving_right = False
 
-home_page = False
+home_page = True
 game_page = False
-score_page = True
+score_page = False
 
 score = 0
 
@@ -132,7 +144,7 @@ while running:
 			if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
 				running = False
 
-		if event.type == pygame.KEYDOWN:
+		if event.type == pygame.KEYDOWN and game_page:
 			if event.key == pygame.K_LEFT:
 				moving_left = True
 			if event.key == pygame.K_RIGHT:
@@ -144,6 +156,7 @@ while running:
 			if home_page:
 				home_page = False
 				game_page = True
+				click_fx.play()
 			elif game_page:
 				x, y = event.pos
 				if p.rect.collidepoint((x,y)):
@@ -179,6 +192,7 @@ while running:
 			game_page = False
 			score_page = False
 			reset()
+			click_fx.play()
 
 			plane_destroy_count = 0
 			level = 1
@@ -188,6 +202,7 @@ while running:
 			score_page = False
 			game_page = True
 			reset()
+			click_fx.play()
 
 			plane_destroy_count = 0
 			score = 0
@@ -209,6 +224,9 @@ while running:
 				type = random.randint(4, 5)
 			elif level == 5:
 				type = random.randint(1, 5)
+
+			if type in (4, 5):
+				chopper_fx.play()
 
 			x = random.randint(10, WIDTH - 100)
 			e = Enemy(x, -150, type)
@@ -251,6 +269,7 @@ while running:
 				explosion_group.add(explosion)
 
 				bullet.kill()
+				collision_fx.play()
 
 			for bullet in player_bullet_group:
 				planes_hit = pygame.sprite.spritecollide(bullet, enemy_group, False)
@@ -267,12 +286,15 @@ while running:
 							fuel_group.add(fuel)
 
 						plane_destroy_count += 1
+						blast_fx.play()
+						chopper_fx.stop()
 
 					x, y = bullet.rect.center
 					explosion = Explosion(x, y, 1)
 					explosion_group.add(explosion)
 
 					bullet.kill()
+					collision_fx.play()
 
 			player_collide = pygame.sprite.spritecollide(p, enemy_group, True)
 			if player_collide:
