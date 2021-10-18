@@ -133,6 +133,7 @@ game_page = False
 score_page = False
 
 score = 0
+sound_on = True
 
 running = True
 while running:
@@ -207,7 +208,15 @@ while running:
 			plane_destroy_count = 0
 			score = 0
 
-		sound_btn.draw(win)
+		if sound_btn.draw(win):
+			sound_on = not sound_on
+
+			if sound_on:
+				sound_btn.update_image(sound_on_img)
+				pygame.mixer.music.play(loops=-1)
+			else:
+				sound_btn.update_image(sound_off_img)
+				pygame.mixer.music.stop()
 
 	if game_page:
 
