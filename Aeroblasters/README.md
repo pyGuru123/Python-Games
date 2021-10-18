@@ -30,9 +30,20 @@ pygame is already installed in pydroid3, no installation required.
 
 ## Usage
 
-Navigate and click main.py to run the game. 
+Navigate and click main.py to run the game. Then tap on the screen to start playing the game. The objective of the game is to destroy as much enemy planes or choppers as possible without getting destroyed. 
 
 Controls:
-* yet to be edited
+* Press left arrow key to go left
+* Press right arrow key to go right
+* Press space key to go shoot
+* Press esc key to quit
 
-## THIS GAME IS CURRENTLY UNDER DEVELOPMENT !
+When playing with mouse or on pydroid3
+* Press left half of game window to go left
+* Press right half of game window to go right
+* Click on player plane to shoot
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
