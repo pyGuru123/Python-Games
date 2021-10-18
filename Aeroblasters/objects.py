@@ -123,6 +123,13 @@ class Enemy(pygame.sprite.Sprite):
 		self.health = 100
 		self.bullet_counter = 0
 
+		if self.type in (1,2,3):
+			self.fx = pygame.mixer.Sound('Sounds/plane.mp3')
+		elif self.type in (4, 5):
+			self.fx = pygame.mixer.Sound('Sounds/chopper.mp3')
+
+		self.fx.play(-1)
+
 	def shoot(self, enemy_bullet_group):
 		if self.type in (1, 4, 5):
 			x, y = self.rect.center
@@ -146,6 +153,7 @@ class Enemy(pygame.sprite.Sprite):
 			explosion = Explosion(x, y, 2)
 			explosion_group.add(explosion)
 
+			self.fx.stop()
 			self.kill()
 
 		self.bullet_counter += 1

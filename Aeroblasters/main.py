@@ -69,10 +69,10 @@ tap_to_play_msg = tap_to_play = BlinkingText(WIDTH//2, HEIGHT-60, 25, "Tap To Pl
 # SOUNDS **********************************************************************
 
 player_bullet_fx = pygame.mixer.Sound('Sounds/gunshot.wav')
-chopper_fx = pygame.mixer.Sound('Sounds/chopper.mp3')
 click_fx = pygame.mixer.Sound('Sounds/click.mp3')
 collision_fx = pygame.mixer.Sound('Sounds/mini_exp.mp3')
 blast_fx = pygame.mixer.Sound('Sounds/blast.wav')
+fuel_fx = pygame.mixer.Sound('Sounds/fuel.wav')
 
 pygame.mixer.music.load('Sounds/Defrini - Spookie.mp3')
 pygame.mixer.music.play(loops=-1)
@@ -120,7 +120,7 @@ def reset():
 
 # VARIABLES *******************************************************************
 
-level = 4
+level = 1
 plane_destroy_count = 0
 plane_frequency = 5000
 start_time = pygame.time.get_ticks()
@@ -225,9 +225,6 @@ while running:
 			elif level == 5:
 				type = random.randint(1, 5)
 
-			if type in (4, 5):
-				chopper_fx.play()
-
 			x = random.randint(10, WIDTH - 100)
 			e = Enemy(x, -150, type)
 			enemy_group.add(e)
@@ -287,7 +284,6 @@ while running:
 
 						plane_destroy_count += 1
 						blast_fx.play()
-						chopper_fx.stop()
 
 					x, y = bullet.rect.center
 					explosion = Explosion(x, y, 1)
@@ -313,9 +309,11 @@ while running:
 				p.fuel += 25
 				if p.fuel >= 100:
 					p.fuel = 100
+				fuel_fx.play()
 
 			if pygame.sprite.spritecollide(p, powerup_group, True):
 				p.powerup += 2
+				fuel_fx.play()
 
 		if not p.alive or p.fuel <= -10:
 			if len(explosion_group) == 0:
