@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Ground, Dino
+from objects import Ground, Dino, Cactus
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = (600, 200)
@@ -24,11 +24,13 @@ GRAY = (172, 172, 172)
 # OBJECTS ********************************************************************
 
 ground = Ground()
-dino = Dino(50, 110)
+dino = Dino(50, 160)
+cactus = Cactus(1)
 
 # VARIABLES ******************************************************************
 
 SPEED = 4
+jump = False
 
 running = True
 while running:
@@ -41,10 +43,19 @@ while running:
 			if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
 				running = False
 
+			if event.key == pygame.K_SPACE:
+				jump = True
+
+		if event.type == pygame.KEYUP:
+			if event.key == pygame.K_SPACE:
+				jump = False
+
 	ground.update(SPEED)
 	ground.draw(win)
-	dino.update()
+	dino.update(jump)
 	dino.draw(win)
+	cactus.update(SPEED)
+	cactus.draw(win)
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 4)
 	clock.tick(FPS)
