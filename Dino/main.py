@@ -21,15 +21,18 @@ WHITE = (225,225,225)
 BLACK = (32, 33, 36)
 GRAY = (172, 172, 172)
 
-# OBJECTS ********************************************************************
+# OBJECTS & GROUPS ***********************************************************
 
 ground = Ground()
 dino = Dino(50, 160)
-cactus = Cactus(1)
+
+cactus_group = pygame.sprite.Group()
 
 # VARIABLES ******************************************************************
 
-SPEED = 4
+counter = 0
+
+SPEED = 6
 jump = False
 
 running = True
@@ -50,12 +53,18 @@ while running:
 			if event.key == pygame.K_SPACE:
 				jump = False
 
+	counter += 1
+	if counter % 250 == 0:
+		type = random.randint(1, 6)
+		cactus = Cactus(type)
+		cactus_group.add(cactus)
+
 	ground.update(SPEED)
 	ground.draw(win)
 	dino.update(jump)
 	dino.draw(win)
-	cactus.update(SPEED)
-	cactus.draw(win)
+	cactus_group.update(SPEED)
+	cactus_group.draw(win)
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 4)
 	clock.tick(FPS)

@@ -31,8 +31,8 @@ class Dino():
 	def __init__(self, x, y):
 		self.x, self.y = x, y
 		self.running_list = []
-		for i in range(3, 5):
-			img = pygame.image.load(f'Assets/Dino/{i}.png').convert_alpha()
+		for i in range(1, 4):
+			img = pygame.image.load(f'Assets/Dino/{i}.png')
 			img = pygame.transform.scale(img, (45, 50))
 			self.running_list.append(img)
 
@@ -63,11 +63,16 @@ class Dino():
 			self.rect.bottom = self.y
 			self.isJumping = False
 
-		self.counter += 1
-		if self.counter >= 6:
-			self.index = (self.index + 1) % len(self.running_list)
-			self.image = self.running_list[self.index]
+		if self.isJumping:
+			self.index = 0
 			self.counter = 0
+			self.image = self.running_list[self.index]
+		else:
+			self.counter += 1
+			if self.counter >= 4:
+				self.index = (self.index + 1) % len(self.running_list)
+				self.image = self.running_list[self.index]
+				self.counter = 0
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
