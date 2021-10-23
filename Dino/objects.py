@@ -44,56 +44,72 @@ class Dino():
 			img = pygame.transform.scale(img, (70, 38))
 			self.duck_list.append(img)
 
-		self.index = 0
-		self.image = self.run_list[self.index]
-		self.rect = self.image.get_rect()
-		self.rect.x = self.x
-		self.rect.bottom = self.base
+		# self.index = 0
+		# self.image = self.run_list[self.index]
+		# self.rect = self.image.get_rect()
+		# self.rect.x = self.x
+		# self.rect.bottom = self.base
 
-		self.counter = 0
+		# self.counter = 0
+		# self.alive = True
+
+		self.reset()
 
 		self.vel = 0
 		self.gravity = 1
 		self.jumpHeight = 15
 		self.isJumping = False
 
+	def reset(self):
+		self.index = 0
+		self.image = self.run_list[self.index]
+		self.rect = self.image.get_rect()
+		self.rect.x = self.x
+		self.rect.bottom = self.base
+
+		self.alive = True
+		self.counter = 0
+
 	def update(self, jump, duck):
-		if not self.isJumping and jump:
-			self.vel = -self.jumpHeight
-			self.isJumping = True
+		if self.alive:
+			if not self.isJumping and jump:
+				self.vel = -self.jumpHeight
+				self.isJumping = True
 
-		self.vel += self.gravity
-		if self.vel >= self.jumpHeight:
-			self.vel = self.jumpHeight
+			self.vel += self.gravity
+			if self.vel >= self.jumpHeight:
+				self.vel = self.jumpHeight
 
-		self.rect.y += self.vel
-		if self.rect.bottom > self.base:
-			self.rect.bottom = self.base
-			self.isJumping = False
-
-		if duck:
-			self.counter += 1
-			if self.counter >= 6:
-				self.index = (self.index + 1) % len(self.duck_list)
-				self.image = self.duck_list[self.index]
-				self.rect = self.image.get_rect()
-				self.rect.x = self.x
+			self.rect.y += self.vel
+			if self.rect.bottom > self.base:
 				self.rect.bottom = self.base
-				self.counter = 0
+				self.isJumping = False
 
-		elif self.isJumping:
-			self.index = 0
-			self.counter = 0
-			self.image = self.run_list[self.index]
-		else:
-			self.counter += 1
-			if self.counter >= 4:
-				self.index = (self.index + 1) % len(self.run_list)
+			if duck:
+				self.counter += 1
+				if self.counter >= 6:
+					self.index = (self.index + 1) % len(self.duck_list)
+					self.image = self.duck_list[self.index]
+					self.rect = self.image.get_rect()
+					self.rect.x = self.x
+					self.rect.bottom = self.base
+					self.counter = 0
+
+			elif self.isJumping:
+				self.index = 0
+				self.counter = 0
 				self.image = self.run_list[self.index]
-				self.rect = self.image.get_rect()
-				self.rect.x = self.x
-				self.rect.bottom = self.base
-				self.counter = 0
+			else:
+				self.counter += 1
+				if self.counter >= 4:
+					self.index = (self.index + 1) % len(self.run_list)
+					self.image = self.run_list[self.index]
+					self.rect = self.image.get_rect()
+					self.rect.x = self.x
+					self.rect.bottom = self.base
+					self.counter = 0
+
+			self.mask = pygame.mask.from_surface(self.image)
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
@@ -120,6 +136,40 @@ class Cactus(pygame.sprite.Sprite):
 		if self.rect.right <= 0:
 			self.kill()
 
+		self.mask = pygame.mask.from_surface(self.image)
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Ptera(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Ptera, self).__init__()
+
+		self.image_list = []
+		for i in range(1, 3):
+			scale = 0.65
+			img = pygame.image.load(f'Assets/Ptera/{i}.png')
+			w, h = img.get_size()
+			img = pygame.transform.scale(img, (int(w*scale), int(h*scale)))
+			self.image_list.append(img)
+
+		self.index = 0
+		self.image = self.image_list[self.index]
+		self.rect = self.image.get_rect(center=(x, y))
+
+		self.counter = 0
+
+	def update(self, speed):
+		self.rect.x -= speed
+		if self.rect.right <= 0:
+			self.kill()
+
+		self.counter += 1
+		if self.counter >= 6:
+			self.index = (self.index + 1) % len(self.image_list)
+			self.image = self.image_list[self.index]
+			self.counter = 0
+
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
@@ -127,14 +177,7 @@ class Cactus(pygame.sprite.Sprite):
 class Cloud(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Cloud, self).__init__()
-
-			# scale = 0.65
-		img = pygame.image.load(f'Assets/cloud.png')
-			# w, h = img.get_size()
-			# img = pygame.transform.scale(img, (int(w*scale), int(h*scale)))
-			# self.image_list.append(img)
-
-		self.image = img
+		self.image = pygame.image.load(f'Assets/cloud.png')
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y

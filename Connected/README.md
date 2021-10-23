@@ -7,7 +7,7 @@
 Connected is a simple endless hypercasual arcade game made with pygame.
 
 <p align='center'>
-	<img src='app.png' width=80 height=120>
+	<img src='app.png' width=200 height=300>
 </p>
 ## How to Download
 
