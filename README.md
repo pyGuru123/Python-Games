@@ -9,6 +9,9 @@ and pygame library.
 
 ## All the Games are listed here
 
+* ### [Aeroblasters](https://github.com/pyGuru123/Python-Games/tree/master/Aeroblasters)
+	> Aeroblasters is a 2d plane shooter arcade game.
+
 * ### [Arc Dash](https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
 	> Arc Dash is a simple endless target based hypercasual arcade game.
 
