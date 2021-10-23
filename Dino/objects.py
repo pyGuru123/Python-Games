@@ -29,18 +29,26 @@ class Ground():
 
 class Dino():
 	def __init__(self, x, y):
-		self.x, self.y = x, y
-		self.running_list = []
+		self.x, self.base = x, y
+
+		self.run_list = []
+		self.duck_list = []
+
 		for i in range(1, 4):
 			img = pygame.image.load(f'Assets/Dino/{i}.png')
-			img = pygame.transform.scale(img, (45, 50))
-			self.running_list.append(img)
+			img = pygame.transform.scale(img, (52, 58))
+			self.run_list.append(img)
+
+		for i in range(4, 6):
+			img = pygame.image.load(f'Assets/Dino/{i}.png').convert_alpha()
+			img = pygame.transform.scale(img, (70, 38))
+			self.duck_list.append(img)
 
 		self.index = 0
-		self.image = self.running_list[self.index]
+		self.image = self.run_list[self.index]
 		self.rect = self.image.get_rect()
-		self.rect.x = x
-		self.rect.bottom = y
+		self.rect.x = self.x
+		self.rect.bottom = self.base
 
 		self.counter = 0
 
@@ -49,7 +57,7 @@ class Dino():
 		self.jumpHeight = 15
 		self.isJumping = False
 
-	def update(self, jump=False):
+	def update(self, jump, duck):
 		if not self.isJumping and jump:
 			self.vel = -self.jumpHeight
 			self.isJumping = True
@@ -59,19 +67,32 @@ class Dino():
 			self.vel = self.jumpHeight
 
 		self.rect.y += self.vel
-		if self.rect.bottom > self.y:
-			self.rect.bottom = self.y
+		if self.rect.bottom > self.base:
+			self.rect.bottom = self.base
 			self.isJumping = False
 
-		if self.isJumping:
+		if duck:
+			self.counter += 1
+			if self.counter >= 6:
+				self.index = (self.index + 1) % len(self.duck_list)
+				self.image = self.duck_list[self.index]
+				self.rect = self.image.get_rect()
+				self.rect.x = self.x
+				self.rect.bottom = self.base
+				self.counter = 0
+
+		elif self.isJumping:
 			self.index = 0
 			self.counter = 0
-			self.image = self.running_list[self.index]
+			self.image = self.run_list[self.index]
 		else:
 			self.counter += 1
 			if self.counter >= 4:
-				self.index = (self.index + 1) % len(self.running_list)
-				self.image = self.running_list[self.index]
+				self.index = (self.index + 1) % len(self.run_list)
+				self.image = self.run_list[self.index]
+				self.rect = self.image.get_rect()
+				self.rect.x = self.x
+				self.rect.bottom = self.base
 				self.counter = 0
 
 	def draw(self, win):
@@ -82,8 +103,8 @@ class Cactus(pygame.sprite.Sprite):
 		super(Cactus, self).__init__()
 
 		self.image_list = []
-		for i in range(6):
-			scale = 0.7
+		for i in range(4):
+			scale = 0.65
 			img = pygame.image.load(f'Assets/Cactus/{i+1}.png')
 			w, h = img.get_size()
 			img = pygame.transform.scale(img, (int(w*scale), int(h*scale)))
@@ -93,6 +114,30 @@ class Cactus(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.x = WIDTH + 10
 		self.rect.bottom = 165
+
+	def update(self, speed):
+		self.rect.x -= speed
+		if self.rect.right <= 0:
+			self.kill()
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+
+class Cloud(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Cloud, self).__init__()
+
+			# scale = 0.65
+		img = pygame.image.load(f'Assets/cloud.png')
+			# w, h = img.get_size()
+			# img = pygame.transform.scale(img, (int(w*scale), int(h*scale)))
+			# self.image_list.append(img)
+
+		self.image = img
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
 
 	def update(self, speed):
 		self.rect.x -= speed
