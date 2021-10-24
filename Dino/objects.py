@@ -131,12 +131,13 @@ class Cactus(pygame.sprite.Sprite):
 		self.rect.x = WIDTH + 10
 		self.rect.bottom = 165
 
-	def update(self, speed):
-		self.rect.x -= speed
-		if self.rect.right <= 0:
-			self.kill()
+	def update(self, speed, dino):
+		if dino.alive:
+			self.rect.x -= speed
+			if self.rect.right <= 0:
+				self.kill()
 
-		self.mask = pygame.mask.from_surface(self.image)
+			self.mask = pygame.mask.from_surface(self.image)
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
@@ -159,16 +160,19 @@ class Ptera(pygame.sprite.Sprite):
 
 		self.counter = 0
 
-	def update(self, speed):
-		self.rect.x -= speed
-		if self.rect.right <= 0:
-			self.kill()
+	def update(self, speed, dino):
+		if dino.alive:
+			self.rect.x -= speed
+			if self.rect.right <= 0:
+				self.kill()
 
-		self.counter += 1
-		if self.counter >= 6:
-			self.index = (self.index + 1) % len(self.image_list)
-			self.image = self.image_list[self.index]
-			self.counter = 0
+			self.counter += 1
+			if self.counter >= 6:
+				self.index = (self.index + 1) % len(self.image_list)
+				self.image = self.image_list[self.index]
+				self.counter = 0
+
+			self.mask = pygame.mask.from_surface(self.image)
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
@@ -182,10 +186,11 @@ class Cloud(pygame.sprite.Sprite):
 		self.rect.x = x
 		self.rect.y = y
 
-	def update(self, speed):
-		self.rect.x -= speed
-		if self.rect.right <= 0:
-			self.kill()
+	def update(self, speed, dino):
+		if dino.alive:
+			self.rect.x -= speed
+			if self.rect.right <= 0:
+				self.kill()
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)

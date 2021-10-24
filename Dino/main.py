@@ -21,6 +21,14 @@ WHITE = (225,225,225)
 BLACK = (0, 0, 0)
 GRAY = (32, 33, 36)
 
+# IMAGES *********************************************************************
+
+game_over_img = pygame.image.load('Assets/game_over.png')
+game_over_img = pygame.transform.scale(game_over_img, (200, 33))
+
+replay_img = pygame.image.load('Assets/replay.png')
+replay_img = pygame.transform.scale(replay_img, (40, 36))
+
 # OBJECTS & GROUPS ***********************************************************
 
 ground = Ground()
@@ -54,6 +62,8 @@ SPEED = 5
 jump = False
 duck = False
 
+home_page = True
+
 running = True
 while running:
 	win.fill(GRAY)
@@ -84,45 +94,51 @@ while running:
 			if event.key == pygame.K_DOWN:
 				duck = False 
 
-	counter += 1
-	if counter % enemy_time == 0:
-		if random.randint(1, 10) == 5:
-			y = random.choice([85, 130])
-			ptera = Ptera(WIDTH, y)
-			ptera_group.add(ptera)
-		else:
-			type = random.randint(1, 4)
-			cactus = Cactus(type)
-			cactus_group.add(cactus)
+	if dino.alive:
+		counter += 1
+		if counter % enemy_time == 0:
+			if random.randint(1, 10) == 5:
+				y = random.choice([85, 130])
+				ptera = Ptera(WIDTH, y)
+				ptera_group.add(ptera)
+			else:
+				type = random.randint(1, 4)
+				cactus = Cactus(type)
+				cactus_group.add(cactus)
 
-	if counter % cloud_time == 0:
-		y = random.randint(20, 100)
-		cloud = Cloud(WIDTH, y)
-		cloud_group.add(cloud)
+		if counter % cloud_time == 0:
+			y = random.randint(20, 100)
+			cloud = Cloud(WIDTH, y)
+			cloud_group.add(cloud)
 
-	if counter % 100 == 0:
-		SPEED += 0.2
-		enemy_time -= 1
+		if counter % 100 == 0:
+			SPEED += 0.2
+			enemy_time -= 1
+
+		for cactus in cactus_group:
+			if pygame.sprite.collide_mask(dino, cactus):
+				SPEED = 0
+				dino.alive = False
+
+		for cactus in ptera_group:
+			if pygame.sprite.collide_mask(dino, ptera):
+				SPEED = 0
+				dino.alive = False
 
 	ground.update(SPEED)
 	ground.draw(win)
-	cactus_group.update(SPEED)
+	cactus_group.update(SPEED, dino)
 	cactus_group.draw(win)
-	ptera_group.update(SPEED-1)
+	ptera_group.update(SPEED-1, dino)
 	ptera_group.draw(win)
-	cloud_group.update(SPEED-3)
+	cloud_group.update(SPEED-3, dino)
 	cloud_group.draw(win)
 	dino.update(jump, duck)
 	dino.draw(win)
 
-	for cactus in cactus_group:
-		if pygame.sprite.collide_mask(dino, cactus):
-			SPEED = 0
-			dino.alive = False
-
-	if pygame.sprite.spritecollide(dino, ptera_group, False):
-		SPEED = 0
-		dino.alive = False
+	if not dino.alive:
+		win.blit(game_over_img, (WIDTH//2-100, 100))
+		win.blit(replay_img, (WIDTH//2-20, 50))
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 4)
 	clock.tick(FPS)
