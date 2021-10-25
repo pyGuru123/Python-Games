@@ -33,6 +33,17 @@ Controls:
 * Press space on end page to restart the game.
 * Press escape or q key to end the game.
 
+This game has few cheatcodes which you can try. Just type them to activate / deactivate them
+
+* GODMODE -> immortal jutsu ( can't die )
+* DAYMODE -> Swap between day and night
+* LYAGAMI -> automatic jump and duck
+* IAMRICH -> add 10,000 to score
+* HISCORE -> highscore is 99999
+* SPEEDUP -> increase speed by 2
+
+cheatcodes are case-insensitive
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

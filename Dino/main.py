@@ -73,6 +73,20 @@ def reset():
 
 	dino.reset()
 
+# CHEATCODES *****************************************************************
+
+# GODMODE -> immortal jutsu ( can't die )
+# DAYMODE -> Swap between day and night
+# LYAGAMI -> automatic jump and duck
+# IAMRICH -> add 10,000 to score
+# HISCORE -> highscore is 99999
+# SPEEDUP -> increase speed by 2
+
+keys = []
+GODMODE = False
+DAYMODE = False
+LYAGAMI = False
+
 # VARIABLES ******************************************************************
 
 counter = 0
@@ -93,7 +107,11 @@ mouse_pos = (-1, -1)
 running = True
 while running:
 	jump = False
-	win.fill(GRAY)
+	if DAYMODE:
+		win.fill(WHITE)
+	else:
+		win.fill(GRAY)
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -117,6 +135,27 @@ while running:
 
 			if event.key == pygame.K_DOWN:
 				duck = True
+
+			key = pygame.key.name(event.key)
+			keys.append(key)
+			keys = keys[-7:]
+			if ''.join(keys).upper() == 'GODMODE':
+				GODMODE = not GODMODE
+
+			if ''.join(keys).upper() == 'DAYMODE':
+				DAYMODE = not DAYMODE
+
+			if ''.join(keys).upper() == 'LYAGAMI':
+				LYAGAMI = not LYAGAMI
+
+			if ''.join(keys).upper() == 'SPEEDUP':
+				SPEED += 2
+
+			if ''.join(keys).upper() == 'IAMRICH':
+				score += 10000
+
+			if ''.join(keys).upper() == 'HISCORE':
+				high_score = 99999
 
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
@@ -167,17 +206,33 @@ while running:
 			if score and score % 100 == 0:
 				checkpoint_fx.play()
 
-			for cactus in cactus_group:
-				if pygame.sprite.collide_mask(dino, cactus):
-					SPEED = 0
-					dino.alive = False
-					die_fx.play()
+			if not GODMODE:
+				for cactus in cactus_group:
+					if LYAGAMI:
+						dx = cactus.rect.x - dino.rect.x
+						if 0 <= dx <= 70:
+							jump = True
 
-			for cactus in ptera_group:
-				if pygame.sprite.collide_mask(dino, ptera):
-					SPEED = 0
-					dino.alive = False
-					die_fx.play()
+					if pygame.sprite.collide_mask(dino, cactus):
+						SPEED = 0
+						dino.alive = False
+						die_fx.play()
+
+				for cactus in ptera_group:
+					if LYAGAMI:
+						dx = ptera.rect.x - dino.rect.x
+						if 0 <= dx <= 70:
+							if dino.rect.top <= ptera.rect.top:
+								jump = True
+							else:
+								duck = True
+						else:
+							duck = False
+
+					if pygame.sprite.collide_mask(dino, ptera):
+						SPEED = 0
+						dino.alive = False
+						die_fx.play()
 
 		ground.update(SPEED)
 		ground.draw(win)
@@ -192,7 +247,7 @@ while running:
 		dino.update(jump, duck)
 		dino.draw(win)
 
-		string_score = f'{score}'.zfill(5)
+		string_score = str(score).zfill(5)
 		for i, num in enumerate(string_score):
 			win.blit(numbers_img, (520+11*i, 10), (10*int(num), 0, 10, 12))
 
