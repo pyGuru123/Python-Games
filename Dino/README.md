@@ -33,7 +33,7 @@ Controls:
 * Press space on end page to restart the game.
 * Press escape or q key to end the game.
 
-This game has few cheatcodes which you can try. Just type them to activate / deactivate them
+This game has few cheatcodes which you can try. Just type the cheatcode anytime to activate / deactivate them.
 
 * GODMODE -> immortal jutsu ( can't die )
 * DAYMODE -> Swap between day and night

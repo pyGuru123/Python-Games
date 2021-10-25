@@ -24,8 +24,8 @@ and pygame library.
 * ### [Connected](https://github.com/pyGuru123/Python-Games/tree/master/Connected)
 	> Connected is a simple endless hypercasual game.
 
-* ### [Dino Run](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
-	> Dino Run is an implementaion of chromes dino run game in pygame.
+* ### [Dino](https://github.com/pyGuru123/Python-Games/tree/master/Dino)
+	> Dino is an implementaion of chrome dino game but with cheatcodes.
 
 * ### [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
 	> Dodgy walls is a simple endless hypercasual arcade game.

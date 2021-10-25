@@ -210,7 +210,7 @@ while running:
 				for cactus in cactus_group:
 					if LYAGAMI:
 						dx = cactus.rect.x - dino.rect.x
-						if 0 <= dx <= 70:
+						if 0 <= dx <= (70 + (score//100)):
 							jump = True
 
 					if pygame.sprite.collide_mask(dino, cactus):
