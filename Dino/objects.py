@@ -119,7 +119,7 @@ class Cactus(pygame.sprite.Sprite):
 		super(Cactus, self).__init__()
 
 		self.image_list = []
-		for i in range(4):
+		for i in range(5):
 			scale = 0.65
 			img = pygame.image.load(f'Assets/Cactus/{i+1}.png')
 			w, h = img.get_size()
@@ -147,7 +147,7 @@ class Ptera(pygame.sprite.Sprite):
 		super(Ptera, self).__init__()
 
 		self.image_list = []
-		for i in range(1, 3):
+		for i in range(2):
 			scale = 0.65
 			img = pygame.image.load(f'Assets/Ptera/{i}.png')
 			w, h = img.get_size()
@@ -182,6 +182,7 @@ class Cloud(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Cloud, self).__init__()
 		self.image = pygame.image.load(f'Assets/cloud.png')
+		self.image = pygame.transform.scale(self.image, (60, 18))
 		self.rect = self.image.get_rect()
 		self.rect.x = x
 		self.rect.y = y
