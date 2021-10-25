@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Ground, Dino, Cactus, Cloud, Ptera
+from objects import Ground, Dino, Cactus, Cloud, Ptera, Star
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = (600, 200)
@@ -52,6 +52,7 @@ dino = Dino(50, 160)
 cactus_group = pygame.sprite.Group()
 ptera_group = pygame.sprite.Group()
 cloud_group = pygame.sprite.Group()
+stars_group = pygame.sprite.Group()
 
 # FUNCTIONS ******************************************************************
 
@@ -68,6 +69,7 @@ def reset():
 	cactus_group.empty()
 	ptera_group.empty()
 	cloud_group.empty()
+	stars_group.empty()
 
 	dino.reset()
 
@@ -76,6 +78,7 @@ def reset():
 counter = 0
 enemy_time = 100
 cloud_time = 500
+stars_time = 175
 
 SPEED = 5
 jump = False
@@ -148,6 +151,12 @@ while running:
 				cloud = Cloud(WIDTH, y)
 				cloud_group.add(cloud)
 
+			if counter % stars_time == 0:
+				type = random.randint(1, 3)
+				y = random.randint(40, 100)
+				star = Star(WIDTH, y, type)
+				stars_group.add(star)
+
 			if counter % 100 == 0:
 				SPEED += 0.1
 				enemy_time -= 0.5
@@ -172,12 +181,14 @@ while running:
 
 		ground.update(SPEED)
 		ground.draw(win)
+		cloud_group.update(SPEED-3, dino)
+		cloud_group.draw(win)
+		stars_group.update(SPEED-3, dino)
+		stars_group.draw(win)
 		cactus_group.update(SPEED, dino)
 		cactus_group.draw(win)
 		ptera_group.update(SPEED-1, dino)
 		ptera_group.draw(win)
-		cloud_group.update(SPEED-3, dino)
-		cloud_group.draw(win)
 		dino.update(jump, duck)
 		dino.draw(win)
 
