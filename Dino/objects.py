@@ -40,9 +40,12 @@ class Dino():
 			self.run_list.append(img)
 
 		for i in range(4, 6):
-			img = pygame.image.load(f'Assets/Dino/{i}.png').convert_alpha()
+			img = pygame.image.load(f'Assets/Dino/{i}.png')
 			img = pygame.transform.scale(img, (70, 38))
 			self.duck_list.append(img)
+
+		self.dead_image = pygame.image.load(f'Assets/Dino/8.png')
+		self.dead_image = pygame.transform.scale(self.dead_image, (52,58))
 
 		# self.index = 0
 		# self.image = self.run_list[self.index]
@@ -110,6 +113,9 @@ class Dino():
 					self.counter = 0
 
 			self.mask = pygame.mask.from_surface(self.image)
+
+		else:
+			self.image = self.dead_image
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)

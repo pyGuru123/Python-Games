@@ -6,7 +6,9 @@
 
 Dino Run is simple modified version of Google Chrome dino made with python and pygame.
 
-![Alt text](app.png?raw=true "Dino Run")
+<p align='center'>
+	<img src='app.png' width=620 height=218>
+</p>
 
 ## How to Download
 
@@ -23,11 +25,13 @@ pip install pygame
 
 ## Usage
 
-Double click the game.py to open the game, Press space or Up arrow key or click play button to start the game. The objective of the game is to run without hitting the obstacles including cactus 🌵 & Pterasaurs.
+Double click the main.py to open the game. The objective of the game is to dodge incoming cactus and pteras in order to create high score.
 
 Controls:
-* Use Space or Up arrow key to jump.
-* Use Down arrow key to duck.
+* Press Space or Up arrow key to jump.
+* Press Down arrow key to duck.
+* Press space on end page to restart the game.
+* Press escape or q key to end the game.
 
 ## Contributing
 
