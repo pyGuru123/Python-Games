@@ -47,15 +47,6 @@ class Dino():
 		self.dead_image = pygame.image.load(f'Assets/Dino/8.png')
 		self.dead_image = pygame.transform.scale(self.dead_image, (52,58))
 
-		# self.index = 0
-		# self.image = self.run_list[self.index]
-		# self.rect = self.image.get_rect()
-		# self.rect.x = self.x
-		# self.rect.bottom = self.base
-
-		# self.counter = 0
-		# self.alive = True
-
 		self.reset()
 
 		self.vel = 0
