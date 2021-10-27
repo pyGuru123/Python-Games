@@ -3,6 +3,7 @@
 # Author : Prajjwal Pathak (pyguru)
 # Date : Thursday, 28 October, 2021
 
+import random
 import pygame
 from objects import Rect
 
@@ -27,23 +28,25 @@ WHITE = (225,225,225)
 BLACK = (0, 0, 0)
 GRAY = (32, 33, 36)
 BLUE = (0, 90, 156)
-ORANGE = (255, 165, 0)
+ORANGE = (208, 91, 3)
 
 # Rect class
 
-rect_list = []
+box_list = []
 
 for i in range(9):
 	r = i // 3
 	c = i % 3
 	x = 20 + 70 * c + 16
 	y = 220 + 70 * r + 16
-	rect = Rect(x, y, i)
-	rect_list.append(rect)
+	box = Rect(x, y, i)
+	box_list.append(box)
 
 # VARIABLES ******************************************************************
 
-board = ['#'] + [' ' for i in range(9)]
+board = [' ' for i in range(9)]
+players = ['X', 'O']
+current_player = random.randint(0, 1)
 
 running = True
 while running:
@@ -61,19 +64,24 @@ while running:
 			click_pos = event.pos
 
 	pos = pygame.mouse.get_pos()
-	for r in rect_list:
-		r.update(win)
-		if r.rect.collidepoint(pos):
-			r.update(win, BLUE, 5)
+	for box in box_list:
+		box.update(win)
+		if box.active and click_pos:
+			if box.rect.collidepoint(click_pos):
+				box.active = False
+				text = players[current_player]
+				
+				box.text = text
+				if text == 'X':
+					box.bgcolor = BLUE
+				else:
+					box.bgcolor = ORANGE
 
-		if click_pos:
-			if r.rect.collidepoint(click_pos):
-				r.active = False
-				board[r.index] = 'X'
-				print(board)
+				board[box.index] = text
+				current_player = (current_player + 1) % 2
 
 
-	pygame.draw.rect(win, ORANGE, (0, 0, WIDTH, HEIGHT), 5)
+	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
 	clock.tick()
 	pygame.display.update()
 pygame.quit()

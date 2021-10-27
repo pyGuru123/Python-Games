@@ -5,7 +5,23 @@ class Rect():
 		self.rect = pygame.Rect(x, y, 70, 70)
 		self.index = index
 		self.active = True
+		self.border = True
 
-	def update(self, win, color=(255, 255, 255), width=2):
+		self.bgcolor = (0, 0, 0)
+		self.color = (255, 255, 255)
+		self.text = ''
+		self.font = pygame.font.Font('Fonts/Papyrus.ttf', 20)
+		self.image = self.font.render(self.text, True, self.color)
+
+	def update(self, win):
 		if self.active:
-			pygame.draw.rect(win, color, self.rect, width, border_radius=5)
+			pygame.draw.rect(win, self.color, self.rect, 2, border_radius=5)
+		else:
+			pygame.draw.rect(win, self.bgcolor, self.rect, border_radius=5)
+			if self.border:
+				pygame.draw.rect(win, self.color, self.rect, 2, border_radius=5)
+
+		self.image = self.font.render(self.text, True, self.color)
+		x = self.rect.centerx - self.image.get_width() // 2
+		y = self.rect.centery - self.image.get_height() // 2
+		win.blit(self.image, (x, y))
