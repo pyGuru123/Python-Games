@@ -7,10 +7,10 @@ class Rect():
 		self.active = True
 		self.border = True
 
-		self.bgcolor = (0, 0, 0)
+		self.bgcolor = (32, 33, 36)
 		self.color = (255, 255, 255)
 		self.text = ''
-		self.font = pygame.font.Font('Fonts/Papyrus.ttf', 20)
+		self.font = pygame.font.Font('Fonts/PAPYRUS.ttf', 25)
 		self.image = self.font.render(self.text, True, self.color)
 
 	def update(self, win):

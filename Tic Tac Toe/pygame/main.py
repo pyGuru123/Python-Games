@@ -6,6 +6,7 @@
 import random
 import pygame
 from objects import Rect
+from logic import isBoardFull, check_win
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = (288, 512)
@@ -29,8 +30,9 @@ BLACK = (0, 0, 0)
 GRAY = (32, 33, 36)
 BLUE = (0, 90, 156)
 ORANGE = (208, 91, 3)
+YELLOW = (255,255,0)
 
-# Rect class
+# Rect class *****************************************************************
 
 box_list = []
 
@@ -42,16 +44,38 @@ for i in range(9):
 	box = Rect(x, y, i)
 	box_list.append(box)
 
-# VARIABLES ******************************************************************
+# BOARD **********************************************************************
 
-board = [' ' for i in range(9)]
+board = ['#'] + [' ' for i in range(9)]
 players = ['X', 'O']
 current_player = random.randint(0, 1)
+text = players[current_player]
+
+# FONTS **********************************************************************
+
+scoreX = '8'
+scoreO = '5'
+
+font1 = pygame.font.Font('Fonts/PAPYRUS.ttf', 17)
+font2 = pygame.font.Font('Fonts/CHILLER.ttf', 30)
+imgX = font1.render(f'X    {scoreX}', True, WHITE)
+imgO = font1.render(f'O    {scoreO}', True, WHITE)
+
+tic_tac_toe = font2.render('Tic Tac Toe', True, WHITE)
+
+# VARIABLES ******************************************************************
+
+result = None
 
 running = True
 while running:
 	click_pos = None
 	win.fill(GRAY)
+
+	pygame.draw.rect(win, BLUE, (0, 2, WIDTH, 40), border_radius=20)
+	pygame.draw.rect(win, WHITE, (0, 2, WIDTH, 40), 2, border_radius=20)
+	win.blit(tic_tac_toe, (WIDTH//2-tic_tac_toe.get_width()//2,5))
+	
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -63,13 +87,11 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			click_pos = event.pos
 
-	pos = pygame.mouse.get_pos()
 	for box in box_list:
 		box.update(win)
 		if box.active and click_pos:
 			if box.rect.collidepoint(click_pos):
 				box.active = False
-				text = players[current_player]
 				
 				box.text = text
 				if text == 'X':
@@ -77,9 +99,31 @@ while running:
 				else:
 					box.bgcolor = ORANGE
 
-				board[box.index] = text
+				board[box.index+1] = text
 				current_player = (current_player + 1) % 2
+				text = players[current_player]
 
+	check_winner = check_win(board, "X")
+	if check_winner[0]:
+		result = 'X Won'
+	check_winner = check_win(board, "O")
+	if check_winner[0]:
+		result = 'O Won'
+
+	if isBoardFull(board) or result:
+		for box in box_list:
+			box.active = False
+			box.border = False
+
+
+	if text == 'X':
+		pygame.draw.rect(win, BLUE, (35, 150, 80, 30), border_radius=10)
+	elif text == 'O':
+		pygame.draw.rect(win, ORANGE, (165, 150, 80, 30), border_radius=10)
+	win.blit(imgX, (60, 152))
+	win.blit(imgO, (180, 152))
+	pygame.draw.rect(win, WHITE, (35, 150, 80, 30), 1, border_radius=10)
+	pygame.draw.rect(win, WHITE, (165, 150, 80, 30), 1, border_radius=10)
 
 	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
 	clock.tick()
