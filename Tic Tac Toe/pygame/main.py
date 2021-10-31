@@ -53,8 +53,8 @@ text = players[current_player]
 
 # FONTS **********************************************************************
 
-scoreX = '8'
-scoreO = '5'
+scoreX = '-'
+scoreO = '-'
 
 font1 = pygame.font.Font('Fonts/PAPYRUS.ttf', 17)
 font2 = pygame.font.Font('Fonts/CHILLER.ttf', 30)
@@ -66,15 +66,16 @@ tic_tac_toe = font2.render('Tic Tac Toe', True, WHITE)
 # VARIABLES ******************************************************************
 
 result = None
+line_pos = None
 
 running = True
 while running:
 	click_pos = None
 	win.fill(GRAY)
 
-	pygame.draw.rect(win, BLUE, (0, 2, WIDTH, 40), border_radius=20)
-	pygame.draw.rect(win, WHITE, (0, 2, WIDTH, 40), 2, border_radius=20)
-	win.blit(tic_tac_toe, (WIDTH//2-tic_tac_toe.get_width()//2,5))
+	pygame.draw.rect(win, BLUE, (10, 10, WIDTH-20, 50), border_radius=20)
+	pygame.draw.rect(win, WHITE, (10, 10, WIDTH-20, 50), 2, border_radius=20)
+	win.blit(tic_tac_toe, (WIDTH//2-tic_tac_toe.get_width()//2,17))
 	
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -106,26 +107,37 @@ while running:
 	check_winner = check_win(board, "X")
 	if check_winner[0]:
 		result = 'X Won'
+		line_pos = check_winner[1]
 	check_winner = check_win(board, "O")
 	if check_winner[0]:
 		result = 'O Won'
+		line_pos = check_winner[1]
+	if line_pos:
+		starting = box_list[int(line_pos[0]) - 1].rect.center
+		ending = box_list[int(line_pos[-1]) - 1].rect.center
+
+		pygame.draw.line(win, WHITE, starting, ending, 5)
+
+	if result:
+		if box_list[-1].rect.bottom <= 500:
+			for box in box_list:
+				box.rect.y += 1
 
 	if isBoardFull(board) or result:
 		for box in box_list:
 			box.active = False
-			box.border = False
-
 
 	if text == 'X':
 		pygame.draw.rect(win, BLUE, (35, 150, 80, 30), border_radius=10)
 	elif text == 'O':
 		pygame.draw.rect(win, ORANGE, (165, 150, 80, 30), border_radius=10)
+
 	win.blit(imgX, (60, 152))
 	win.blit(imgO, (180, 152))
 	pygame.draw.rect(win, WHITE, (35, 150, 80, 30), 1, border_radius=10)
 	pygame.draw.rect(win, WHITE, (165, 150, 80, 30), 1, border_radius=10)
 
-	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
+	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5, border_radius=10)
 	clock.tick()
 	pygame.display.update()
 pygame.quit()
