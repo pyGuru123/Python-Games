@@ -30,22 +30,36 @@ BLACK = (0, 0, 0)
 GRAY = (32, 33, 36)
 BLUE = (0, 90, 156)
 ORANGE = (208, 91, 3)
-YELLOW = (255,255,0)
 
-# Rect class *****************************************************************
+# IMAGES *********************************************************************
 
-box_list = []
+bg1 = pygame.image.load('Assets/bg1.png')
+bg1 = pygame.transform.scale(bg1, (WIDTH, HEIGHT-10))
 
-for i in range(9):
-	r = i // 3
-	c = i % 3
-	x = 20 + 70 * c + 16
-	y = 220 + 70 * r + 16
-	box = Rect(x, y, i)
-	box_list.append(box)
+bg2 = pygame.image.load('Assets/bg2.png')
+bg2 = pygame.transform.scale(bg2, (WIDTH, HEIGHT-10))
 
-# BOARD **********************************************************************
+replay_image = pygame.image.load('Assets/replay.png')
+replay_image = pygame.transform.scale(replay_image, (36, 36))
+replay_rect = replay_image.get_rect()
+replay_rect.x = WIDTH - 110
+replay_rect.y = 210
 
+# BOARD FUNCTIONS ************************************************************
+
+def generate_box():
+	box_list = []
+	for i in range(9):
+		r = i // 3
+		c = i % 3
+		x = 20 + 70 * c + 16
+		y = 220 + 70 * r + 16
+		box = Rect(x, y, i)
+		box_list.append(box)
+
+	return box_list
+
+box_list = generate_box()
 board = ['#'] + [' ' for i in range(9)]
 players = ['X', 'O']
 current_player = random.randint(0, 1)
@@ -53,13 +67,12 @@ text = players[current_player]
 
 # FONTS **********************************************************************
 
-scoreX = '-'
-scoreO = '-'
+scoreX = 0
+scoreO = 0
 
 font1 = pygame.font.Font('Fonts/PAPYRUS.ttf', 17)
 font2 = pygame.font.Font('Fonts/CHILLER.ttf', 30)
-imgX = font1.render(f'X    {scoreX}', True, WHITE)
-imgO = font1.render(f'O    {scoreO}', True, WHITE)
+font3 = pygame.font.Font('Fonts/CHILLER.ttf', 40)
 
 tic_tac_toe = font2.render('Tic Tac Toe', True, WHITE)
 
@@ -67,11 +80,14 @@ tic_tac_toe = font2.render('Tic Tac Toe', True, WHITE)
 
 result = None
 line_pos = None
+click_pos = None
 
 running = True
 while running:
-	click_pos = None
-	win.fill(GRAY)
+	if result:
+		win.blit(bg2, (0,5))
+	else:
+		win.blit(bg1, (0,5))
 
 	pygame.draw.rect(win, BLUE, (10, 10, WIDTH-20, 50), border_radius=20)
 	pygame.draw.rect(win, WHITE, (10, 10, WIDTH-20, 50), 2, border_radius=20)
@@ -105,13 +121,20 @@ while running:
 				text = players[current_player]
 
 	check_winner = check_win(board, "X")
-	if check_winner[0]:
+	if not result and check_winner[0]:
 		result = 'X Won'
 		line_pos = check_winner[1]
+		scoreX += 1
 	check_winner = check_win(board, "O")
-	if check_winner[0]:
+	if not result and check_winner[0]:
 		result = 'O Won'
 		line_pos = check_winner[1]
+		scoreO += 1
+	if isBoardFull(board) or result:
+		for box in box_list:
+			box.active = False
+		if not result:
+			result = 'Draw'
 	if line_pos:
 		starting = box_list[int(line_pos[0]) - 1].rect.center
 		ending = box_list[int(line_pos[-1]) - 1].rect.center
@@ -123,15 +146,26 @@ while running:
 			for box in box_list:
 				box.rect.y += 1
 
-	if isBoardFull(board) or result:
-		for box in box_list:
-			box.active = False
+		result_image = font3.render(result, True, WHITE)
+		win.blit(result_image, (50, 210))
+		win.blit(replay_image, replay_rect)
+		if replay_rect.collidepoint(click_pos):
+			box_list = generate_box()
+			board = ['#'] + [' ' for i in range(9)]
+			players = ['X', 'O']
+			current_player = random.randint(0, 1)
+			text = players[current_player]
+
+			result = None
+			line_pos = None
 
 	if text == 'X':
 		pygame.draw.rect(win, BLUE, (35, 150, 80, 30), border_radius=10)
 	elif text == 'O':
 		pygame.draw.rect(win, ORANGE, (165, 150, 80, 30), border_radius=10)
 
+	imgX = font1.render(f'X    {scoreX}', True, WHITE)
+	imgO = font1.render(f'O    {scoreO}', True, WHITE)
 	win.blit(imgX, (60, 152))
 	win.blit(imgO, (180, 152))
 	pygame.draw.rect(win, WHITE, (35, 150, 80, 30), 1, border_radius=10)
