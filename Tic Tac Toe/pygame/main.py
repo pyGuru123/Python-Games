@@ -5,7 +5,7 @@
 
 import random
 import pygame
-from objects import Rect
+from objects import Rect, generate_boxes, create_board
 from logic import isBoardFull, check_win
 
 pygame.init()
@@ -47,20 +47,8 @@ replay_rect.y = 210
 
 # BOARD FUNCTIONS ************************************************************
 
-def generate_box():
-	box_list = []
-	for i in range(9):
-		r = i // 3
-		c = i % 3
-		x = 20 + 70 * c + 16
-		y = 220 + 70 * r + 16
-		box = Rect(x, y, i)
-		box_list.append(box)
-
-	return box_list
-
-box_list = generate_box()
-board = ['#'] + [' ' for i in range(9)]
+board = create_board()
+box_list = generate_boxes()
 players = ['X', 'O']
 current_player = random.randint(0, 1)
 text = players[current_player]
@@ -103,6 +91,9 @@ while running:
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			click_pos = event.pos
+
+		if event.type == pygame.MOUSEBUTTONUP:
+			click_pos = None
 
 	for box in box_list:
 		box.update(win)
@@ -149,9 +140,9 @@ while running:
 		result_image = font3.render(result, True, WHITE)
 		win.blit(result_image, (50, 210))
 		win.blit(replay_image, replay_rect)
-		if replay_rect.collidepoint(click_pos):
-			box_list = generate_box()
-			board = ['#'] + [' ' for i in range(9)]
+		if click_pos and replay_rect.collidepoint(click_pos):
+			board = create_board()
+			box_list = generate_boxes()
 			players = ['X', 'O']
 			current_player = random.randint(0, 1)
 			text = players[current_player]

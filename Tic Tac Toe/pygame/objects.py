@@ -23,3 +23,19 @@ class Rect():
 		x = self.rect.centerx - self.image.get_width() // 2
 		y = self.rect.centery - self.image.get_height() // 2
 		win.blit(self.image, (x, y))
+
+
+def create_board():
+	return ['#'] + [' ' for i in range(9)]
+
+def generate_boxes():
+	box_list = []
+	for i in range(9):
+		r = i // 3
+		c = i % 3
+		x = 20 + 70 * c + 16
+		y = 220 + 70 * r + 16
+		box = Rect(x, y, i)
+		box_list.append(box)
+
+	return box_list
