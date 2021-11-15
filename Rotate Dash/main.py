@@ -46,9 +46,9 @@ line_group = pygame.sprite.Group()
 
 RADIUS = 70
 ball = Ball((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
-# ball_group.add(ball)
 
-line = Line(1, win)
+line_type = random.randint(1, 2)
+line = Line(line_type, win)
 line_group.add(line)
 
 clicked = False
@@ -69,17 +69,28 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if not clicked:
 				clicked = True
-				for ball in ball_group:
-					ball.dtheta *= -1
+				ball.dtheta *= -1
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
+	ball.update(BLUE)
+	line_group.update()
+
+	if pygame.sprite.spritecollide(ball, line_group, False):
+		for line in line_group:
+			line.kill()
+		if line_type == 1:
+			line_type = 2
+		else:
+			line_type = 1
+		print(line_type)
+		line = Line(line_type, win)
+		line_group.add(line)
+
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 35)
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 120, 5)
 
-	ball.update(BLUE)
-	line_group.update()
 
 	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
 	clock.tick(FPS)

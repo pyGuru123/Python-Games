@@ -64,5 +64,7 @@ class Line(pygame.sprite.Sprite):
 					(self.x, self.y+self.height), 2)
 
 	def update(self):
+		pygame.draw.line(self.win, (70,70,70), (self.x, self.y),
+					(self.x, self.y+self.height), 5)
 		self.rect = pygame.draw.line(self.win, (0,0,0), (self.x, self.y),
 					(self.x, self.y+self.height), 2)
