@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Ball, Line
+from objects import Ball, Line, Circle
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -35,6 +35,7 @@ PURPLE = (155,38,182)
 AQUA = (0,103,127)
 WHITE = (200,200,200)
 BLACK = (0,0,0)
+GRAY = (128,128,128)
 
 color_list = [RED, GREEN, BLUE, ORANGE, YELLOW, PURPLE]
 color_index = 0
@@ -43,6 +44,7 @@ color = color_list[color_index]
 # Groups **********************************************************************
 
 line_group = pygame.sprite.Group()
+circle_group = pygame.sprite.Group()
 
 RADIUS = 70
 ball = Ball((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
@@ -51,7 +53,17 @@ line_type = random.randint(1, 2)
 line = Line(line_type, win)
 line_group.add(line)
 
+circle = Circle(50, 185, 1, win)
+circle_group.add(circle)
+circle = Circle(WIDTH-50, 185, 2, win)
+circle_group.add(circle)
+circle = Circle(WIDTH-50, HEIGHT-185, 3, win)
+circle_group.add(circle)
+circle = Circle(50, HEIGHT-185, 4, win)
+circle_group.add(circle)
+
 clicked = False
+score = 1
 
 running = True
 while running:
@@ -76,6 +88,7 @@ while running:
 
 	ball.update(BLUE)
 	line_group.update()
+	circle_group.update()
 
 	if pygame.sprite.spritecollide(ball, line_group, False):
 		for line in line_group:
@@ -84,9 +97,9 @@ while running:
 			line_type = 2
 		else:
 			line_type = 1
-		print(line_type)
 		line = Line(line_type, win)
 		line_group.add(line)
+		score += 1
 
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 35)
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 120, 5)

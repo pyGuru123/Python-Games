@@ -68,3 +68,41 @@ class Line(pygame.sprite.Sprite):
 					(self.x, self.y+self.height), 5)
 		self.rect = pygame.draw.line(self.win, (0,0,0), (self.x, self.y),
 					(self.x, self.y+self.height), 2)
+
+
+class Circle(pygame.sprite.Sprite):
+	def __init__(self, x, y, type, win):
+		super(Circle, self).__init__()
+
+		self.x, self.y = x, y
+		self.win = win
+		self.radius = 7
+		self.d = random.randint(4, 8) / 10
+		if type == 1:
+			self.dx = self.d
+			self.dy = self.d
+		if type == 2:
+			self.dx = -self.d
+			self.dy = self.d
+		if type == 3:
+			self.dx = -self.d
+			self.dy = -self.d
+		if type == 4:
+			self.dx = self.d
+			self.dy = -self.d
+
+		self.distance = 0
+
+	# def reset()
+
+	def update(self):
+		self.x += self.dx
+		self.y += self.dy
+		self.distance += self.d
+
+		if self.distance >= 60:
+			self.dx *= -1
+			self.dy *= -1
+			self.distance = 0
+
+		self.rect = pygame.draw.circle(self.win, (30, 30, 30), (self.x, self.y), self.radius)
