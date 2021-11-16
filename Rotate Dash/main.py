@@ -7,7 +7,7 @@ import random
 import pygame
 
 from objects import Ball, Line, Circle, Square, get_circle_position, \
-					Particle, ScoreCard
+					Particle, ScoreCard, Button, Message
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -25,7 +25,7 @@ else:
 clock = pygame.time.Clock()
 FPS = 60
 
-# COLORS **********************************************************************
+# COLORS *********************************************************************
 
 RED = (255,0,0)
 GREEN = (0,177,64)
@@ -38,16 +38,23 @@ WHITE = (200,200,200)
 BLACK = (30,30,30)
 GRAY = (128,128,128)
 
+score_bg = 128
+
 color_list = [BLUE, GREEN, RED, ORANGE, YELLOW, PURPLE]
 color_index = 0
 color = color_list[color_index]
 
-# FONTS ***********************************************************************
+# FONTS **********************************************************************
 
 score_font = "Fonts/DroneflyRegular-K78LA.ttf"
-score_msg = ScoreCard(WIDTH//2, 60, 50, score_font, BLACK, win)
+final_score_font = "Fonts/BubblegumSans-Regular.ttf"
+new_high_font = "Fonts/DalelandsUncialBold-82zA.ttf"
 
-# SOUNDS **********************************************************************
+score_msg = ScoreCard(WIDTH//2, 60, 50, score_font, BLACK, win)
+final_score_msg = Message(144, HEIGHT//2-50, 100, "0",final_score_font, WHITE, win)
+new_high_msg = Message(WIDTH//2, HEIGHT//2+10, 20, "NEW HIGH", new_high_font, WHITE, win)
+
+# SOUNDS *********************************************************************
 
 score_fx = pygame.mixer.Sound('Sounds/click.wav')
 score_fx.set_volume(0.2)
@@ -56,36 +63,47 @@ explode_fx = pygame.mixer.Sound('Sounds/explode.wav')
 
 pygame.mixer.music.load('Sounds/music.wav')
 pygame.mixer.music.play(loops=-1)
-pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.set_volume(0.7)
 
-# Groups **********************************************************************
+# Button images **************************************************************
+
+close_img = pygame.image.load('Assets/closeBtn.png')
+replay_img = pygame.image.load('Assets/replay.png')
+sound_off_img = pygame.image.load("Assets/soundOffBtn.png")
+sound_on_img = pygame.image.load("Assets/soundOnBtn.png")
+
+# Buttons ********************************************************************
+
+close_btn = Button(close_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 120)
+replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT//2 + 115)
+sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 120)
+
+# Groups *********************************************************************
 
 line_group = pygame.sprite.Group()
 circle_group = pygame.sprite.Group()
 square_group = pygame.sprite.Group()
 particle_group = pygame.sprite.Group()
 
-
 RADIUS = 70
 ball = Ball((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
 
-line_type = random.randint(1, 2)
+line_type = 1
 line = Line(line_type, win)
 line_group.add(line)
 
-for i in range(4):
-	angle = 45 * (2*(i+1) - 1)
-	x, y = get_circle_position(angle)
-	circle = Circle(x, y, i+1, win)
-	circle_group.add(circle)
+# VARIABLES ******************************************************************
 
 inner_center = [WIDTH//2,HEIGHT//2]
 
 clicked = False
 start_rotation = False
+sound_on = True
 counter = 0
+circle_count = 0
 clicks = 0
 score = 0
+high_score = 0
 
 home_page = False
 game_page = True
@@ -114,6 +132,13 @@ while running:
 
 				ball.dtheta *= -1
 
+				if len(circle_group) < 4:
+					circle_count += 1
+					angle = 45 * (2 * circle_count - 1)
+					x, y = get_circle_position(angle)
+					circle = Circle(x, y, circle_count, win)
+					circle_group.add(circle)
+
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
@@ -121,7 +146,42 @@ while running:
 		pass
 
 	if score_page:
-		pass
+		if score_bg > 40:
+			score_bg -= 1
+		win.fill((score_bg, score_bg, score_bg))
+
+		if score and score>= high_score:
+			high_score = score
+			new_high_msg.update(shadow=False)
+
+		final_score_msg.update(score, color)
+
+		if close_btn.draw(win):
+			running = False
+
+		if replay_btn.draw(win):
+			clicks = 0
+			ball.reset()
+			start_rotation = False
+			score = 0
+
+			score_page = False
+			game_page = True
+
+			inner_center = [WIDTH//2,HEIGHT//2]
+			line_type = 1
+			line = Line(line_type, win)
+			line_group.add(line)
+
+		if sound_btn.draw(win):
+			sound_on = not sound_on
+			
+			if sound_on:
+				sound_btn.update_image(sound_on_img)
+				pygame.mixer.music.play(loops=-1)
+			else:
+				sound_btn.update_image(sound_off_img)
+				pygame.mixer.music.stop()
 
 	if game_page:
 		counter += 1
@@ -169,6 +229,10 @@ while running:
 				score_page = True
 				game_page = False
 				score_page_fx.play()
+				score_bg = 128
+
+				particle_group.empty()
+				line_group.empty()
 
 		pygame.draw.circle(win, BLACK, inner_center, 35)
 		if clicks % 3 == 0:
