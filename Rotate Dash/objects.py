@@ -69,7 +69,6 @@ class Line(pygame.sprite.Sprite):
 		self.rect = pygame.draw.line(self.win, (0,0,0), (self.x, self.y),
 					(self.x, self.y+self.height), 2)
 
-
 class Circle(pygame.sprite.Sprite):
 	def __init__(self, x, y, type, win):
 		super(Circle, self).__init__()
@@ -77,23 +76,22 @@ class Circle(pygame.sprite.Sprite):
 		self.x, self.y = x, y
 		self.win = win
 		self.radius = 7
+
 		self.d = random.randint(4, 8) / 10
 		if type == 1:
-			self.dx = self.d
-			self.dy = self.d
+			self.dx = -self.d
+			self.dy = -self.d
 		if type == 2:
-			self.dx = -self.d
-			self.dy = self.d
-		if type == 3:
-			self.dx = -self.d
-			self.dy = -self.d
-		if type == 4:
 			self.dx = self.d
 			self.dy = -self.d
+		if type == 3:
+			self.dx = self.d
+			self.dy = self.d
+		if type ==4:
+			self.dx = -self.d
+			self.dy = self.d
 
 		self.distance = 0
-
-	# def reset()
 
 	def update(self):
 		self.x += self.dx
@@ -106,3 +104,41 @@ class Circle(pygame.sprite.Sprite):
 			self.distance = 0
 
 		self.rect = pygame.draw.circle(self.win, (30, 30, 30), (self.x, self.y), self.radius)
+
+class Square(pygame.sprite.Sprite):
+	def __init__(self, win):
+		super(Square, self).__init__()
+
+		self.win = win
+		self.color = (128,128,128)
+		self.speed = 2
+		self.angle = 0
+
+		self.side = random.randint(25, 40)
+		x = random.randint(self.side, WIDTH-self.side)
+		y = 0
+
+		self.surface = pygame.Surface((self.side, self.side), pygame.SRCALPHA)
+		self.surface.set_colorkey((200,200,200))
+		self.rect = self.surface.get_rect(center=(x, y))
+
+	def update(self):
+		center = self.rect.center
+		self.angle = (self.angle + self.speed) % 360
+		image = pygame.transform.rotate(self.surface , self.angle)
+		self.rect = image.get_rect()
+		self.rect.center = center
+		self.rect.y += 1
+
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+		pygame.draw.rect(self.surface, self.color, (0,0, self.side, self.side), 3)
+		self.win.blit(image, self.rect)
+
+def get_circle_position(angle, radius=120):
+	angle = angle * math.pi / 180
+	x = math.cos(angle) * radius + CENTER[0]
+	y = math.sin(angle) * radius + CENTER[1]
+
+	return x, y

@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Ball, Line, Circle
+from objects import Ball, Line, Circle, Square, get_circle_position
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -45,6 +45,7 @@ color = color_list[color_index]
 
 line_group = pygame.sprite.Group()
 circle_group = pygame.sprite.Group()
+square_group = pygame.sprite.Group()
 
 RADIUS = 70
 ball = Ball((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
@@ -53,14 +54,14 @@ line_type = random.randint(1, 2)
 line = Line(line_type, win)
 line_group.add(line)
 
-circle = Circle(50, 185, 1, win)
-circle_group.add(circle)
-circle = Circle(WIDTH-50, 185, 2, win)
-circle_group.add(circle)
-circle = Circle(WIDTH-50, HEIGHT-185, 3, win)
-circle_group.add(circle)
-circle = Circle(50, HEIGHT-185, 4, win)
-circle_group.add(circle)
+for i in range(4):
+	angle = 45 * (2*(i+1) - 1)
+	x, y = get_circle_position(angle)
+	circle = Circle(x, y, i+1, win)
+	circle_group.add(circle)
+
+square = Square(win)
+square_group.add(square)
 
 clicked = False
 score = 1
@@ -86,6 +87,7 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
+	square_group.update()
 	ball.update(BLUE)
 	line_group.update()
 	circle_group.update()
@@ -103,7 +105,6 @@ while running:
 
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 35)
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 120, 5)
-
 
 	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
 	clock.tick(FPS)
