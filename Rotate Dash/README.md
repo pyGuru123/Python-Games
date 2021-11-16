@@ -12,7 +12,7 @@ Rotate Dash is a simple endless hypercasual arcade game made with pygame.
 
 ## How to Download
 
-Download this project from here [Download Connected](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Rotate%20Dash)
+Download this project from here [Download Rotate Dash](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Rotate%20Dash)
 
 ## Requirements
 

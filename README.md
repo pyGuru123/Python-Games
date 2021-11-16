@@ -57,8 +57,11 @@ and pygame library.
 * ### [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 	> Rock Paper Scissor game written using tkinter library.
 
+* ### [Rotate Dash](https://github.com/pyGuru123/Python-Games/tree/master/Rotate%20Dash)
+	> Rock Paper Scissor game written using tkinter library.
+
 * ### [Tetris](https://github.com/pyGuru123/Python-Games/tree/master/Tetris)
-	> Tetris game written using pygame library.
+	> Rotate Dash is a simple hypercasual game written using pygame library.
 
 * ### [Tic Tac Toe](https://github.com/pyGuru123/Python-Games/tree/master/Tic%20Tac%20Toe)
 	> Tic Tac Toe game written using tkinter library.
