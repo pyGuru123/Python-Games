@@ -12,6 +12,15 @@ def get_circle_position(angle, radius=115):
 
 	return x, y
 
+def rotate_image(image, rect, angle):
+	center = rect.center
+	angle = (angle + 2) % 360
+	img = pygame.transform.rotate(image , angle)
+	rect = img.get_rect()
+	rect.center = center
+
+	return img, rect, angle
+
 class Ball(pygame.sprite.Sprite):
 	def __init__(self, pos, radius, angle, win):
 		super(Ball, self).__init__()
@@ -265,3 +274,17 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
+
+class BlinkingText(Message):
+	def __init__(self, x, y, size, text, font, color, win):
+		super(BlinkingText, self).__init__(x, y, size, text, font, color, win)
+		self.index = 0
+		self.show = True
+
+	def update(self):
+		self.index += 1
+		if self.index % 40 == 0:
+			self.show = not self.show
+
+		if self.show:
+			self.win.blit(self.image, self.rect)

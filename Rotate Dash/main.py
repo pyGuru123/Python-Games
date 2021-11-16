@@ -7,7 +7,8 @@ import random
 import pygame
 
 from objects import Ball, Line, Circle, Square, get_circle_position, \
-					Particle, ScoreCard, Button, Message
+					Particle, ScoreCard, Button, Message, rotate_image, \
+					BlinkingText
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -49,10 +50,21 @@ color = color_list[color_index]
 score_font = "Fonts/DroneflyRegular-K78LA.ttf"
 final_score_font = "Fonts/BubblegumSans-Regular.ttf"
 new_high_font = "Fonts/DalelandsUncialBold-82zA.ttf"
+title_font = "Fonts/Aladin-Regular.ttf"
 
-score_msg = ScoreCard(WIDTH//2, 60, 50, score_font, BLACK, win)
+f = pygame.font.Font(title_font, 45)
+r_msg = f.render('R', 'True', RED)
+r_rect = r_msg.get_rect()
+r_rect.x = 90
+r_rect.y = (HEIGHT // 2) - 190 
+
+otate_msg = f.render('OTATE', True, GREEN)
+dash_msg = f.render('DASH', True, BLUE)
 final_score_msg = Message(144, HEIGHT//2-50, 100, "0",final_score_font, WHITE, win)
 new_high_msg = Message(WIDTH//2, HEIGHT//2+10, 20, "NEW HIGH", new_high_font, WHITE, win)
+tap_to_play = BlinkingText(WIDTH//2, HEIGHT-60, 20, "Tap To Play", None, BLACK, win)
+
+score_msg = ScoreCard(WIDTH//2, 60, 50, score_font, BLACK, win)
 
 # SOUNDS *********************************************************************
 
@@ -105,8 +117,10 @@ clicks = 0
 score = 0
 high_score = 0
 
-home_page = False
-game_page = True
+angle = 0
+
+home_page = True
+game_page = False
 score_page = False
 
 running = True
@@ -123,34 +137,50 @@ while running:
 				running = False
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			if not clicked:
-				if not start_rotation:
-					start_rotation = True
+			if home_page:
+				ball.alive = True
+				ball.reset()
 
-				clicked = True
-				clicks += 1
+				home_page = False
+				game_page = True
 
-				ball.dtheta *= -1
+			elif game_page:
+				if not clicked :
+					if not start_rotation:
+						start_rotation = True
 
-				if len(circle_group) < 4:
-					circle_count += 1
-					angle = 45 * (2 * circle_count - 1)
-					x, y = get_circle_position(angle)
-					circle = Circle(x, y, circle_count, win)
-					circle_group.add(circle)
+					clicked = True
+					clicks += 1
+
+					ball.dtheta *= -1
+
+					if len(circle_group) < 4:
+						circle_count += 1
+						angle = 45 * (2 * circle_count - 1)
+						x, y = get_circle_position(angle)
+						circle = Circle(x, y, circle_count, win)
+						circle_group.add(circle)
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
 	if home_page:
-		pass
+		image, rect, angle = rotate_image(r_msg, r_rect, angle)
+		win.blit(image, rect)
+		win.blit(otate_msg, (120, HEIGHT//2 - 190))
+		win.blit(dash_msg, (140, HEIGHT//2 - 140))
+
+		ball.alive = True
+		ball.update(color, True)
+
+		tap_to_play.update()
 
 	if score_page:
 		if score_bg > 40:
 			score_bg -= 1
 		win.fill((score_bg, score_bg, score_bg))
 
-		if score and score>= high_score:
+		if score and score > high_score:
 			high_score = score
 			new_high_msg.update(shadow=False)
 
@@ -164,6 +194,7 @@ while running:
 			ball.reset()
 			start_rotation = False
 			score = 0
+			final_score_msg = Message(144, HEIGHT//2-50, 100, "0",final_score_font, WHITE, win)
 
 			score_page = False
 			game_page = True
