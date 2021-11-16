@@ -5,7 +5,7 @@ import pygame
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
 
-def get_circle_position(angle, radius=120):
+def get_circle_position(angle, radius=115):
 	angle = angle * math.pi / 180
 	x = math.cos(angle) * radius + CENTER[0]
 	y = math.sin(angle) * radius + CENTER[1]
@@ -24,28 +24,29 @@ class Ball(pygame.sprite.Sprite):
 
 		self.rect = pygame.draw.circle(self.win, (25, 25, 25), (self.x,self.y), 6)
 
-	def update(self, color):
+	def update(self, color, rotate):
 		if self.alive:
-			x = round(CENTER[0] + self.radius * math.cos(self.angle * math.pi / 180))
-			y = round(CENTER[1] + self.radius * math.sin(self.angle * math.pi / 180))
+				x = round(CENTER[0] + self.radius * math.cos(self.angle * math.pi / 180))
+				y = round(CENTER[1] + self.radius * math.sin(self.angle * math.pi / 180))
 
-			self.angle += self.dtheta
+				if rotate:
+					self.angle += self.dtheta
 
-			self.step += 1
-			if self.step % 5 == 0:
-				self.pos_list.append((x,y))
-			if len(self.pos_list) > 5:
-				self.pos_list.pop(0)
+				self.step += 1
+				if self.step % 5 == 0:
+					self.pos_list.append((x,y))
+				if len(self.pos_list) > 5:
+					self.pos_list.pop(0)
 
-			pygame.draw.circle(self.win, (255, 255, 255), (x,y), 7)
-			self.rect = pygame.draw.circle(self.win, color, (x,y), 6)
+				pygame.draw.circle(self.win, (255, 255, 255), (x,y), 7)
+				self.rect = pygame.draw.circle(self.win, color, (x,y), 6)
 
-			for index, pos in enumerate(self.pos_list):
-				if index < 3:
-					radius = 1
-				else:
-					radius = 2
-				pygame.draw.circle(self.win, color, pos, radius)
+				for index, pos in enumerate(self.pos_list):
+					if index < 3:
+						radius = 1
+					else:
+						radius = 2
+					pygame.draw.circle(self.win, color, pos, radius)
 
 	def reset(self):
 		self.alive = True
@@ -72,10 +73,10 @@ class Line(pygame.sprite.Sprite):
 		self.rect = pygame.draw.line(self.win, (0,0,0), (self.x, self.y),
 					(self.x, self.y+self.height), 2)
 
-	def update(self):
+	def update(self, color):
 		pygame.draw.line(self.win, (70,70,70), (self.x, self.y),
 					(self.x, self.y+self.height), 5)
-		self.rect = pygame.draw.line(self.win, (0,0,0), (self.x, self.y),
+		self.rect = pygame.draw.line(self.win, color, (self.x, self.y),
 					(self.x, self.y+self.height), 2)
 
 class Circle(pygame.sprite.Sprite):
@@ -107,7 +108,7 @@ class Circle(pygame.sprite.Sprite):
 		self.y += self.dy
 		self.distance += self.d
 
-		if self.distance >= 60:
+		if self.distance >= 55:
 			self.dx *= -1
 			self.dy *= -1
 			self.distance = 0
@@ -172,3 +173,34 @@ class Particle(pygame.sprite.Sprite):
 			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
 		else:
 			self.kill()
+
+class ScoreCard:
+	def __init__(self, x, y, size, style, color,  win):
+		self.size = size
+		self.color = color
+		self.win = win
+
+		self.inc = 1
+		self.animate = False
+		
+		self.style = style
+		self.font= pygame.font.Font(self.style, self.size)
+
+		self.image = self.font.render("0", True, self.color)
+		self.rect = self.image.get_rect(center=(x,y))
+		self.shadow_rect = self.image.get_rect(center=(x+3, y+3))
+		
+	def update(self, score):
+		if self.animate:
+			self.size += self.inc
+			self.font = pygame.font.Font(self.style, self.size)
+			if self.size <= 50 or self.size >= 55:
+				self.inc *= -1
+				
+			if self.size == 50:
+				self.animate = False
+		self.image = self.font.render(f"{score}", False, self.color)
+		shadow = self.font.render(f"{score}", True, (54, 69, 79) )	
+		
+		self.win.blit(shadow, self.shadow_rect)
+		self.win.blit(self.image, self.rect)

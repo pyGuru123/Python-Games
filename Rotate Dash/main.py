@@ -7,7 +7,7 @@ import random
 import pygame
 
 from objects import Ball, Line, Circle, Square, get_circle_position, \
-					Particle
+					Particle, ScoreCard
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -35,12 +35,28 @@ YELLOW = (254,221,0)
 PURPLE = (155,38,182)
 AQUA = (0,103,127)
 WHITE = (200,200,200)
-BLACK = (0,0,0)
+BLACK = (30,30,30)
 GRAY = (128,128,128)
 
-color_list = [RED, GREEN, BLUE, ORANGE, YELLOW, PURPLE]
+color_list = [BLUE, GREEN, RED, ORANGE, YELLOW, PURPLE]
 color_index = 0
 color = color_list[color_index]
+
+# FONTS ***********************************************************************
+
+score_font = "Fonts/DroneflyRegular-K78LA.ttf"
+score_msg = ScoreCard(WIDTH//2, 60, 50, score_font, BLACK, win)
+
+# SOUNDS **********************************************************************
+
+score_fx = pygame.mixer.Sound('Sounds/click.wav')
+score_fx.set_volume(0.2)
+score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
+explode_fx = pygame.mixer.Sound('Sounds/explode.wav')
+
+pygame.mixer.music.load('Sounds/music.wav')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.5)
 
 # Groups **********************************************************************
 
@@ -63,9 +79,17 @@ for i in range(4):
 	circle = Circle(x, y, i+1, win)
 	circle_group.add(circle)
 
+inner_center = [WIDTH//2,HEIGHT//2]
+
 clicked = False
+start_rotation = False
 counter = 0
-score = 1
+clicks = 0
+score = 0
+
+home_page = False
+game_page = True
+score_page = False
 
 running = True
 while running:
@@ -82,44 +106,76 @@ while running:
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if not clicked:
+				if not start_rotation:
+					start_rotation = True
+
 				clicked = True
+				clicks += 1
+
 				ball.dtheta *= -1
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
-	counter += 1
-	if counter % 200 == 0:
-		square = Square(win)
-		square_group.add(square)
-		counter = 0
+	if home_page:
+		pass
 
-	square_group.update()
-	ball.update(BLUE)
-	line_group.update()
-	circle_group.update()
-	particle_group.update()
+	if score_page:
+		pass
 
-	if pygame.sprite.spritecollide(ball, line_group, True):
-		if line_type == 1:
-			line_type = 2
-		else:
-			line_type = 1
-		line = Line(line_type, win)
-		line_group.add(line)
-		score += 1
+	if game_page:
+		counter += 1
+		if counter % 200 == 0:
+			square = Square(win)
+			square_group.add(square)
+			counter = 0
 
-	if pygame.sprite.spritecollide(ball, circle_group, False) and ball.alive:
-		ball.alive = False
-		x, y = ball.rect.center
-		for i in range(20):
-			particle = Particle(x, y, BLUE, win)
-			particle_group.add(particle)
+		if clicks and clicks % 5 == 0:
+			color_index = (color_index + 1) % len(color_list)
+			color = color_list[color_index]
+			clicks = 0
 
-	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 35)
-	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 120, 5)
+		particle_group.update()
+		if ball.alive:
+			square_group.update()
+			ball.update(color, start_rotation)
+			line_group.update(color)
+			circle_group.update()
+			score_msg.update(score)
 
-	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 5)
+		if pygame.sprite.spritecollide(ball, line_group, True):
+			if line_type == 1:
+				line_type = 2
+			else:
+				line_type = 1
+			line = Line(line_type, win)
+			line_group.add(line)
+
+			score += 1
+			score_fx.play()
+			score_msg.animate = True
+
+		if pygame.sprite.spritecollide(ball, circle_group, False) and ball.alive:
+			ball.alive = False
+			x, y = ball.rect.center
+			for i in range(15):
+				particle = Particle(x, y, color, win)
+				particle_group.add(particle)
+			explode_fx.play()
+
+		if not ball.alive:
+			inner_center[1] -= 10
+			if inner_center[1] <= -120:
+				score_page = True
+				game_page = False
+				score_page_fx.play()
+
+		pygame.draw.circle(win, BLACK, inner_center, 35)
+		if clicks % 3 == 0:
+			pygame.draw.circle(win, color, inner_center, 118, 5)
+		pygame.draw.circle(win, BLACK, inner_center, 120, 5)
+
+	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 8)
 	clock.tick(FPS)
 	pygame.display.update()
 
