@@ -6,7 +6,8 @@
 import random
 import pygame
 
-from objects import Ball, Line, Circle, Square, get_circle_position
+from objects import Ball, Line, Circle, Square, get_circle_position, \
+					Particle
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -46,6 +47,8 @@ color = color_list[color_index]
 line_group = pygame.sprite.Group()
 circle_group = pygame.sprite.Group()
 square_group = pygame.sprite.Group()
+particle_group = pygame.sprite.Group()
+
 
 RADIUS = 70
 ball = Ball((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
@@ -60,10 +63,8 @@ for i in range(4):
 	circle = Circle(x, y, i+1, win)
 	circle_group.add(circle)
 
-square = Square(win)
-square_group.add(square)
-
 clicked = False
+counter = 0
 score = 1
 
 running = True
@@ -87,14 +88,19 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			clicked = False
 
+	counter += 1
+	if counter % 200 == 0:
+		square = Square(win)
+		square_group.add(square)
+		counter = 0
+
 	square_group.update()
 	ball.update(BLUE)
 	line_group.update()
 	circle_group.update()
+	particle_group.update()
 
-	if pygame.sprite.spritecollide(ball, line_group, False):
-		for line in line_group:
-			line.kill()
+	if pygame.sprite.spritecollide(ball, line_group, True):
 		if line_type == 1:
 			line_type = 2
 		else:
@@ -102,6 +108,13 @@ while running:
 		line = Line(line_type, win)
 		line_group.add(line)
 		score += 1
+
+	if pygame.sprite.spritecollide(ball, circle_group, False) and ball.alive:
+		ball.alive = False
+		x, y = ball.rect.center
+		for i in range(20):
+			particle = Particle(x, y, BLUE, win)
+			particle_group.add(particle)
 
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 35)
 	pygame.draw.circle(win, BLACK, (WIDTH//2, HEIGHT//2), 120, 5)
