@@ -38,8 +38,6 @@ WHITE = (200,200,200)
 BLACK = (30,30,30)
 GRAY = (128,128,128)
 
-score_bg = 128
-
 color_list = [BLUE, GREEN, RED, ORANGE, YELLOW, PURPLE]
 color_index = 0
 color = color_list[color_index]
@@ -50,6 +48,11 @@ circle_group = pygame.sprite.Group()
 for i in range(12):
 	c = Circle(i)
 	circle_group.add(c)
+
+# VARIABLES ******************************************************************
+
+clicked = False
+clicks = 0
 
 running = True
 while running:
@@ -63,8 +66,23 @@ while running:
 				event.key == pygame.K_q:
 				running = False
 
-	pygame.draw.circle(win, RED, (CENTER[0], CENTER[1]), 5)
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			if not clicked :
+				clicked = True
+				clicks += 1
 
+				if clicks and clicks % 5 == 0:
+					r = random.choice([-1, 1])
+					print(r)
+					for c in circle_group:
+						c.dt *= -r
+						c.rotate = True
+					clicks = 0
+
+		if event.type == pygame.MOUSEBUTTONUP:
+			clicked = False
+
+	pygame.draw.circle(win, RED, (CENTER[0], CENTER[1]), 5)
 	circle_group.update(win)
 
 	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 8)
