@@ -1,15 +1,14 @@
-# Rotate Dash
+# Corner Dash
 
 # Author : Prajjwal Pathak (pyguru)
-# Date : Thursday, 15 November, 2021
+# Date : Thursday, 23 November, 2021
 
+import math
 import random
 import pygame
 
-from objects import Ball, Line, Circle, Square, get_circle_position, \
-					Particle, ScoreCard, Button, Message, rotate_image, \
-					BlinkingText
-
+from objects import Circle
+ 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
@@ -44,3 +43,32 @@ score_bg = 128
 color_list = [BLUE, GREEN, RED, ORANGE, YELLOW, PURPLE]
 color_index = 0
 color = color_list[color_index]
+
+# GROUP & OBJECTS ************************************************************
+
+circle_group = pygame.sprite.Group()
+for i in range(12):
+	c = Circle(i)
+	circle_group.add(c)
+
+running = True
+while running:
+	win.fill(GRAY)
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			running = False
+
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE or \
+				event.key == pygame.K_q:
+				running = False
+
+	pygame.draw.circle(win, RED, (CENTER[0], CENTER[1]), 5)
+
+	circle_group.update(win)
+
+	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 8)
+	clock.tick(FPS)
+	pygame.display.update()
+
+running = False
