@@ -7,7 +7,7 @@ import math
 import random
 import pygame
 
-from objects import Circle, Player, Dot
+from objects import Circle, Player, Dot, Particle
  
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -48,6 +48,7 @@ main_circle = pygame.image.load('Assets/main.png')
 
 # GROUP & OBJECTS ************************************************************
 
+particle_group = pygame.sprite.Group()
 circle_group = pygame.sprite.Group()
 for i in range(12):
 	c = Circle(i)
@@ -55,9 +56,6 @@ for i in range(12):
 
 p = Player()
 d = Dot()
-
-pos = random.randint(0, 11)
-print(pos)
 
 # TIMER **********************************************************************
 
@@ -68,8 +66,9 @@ start_time = pygame.time.get_ticks()
 clicked = False
 rotate = True
 clicks = 0
-counter = 0
-rotate_event = 5000
+shrink = False
+pos = random.randint(0, 11)
+rotation_complete = False
 
 running = True
 while running:
@@ -94,24 +93,26 @@ while running:
 					color = color_list[color_index]
 
 					clicks = 0
+					shrink = not shrink
 
 		if event.type == pygame.MOUSEBUTTONUP:
 			clicked = False
 			rotate = True
 
-	current_time = pygame.time.get_ticks()
-	delta_time = current_time - start_time()
-	if round(delta_time) % rotate_event == 0:
-		rotate_event = random.randint(10000, 15000)
-		r = random.choice([-1, 1])
-		for c in circle_group:
-			c.dt *= -r
-			c.rotate = True
-		counter = 0
+	# current_time = pygame.time.get_ticks()
+	# delta_time = current_time - start_time()
+	# if round(delta_time) % rotate_event == 0:
+	# 	rotate_event = random.randint(10000, 15000)
+	# 	r = random.choice([-1, 1])
+	# 	for c in circle_group:
+	# 		c.dt *= -r
+	# 		c.rotate = True
+	# 	counter = 0
 
 	win.blit(main_circle, (CENTER[0] - 12.5, CENTER[1] - 12.5))
 
-	circle_group.update()
+	particle_group.update()
+	circle_group.update(shrink)
 	circle_group.draw(win)
 	p.update(rotate)
 	p.draw(win)
@@ -122,6 +123,11 @@ while running:
 
 	for circle in circle_group:
 		if pygame.sprite.collide_mask(p, circle):
+			x, y = circle.rect.center
+			for i in range(10):
+				particle = Particle(x, y, color, win)
+				particle_group.add(particle)
+
 			if circle.i == pos:
 				pos = random.randint(0, 11)
 				print(pos)
@@ -130,7 +136,7 @@ while running:
 
 	x, y = p.rect.center
 	if (x < 0 or x > WIDTH) and (y < 0 or y > HEIGHT):
-		p = Player()
+		p.reset()
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 8)
 	clock.tick(FPS)
