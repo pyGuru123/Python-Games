@@ -5,6 +5,8 @@ import pygame
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
 
+MAX_RADIUS = 120
+
 class Circle(pygame.sprite.Sprite):
 	def __init__(self, i):
 		super(Circle, self).__init__()
@@ -18,10 +20,13 @@ class Circle(pygame.sprite.Sprite):
 		self.max_rotation = 30
 		self.current_theta = 0
 
-	def update(self, win):
-		if self.radius < 120:
+		self.image = pygame.image.load('Assets/circle.png')
+		self.rect = self.image.get_rect()
+
+	def update(self):
+		if self.radius < MAX_RADIUS:
 			self.radius += 5
-		if self.radius == 120:
+		if self.radius == MAX_RADIUS:
 			if self.theta < 30:
 				self.theta += 1
 
@@ -29,6 +34,7 @@ class Circle(pygame.sprite.Sprite):
 			if abs(self.base) > self.max_rotation:
 				self.base = 0
 				self.rotate = False
+				self.max_rotation = random.randint(15, 30)
 			
 			self.base += self.dt
 
@@ -36,7 +42,51 @@ class Circle(pygame.sprite.Sprite):
 		self.x = math.cos(self.angle) * self.radius + CENTER[0]
 		self.y = math.sin(self.angle) * self.radius + CENTER[1]
 
-		self.rect = pygame.draw.circle(win, (0,0,0), (self.x, self.y), 5)
+		self.rect = self.image.get_rect(center=(self.x, self.y))
+		self.mask = pygame.mask.from_surface(self.image)
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Player():
+	def __init__(self):
+		self.radius = 30
+		self.theta = 0
+		self.rotate = True
+		self.speed = 5
+		self.dr = self.speed
+
+		self.image = pygame.image.load('Assets/player.png')
+		self.rect = self.image.get_rect()
+
+	def update(self, rotate):
+		if not rotate:
+			self.rotate = False
+		if self.rotate:
+			self.theta = (self.theta + 2 ) % 360
+		else:
+			self.radius += self.dr
+			if self.radius <= 30:
+				self.dr *= -1
+				self.rotate = True
+
+		angle = self.theta * math.pi / 180
+		self.x = math.cos(angle) * self.radius + CENTER[0]
+		self.y = math.sin(angle) * self.radius + CENTER[1]
+
+		self.rect = self.image.get_rect(center=(self.x, self.y))
+		self.mask = pygame.mask.from_surface(self.image)
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Dot():
+	def __init__(self):
+		self.radius = 8
+
+	def update(self, x, y, win, color):
+		pygame.draw.circle(win, color, (x, y), self.radius)
+
 
 class Square(pygame.sprite.Sprite):
 	def __init__(self, x, y, image=None):

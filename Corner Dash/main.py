@@ -7,7 +7,7 @@ import math
 import random
 import pygame
 
-from objects import Circle
+from objects import Circle, Player, Dot
  
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -34,13 +34,17 @@ ORANGE = (252,76,2)
 YELLOW = (254,221,0)
 PURPLE = (155,38,182)
 AQUA = (0,103,127)
-WHITE = (200,200,200)
-BLACK = (30,30,30)
+WHITE = (255, 255, 255)
+BLACK = (12,12,12)
 GRAY = (128,128,128)
 
-color_list = [BLUE, GREEN, RED, ORANGE, YELLOW, PURPLE]
-color_index = 0
+color_list = [BLUE, GREEN, ORANGE, YELLOW]
+color_index = 3
 color = color_list[color_index]
+
+# IMAGES *********************************************************************
+
+main_circle = pygame.image.load('Assets/main.png')
 
 # GROUP & OBJECTS ************************************************************
 
@@ -49,14 +53,27 @@ for i in range(12):
 	c = Circle(i)
 	circle_group.add(c)
 
+p = Player()
+d = Dot()
+
+pos = random.randint(0, 11)
+print(pos)
+
+# TIMER **********************************************************************
+
+start_time = pygame.time.get_ticks()
+
 # VARIABLES ******************************************************************
 
 clicked = False
+rotate = True
 clicks = 0
+counter = 0
+rotate_event = 5000
 
 running = True
 while running:
-	win.fill(GRAY)
+	win.fill(BLACK)
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -69,23 +86,53 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if not clicked :
 				clicked = True
+				rotate = False
 				clicks += 1
 
 				if clicks and clicks % 5 == 0:
-					r = random.choice([-1, 1])
-					print(r)
-					for c in circle_group:
-						c.dt *= -r
-						c.rotate = True
+					color_index = (color_index + 1) % len(color_list)
+					color = color_list[color_index]
+
 					clicks = 0
 
 		if event.type == pygame.MOUSEBUTTONUP:
 			clicked = False
+			rotate = True
 
-	pygame.draw.circle(win, RED, (CENTER[0], CENTER[1]), 5)
-	circle_group.update(win)
+	current_time = pygame.time.get_ticks()
+	delta_time = current_time - start_time()
+	if round(delta_time) % rotate_event == 0:
+		rotate_event = random.randint(10000, 15000)
+		r = random.choice([-1, 1])
+		for c in circle_group:
+			c.dt *= -r
+			c.rotate = True
+		counter = 0
 
-	pygame.draw.rect(win, BLACK, (0, 0, WIDTH, HEIGHT), 8)
+	win.blit(main_circle, (CENTER[0] - 12.5, CENTER[1] - 12.5))
+
+	circle_group.update()
+	circle_group.draw(win)
+	p.update(rotate)
+	p.draw(win)
+
+	dot_circle = circle_group.sprites()[pos]
+	x, y = dot_circle.rect.center
+	d.update(x, y, win, color)
+
+	for circle in circle_group:
+		if pygame.sprite.collide_mask(p, circle):
+			if circle.i == pos:
+				pos = random.randint(0, 11)
+				print(pos)
+
+			p.dr *= -1
+
+	x, y = p.rect.center
+	if (x < 0 or x > WIDTH) and (y < 0 or y > HEIGHT):
+		p = Player()
+
+	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 8)
 	clock.tick(FPS)
 	pygame.display.update()
 
