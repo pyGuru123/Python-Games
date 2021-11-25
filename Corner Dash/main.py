@@ -64,6 +64,7 @@ for i in range(12):
 p = Player()
 d = Dot()
 pos = random.randint(0, 11)
+dot_circle = circle_group.sprites()[pos]
 
 # VARIABLES ******************************************************************
 
@@ -108,7 +109,7 @@ while running:
 	if game_page:
 		win.blit(main_circle, (CENTER[0] - 12.5, CENTER[1] - 12.5))
 
-		score_msg.update(score)
+		score_msg.update(dot_circle.angle)
 
 		particle_group.update()
 		circle_group.update(shrink)

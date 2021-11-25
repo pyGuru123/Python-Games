@@ -15,11 +15,11 @@ class Circle(pygame.sprite.Sprite):
 		self.base = 0
 		self.radius = 0
 		self.theta = 0
+		self.angle = 0
 
 		self.dt = 1
 		self.rotate = True
 		self.max_rotation = 30
-		self.current_theta = 0
 		self.complete = False
 		self.shrink = False
 
@@ -37,24 +37,26 @@ class Circle(pygame.sprite.Sprite):
 					self.theta += 1
 				else:
 					self.complete = True
+			self.angle = (self.base + self.i * self.theta) * math.pi / 180
 
-		if self.shrink:
-			self.radius -= 1
-			if self.radius < MIN_RADIUS:
-				self.radius = MIN_RADIUS
-		else:
-			self.radius += 1
-			if self.radius > MAX_RADIUS:
-				self.radius = MAX_RADIUS
+		if self.complete:
+			if self.shrink:
+				self.radius -= 1
+				if self.radius < MIN_RADIUS:
+					self.radius = MIN_RADIUS
+			else:
+				self.radius += 1
+				if self.radius > MAX_RADIUS:
+					self.radius = MAX_RADIUS
 
-		if self.theta == 30 and self.rotate:
-			if abs(self.base) > self.max_rotation:
-				self.base = 0
-				self.rotate = False
-			
-			self.base += self.dt
+			if self.rotate:
+				if abs(self.base) > self.max_rotation:
+					self.base = 0
+					self.rotate = False
+				
+				self.base += self.dt
+				self.angle += math.radians(self.dt)
 
-		self.angle = (self.base + self.i * self.theta) * math.pi / 180
 		self.x = math.cos(self.angle) * self.radius + CENTER[0]
 		self.y = math.sin(self.angle) * self.radius + CENTER[1]
 
@@ -63,7 +65,6 @@ class Circle(pygame.sprite.Sprite):
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
-		pygame.draw.circle(win, (255,255,255), (self.x, self.y), 8)
 
 class Player():
 	def __init__(self):
