@@ -51,7 +51,6 @@ class Circle(pygame.sprite.Sprite):
 			if abs(self.base) > self.max_rotation:
 				self.base = 0
 				self.rotate = False
-				self.max_rotation = random.randint(15, 30)
 			
 			self.base += self.dt
 
@@ -62,8 +61,10 @@ class Circle(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 		self.mask = pygame.mask.from_surface(self.image)
 
-	def draw(self, win):
+	def draw(self, win, color=None):
 		win.blit(self.image, self.rect)
+		if color:
+			pygame.draw.circle(win, (0,0,0), self.rect.center, 8)
 
 class Player():
 	def __init__(self):
@@ -78,6 +79,7 @@ class Player():
 		self.rotate = True
 		self.speed = 5
 		self.dr = self.speed
+		self.alive = True
 
 	def update(self, rotate):
 		if not rotate:
@@ -91,8 +93,8 @@ class Player():
 				self.rotate = True
 
 		angle = self.theta * math.pi / 180
-		self.x = math.cos(angle) * self.radius + CENTER[0]
-		self.y = math.sin(angle) * self.radius + CENTER[1]
+		self.x = int(math.cos(angle) * self.radius + CENTER[0])
+		self.y = int(math.sin(angle) * self.radius + CENTER[1])
 
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 		self.mask = pygame.mask.from_surface(self.image)
@@ -108,11 +110,10 @@ class Dot():
 		pygame.draw.circle(win, color, (x, y), self.radius)
 
 
-class Square(pygame.sprite.Sprite):
+class Snowflake(pygame.sprite.Sprite):
 	def __init__(self, x, y, image=None):
-		super(Square, self).__init__()
+		super(Snowflake, self).__init__()
 
-		self.win = win
 		self.color = (128, 128, 128)
 		self.speed = 3
 		self.angle = 0
@@ -174,3 +175,35 @@ class Particle(pygame.sprite.Sprite):
 			pygame.draw.rect(self.win, self.color, (self.x, self.y,s,s))
 		else:
 			self.kill()
+
+
+class ScoreCard:
+	def __init__(self, x, y, size, style, color,  win):
+		self.size = size
+		self.color = color
+		self.win = win
+
+		self.inc = 1
+		self.animate = False
+		
+		self.style = style
+		self.font= pygame.font.Font(self.style, self.size)
+
+		self.image = self.font.render("0", True, self.color)
+		self.rect = self.image.get_rect(center=(x,y))
+		self.shadow_rect = self.image.get_rect(center=(x+3, y+3))
+		
+	def update(self, score):
+		if self.animate:
+			self.size += self.inc
+			self.font = pygame.font.Font(self.style, self.size)
+			if self.size <= 50 or self.size >= 55:
+				self.inc *= -1
+				
+			if self.size == 50:
+				self.animate = False
+		self.image = self.font.render(f"{score}", False, self.color)
+		shadow = self.font.render(f"{score}", True, (54, 69, 79) )	
+		
+		self.win.blit(shadow, self.shadow_rect)
+		self.win.blit(self.image, self.rect)
