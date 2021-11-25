@@ -73,6 +73,7 @@ rotate = True
 clicks = 0
 shrink = False
 score = 0
+score_list = []
 
 home_page = False
 game_page = True
@@ -109,7 +110,7 @@ while running:
 	if game_page:
 		win.blit(main_circle, (CENTER[0] - 12.5, CENTER[1] - 12.5))
 
-		score_msg.update(dot_circle.angle)
+		score_msg.update(score)
 
 		particle_group.update()
 		circle_group.update(shrink)
@@ -118,11 +119,14 @@ while running:
 		p.draw(win)
 
 		if score and score % 7 == 0:
-			shrink = not shrink
+			if score not in score_list:
+				score_list.append(score)
+				shrink = not shrink
 
 		if clicks and clicks % 5 == 0:
 			color_index = (color_index + 1) % len(color_list)
 			color = color_list[color_index]
+
 			r = random.choice([-1, 1])
 			for c in circle_group:
 				c.dt *= -r

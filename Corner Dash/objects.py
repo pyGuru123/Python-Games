@@ -49,7 +49,7 @@ class Circle(pygame.sprite.Sprite):
 				if self.radius > MAX_RADIUS:
 					self.radius = MAX_RADIUS
 
-			if self.rotate:
+			if self.rotate and self.radius in (MAX_RADIUS, MIN_RADIUS):
 				if abs(self.base) > self.max_rotation:
 					self.base = 0
 					self.rotate = False
