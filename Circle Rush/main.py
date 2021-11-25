@@ -8,7 +8,7 @@ import random
 import pygame
 
 from objects import Circle, Player, Dot, Particle, Snowflake, \
-					ScoreCard, Button
+					ScoreCard, Button, Message
  
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -47,6 +47,7 @@ color = color_list[color_index]
 
 score_font = "Fonts/neuropol x rg.ttf"
 score_msg = ScoreCard(WIDTH//2, 60, 35, score_font, WHITE, win)
+final_score_msg = Message(144, HEIGHT//2-50, 100, "0", score_font, WHITE, win)
 
 # IMAGES *********************************************************************
 
@@ -81,7 +82,7 @@ pos = random.randint(0, 11)
 clicked = False
 rotate = True
 clicks = 0
-shrink = False
+shrink = True
 score = 0
 score_list = []
 
@@ -101,7 +102,7 @@ while running:
 				event.key == pygame.K_q:
 				running = False
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
+		if event.type == pygame.MOUSEBUTTONDOWN and game_page:
 			if not clicked :
 				clicked = True
 				rotate = False
@@ -115,6 +116,8 @@ while running:
 		pass
 
 	if score_page:
+		final_score_msg.update(score, color)
+
 		if close_btn.draw(win):
 			running = False
 
