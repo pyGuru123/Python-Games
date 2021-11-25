@@ -61,10 +61,9 @@ class Circle(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 		self.mask = pygame.mask.from_surface(self.image)
 
-	def draw(self, win, color=None):
+	def draw(self, win):
 		win.blit(self.image, self.rect)
-		if color:
-			pygame.draw.circle(win, (0,0,0), self.rect.center, 8)
+		pygame.draw.circle(win, (255,255,255), (self.x, self.y), 8)
 
 class Player():
 	def __init__(self):
@@ -93,8 +92,8 @@ class Player():
 				self.rotate = True
 
 		angle = self.theta * math.pi / 180
-		self.x = int(math.cos(angle) * self.radius + CENTER[0])
-		self.y = int(math.sin(angle) * self.radius + CENTER[1])
+		self.x = math.cos(angle) * self.radius + CENTER[0]
+		self.y = math.sin(angle) * self.radius + CENTER[1]
 
 		self.rect = self.image.get_rect(center=(self.x, self.y))
 		self.mask = pygame.mask.from_surface(self.image)
@@ -191,7 +190,7 @@ class ScoreCard:
 
 		self.image = self.font.render("0", True, self.color)
 		self.rect = self.image.get_rect(center=(x,y))
-		self.shadow_rect = self.image.get_rect(center=(x+3, y+3))
+		self.shadow_rect = self.image.get_rect(center=(x+2, y+2))
 		
 	def update(self, score):
 		if self.animate:
@@ -203,7 +202,7 @@ class ScoreCard:
 			if self.size == 50:
 				self.animate = False
 		self.image = self.font.render(f"{score}", False, self.color)
-		shadow = self.font.render(f"{score}", True, (54, 69, 79) )	
+		shadow = self.font.render(f"{score}", True, (54, 69, 79))
 		
 		self.win.blit(shadow, self.shadow_rect)
 		self.win.blit(self.image, self.rect)

@@ -46,12 +46,11 @@ color = color_list[color_index]
 # IMAGES *********************************************************************
 
 main_circle = pygame.image.load('Assets/main.png')
-leaf = 'Assets/flake.png'
 
 # FONTS **********************************************************************
 
 score_font = "Fonts/neuropol x rg.ttf"
-score_msg = ScoreCard(WIDTH//2, 60, 30, score_font, WHITE, win)
+score_msg = ScoreCard(WIDTH//2, 60, 35, score_font, WHITE, win)
 
 # GROUP & OBJECTS ************************************************************
 
@@ -65,11 +64,6 @@ for i in range(12):
 p = Player()
 d = Dot()
 pos = random.randint(0, 11)
-dot_circle = circle_group.sprites()[pos]
-
-# TIMER **********************************************************************
-
-start_time = pygame.time.get_ticks()
 
 # VARIABLES ******************************************************************
 
@@ -117,7 +111,6 @@ while running:
 		score_msg.update(score)
 
 		particle_group.update()
-		# flake_group.update(win)
 		circle_group.update(shrink)
 		circle_group.draw(win)
 		p.update(rotate)
@@ -134,20 +127,15 @@ while running:
 				c.dt *= -r
 				c.rotate = True
 
-			x = random.randint(40, WIDTH-40)
-			y = 0
-			flake = Snowflake(x, y, leaf)
-			flake_group.add(flake)
-
 			clicks = 0
 
+		dot_circle = circle_group.sprites()[pos]
 		x, y = dot_circle.rect.center
 		d.update(x, y, win, color)
 
 		for circle in circle_group:
 			if circle.complete:
 				if pygame.sprite.collide_mask(p, circle):
-					print(circle.i)
 					if circle.i == pos:
 						pos = random.randint(0, 11)
 
