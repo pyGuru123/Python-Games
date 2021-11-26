@@ -8,7 +8,7 @@ import random
 import pygame
 
 from objects import Circle, Player, Dot, Particle, Snowflake, \
-					ScoreCard, Button, Message, Snowflake
+					ScoreCard, Button, Message, BlinkingText
  
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -51,7 +51,8 @@ score_msg = ScoreCard(WIDTH//2, 60, 35, score_font, WHITE, win)
 final_score_msg = Message(144, HEIGHT//2-50, 100, "0", score_font, WHITE, win)
 new_high_msg = Message(WIDTH//2, HEIGHT//2+20, 16, "NEW HIGH!", score_font, WHITE, win)
 qircle_msg = Message(WIDTH-160, 150, 80, "Qircle", title_font, WHITE, win)
-dash_msg = Message(WIDTH-100, 220, 60, "Dash", title_font, WHITE, win)
+dash_msg = Message(WIDTH-100, 220, 60, "Rush", title_font, WHITE, win)
+tap_to_play = BlinkingText(WIDTH//2, HEIGHT-60, 20, "Tap To Play", None, WHITE, win)
 
 # SOUNDS *********************************************************************
 
@@ -67,7 +68,7 @@ pygame.mixer.music.set_volume(0.3)
 # IMAGES *********************************************************************
 
 main_circle = pygame.image.load('Assets/main.png')
-flake = pygame.image.load('Assets/main.png')
+flake_img = 'Assets/flake.png'
 
 close_img = pygame.image.load('Assets/closeBtn.png')
 replay_img = pygame.image.load('Assets/replay.png')
@@ -97,13 +98,14 @@ pos = random.randint(0, 11)
 
 clicked = False
 rotate = True
-clicks = 0
 shrink = True
-score_list = []
+sound_on = True
 
+clicks = 0
+count = 50
 score = 0
 high_score = 0
-sound_on = True
+score_list = []
 
 home_page = True
 game_page = False
@@ -133,9 +135,19 @@ while running:
 			rotate = True
 
 	if home_page:
+		count += 1
+		if count % 100 == 0:
+			x = random.randint(40, WIDTH-40)
+			y = 0
+			flake = Snowflake(x, y, flake_img)
+			flake_group.add(flake)
+			count = 0
+
+		flake_group.update(win)
 		qircle_msg.update()
 		dash_msg.update()
-
+		tap_to_play.update()
+		
 	if score_page:
 		final_score_msg.update(score, YELLOW)
 		if score and score >= high_score:

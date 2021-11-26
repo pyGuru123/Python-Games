@@ -126,7 +126,7 @@ class Snowflake(pygame.sprite.Sprite):
 			self.rect = self.image.get_rect(center=(x, y))
 		else:
 			self.surface = pygame.Surface((self.side, self.side), pygame.SRCALPHA)
-			self.surface.set_colorkey((200,200,200))
+			self.surface.set_colorkey((20,20,20))
 			self.rect = self.surface.get_rect(center=(x, y))
 
 	def update(self, win):
@@ -268,3 +268,17 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
+
+class BlinkingText(Message):
+	def __init__(self, x, y, size, text, font, color, win):
+		super(BlinkingText, self).__init__(x, y, size, text, font, color, win)
+		self.index = 0
+		self.show = True
+
+	def update(self):
+		self.index += 1
+		if self.index % 40 == 0:
+			self.show = not self.show
+
+		if self.show:
+			self.win.blit(self.image, self.rect)
