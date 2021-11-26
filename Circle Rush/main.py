@@ -8,7 +8,7 @@ import random
 import pygame
 
 from objects import Circle, Player, Dot, Particle, Snowflake, \
-					ScoreCard, Button, Message
+					ScoreCard, Button, Message, Snowflake
  
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -46,12 +46,28 @@ color = color_list[color_index]
 # FONTS **********************************************************************
 
 score_font = "Fonts/neuropol x rg.ttf"
+title_font = 'Fonts/AvQest.ttf'
 score_msg = ScoreCard(WIDTH//2, 60, 35, score_font, WHITE, win)
 final_score_msg = Message(144, HEIGHT//2-50, 100, "0", score_font, WHITE, win)
+new_high_msg = Message(WIDTH//2, HEIGHT//2+20, 16, "NEW HIGH!", score_font, WHITE, win)
+qircle_msg = Message(WIDTH-160, 150, 80, "Qircle", title_font, WHITE, win)
+dash_msg = Message(WIDTH-100, 220, 60, "Dash", title_font, WHITE, win)
+
+# SOUNDS *********************************************************************
+
+dash_fx = pygame.mixer.Sound('Sounds/dash.mp3')
+click_fx = pygame.mixer.Sound('Sounds/click.mp3')
+dead_fx = pygame.mixer.Sound('Sounds/dead.mp3')
+score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
+
+pygame.mixer.music.load('Sounds/music.wav')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.3)
 
 # IMAGES *********************************************************************
 
 main_circle = pygame.image.load('Assets/main.png')
+flake = pygame.image.load('Assets/main.png')
 
 close_img = pygame.image.load('Assets/closeBtn.png')
 replay_img = pygame.image.load('Assets/replay.png')
@@ -83,11 +99,14 @@ clicked = False
 rotate = True
 clicks = 0
 shrink = True
-score = 0
 score_list = []
 
-home_page = False
-game_page = True
+score = 0
+high_score = 0
+sound_on = True
+
+home_page = True
+game_page = False
 score_page = False
 
 running = True
@@ -107,16 +126,21 @@ while running:
 				clicked = True
 				rotate = False
 				clicks += 1
+				click_fx.play()
 
 		if event.type == pygame.MOUSEBUTTONUP:
 			clicked = False
 			rotate = True
 
 	if home_page:
-		pass
+		qircle_msg.update()
+		dash_msg.update()
 
 	if score_page:
-		final_score_msg.update(score, color)
+		final_score_msg.update(score, YELLOW)
+		if score and score >= high_score:
+			high_score = score
+			new_high_msg.update(shadow=False)
 
 		if close_btn.draw(win):
 			running = False
@@ -127,23 +151,21 @@ while running:
 			pos = random.randint(0, 11)
 
 			p.reset()
-			# start_rotation = False
-			# score = 0
-			# final_score_msg = Message(144, HEIGHT//2-50, 100, "0",final_score_font, WHITE, win)
+			final_score_msg = Message(144, HEIGHT//2-50, 100, "0", score_font, WHITE, win)
 
 			score_page = False
 			game_page = True
 
 		if sound_btn.draw(win):
 			pass
-			# sound_on = not sound_on
+			sound_on = not sound_on
 			
-			# if sound_on:
-			# 	sound_btn.update_image(sound_on_img)
-			# 	pygame.mixer.music.play(loops=-1)
-			# else:
-			# 	sound_btn.update_image(sound_off_img)
-			# 	pygame.mixer.music.stop()
+			if sound_on:
+				sound_btn.update_image(sound_on_img)
+				pygame.mixer.music.play(loops=-1)
+			else:
+				sound_btn.update_image(sound_off_img)
+				pygame.mixer.music.stop()
 
 	if game_page:
 		win.blit(main_circle, (CENTER[0] - 12.5, CENTER[1] - 12.5))
@@ -189,6 +211,7 @@ while running:
 								particle_group.add(particle)
 
 							score += 1
+							dash_fx.play()
 						p.dr *= -1
 
 			x, y = p.rect.center
@@ -197,12 +220,14 @@ while running:
 					particle = Particle(x, y, WHITE, win)
 					particle_group.add(particle)
 				p.alive = False
+				dead_fx.play()
 
 		if not p.alive and len(particle_group) == 0:
 			particle_group.empty()
 
 			game_page = False
 			score_page = True
+			score_page_fx.play()
 
 	pygame.draw.rect(win, WHITE, (0, 0, WIDTH, HEIGHT), 8)
 	clock.tick(FPS)
