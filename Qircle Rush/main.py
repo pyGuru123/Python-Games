@@ -86,9 +86,6 @@ sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 
 flake_group = pygame.sprite.Group()
 particle_group = pygame.sprite.Group()
 circle_group = pygame.sprite.Group()
-for i in range(12):
-	c = Circle(i)
-	circle_group.add(c)
 
 p = Player()
 d = Dot()
@@ -123,12 +120,21 @@ while running:
 				event.key == pygame.K_q:
 				running = False
 
-		if event.type == pygame.MOUSEBUTTONDOWN and game_page:
-			if not clicked :
-				clicked = True
-				rotate = False
-				clicks += 1
-				click_fx.play()
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			if home_page:
+				home_page = False
+				game_page = True
+
+				for i in range(12):
+					c = Circle(i)
+					circle_group.add(c)
+
+			elif game_page:
+				if not clicked :
+					clicked = True
+					rotate = False
+					clicks += 1
+					click_fx.play()
 
 		if event.type == pygame.MOUSEBUTTONUP:
 			clicked = False
