@@ -54,6 +54,9 @@ and pygame library.
 * ### [Pong](https://github.com/pyGuru123/Python-Games/tree/master/Pong)
 	> Pong game written using turtle module.
 
+* ### [Qircle Rush](https://github.com/pyGuru123/Python-Games/tree/master/Qircle%20Rush)
+	> Qircle Rush is a simple hypercasual game written using pygame library.
+
 * ### [Rock Paper Scissor](https://github.com/pyGuru123/Python-Games/tree/master/Rock%20Paper%20Scissor)
 	> Rock Paper Scissor game written using tkinter library.
 
