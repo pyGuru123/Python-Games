@@ -9,7 +9,7 @@ class Tile(pygame.sprite.Sprite):
 		super(Tile, self).__init__()
 
 		self.win = win
-		self.color = (255,0,0)
+		self.color = (0,0,0)
 
 		self.surface = pygame.Surface((TILE_WIDTH, TILE_HEIGHT), pygame.SRCALPHA)
 		self.rect = self.surface.get_rect()
@@ -17,6 +17,7 @@ class Tile(pygame.sprite.Sprite):
 		self.rect.y = y
 
 	def update(self, speed):
+		# dx = self.rect.y - speed
 		self.rect.y += speed
 		if self.rect.y >= HEIGHT:
 			self.kill()
