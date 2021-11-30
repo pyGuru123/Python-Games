@@ -4,6 +4,7 @@
 # Date : Thursday, 30 November, 2021
 
 import pygame
+from objects import Tile
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -20,7 +21,17 @@ else:
 clock = pygame.time.Clock()
 FPS = 60
 
+# COLORS *********************************************************************
+
 BLACK = (255, 255, 255)
+
+# GROUPS & OBJECTS ***********************************************************
+
+tile_group = pygame.sprite.Group()
+t = Tile(80, 0, win)
+tile_group.add(t)
+
+speed = 3
 
 running = True
 while running:
@@ -33,6 +44,8 @@ while running:
 			if event.key == pygame.K_ESCAPE or \
 				event.key == pygame.K_q:
 				running = False
+
+	tile_group.update(speed)
 
 	clock.tick(FPS)
 	pygame.display.update()
