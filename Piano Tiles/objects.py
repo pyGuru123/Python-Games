@@ -17,7 +17,6 @@ class Tile(pygame.sprite.Sprite):
 		self.rect.y = y
 
 	def update(self, speed):
-		# dx = self.rect.y - speed
 		self.rect.y += speed
 		if self.rect.y >= HEIGHT:
 			self.kill()
