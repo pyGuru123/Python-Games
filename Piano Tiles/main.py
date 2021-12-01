@@ -27,6 +27,12 @@ FPS = 30
 # COLORS *********************************************************************
 
 WHITE = (255, 255, 255)
+GRAY = (75, 75, 75)
+
+# IMAGES *********************************************************************
+
+bg_img = pygame.image.load('Assets/bg.png')
+bg_img = pygame.transform.scale(bg_img, (WIDTH, HEIGHT))
 
 # GROUPS & OBJECTS ***********************************************************
 
@@ -49,7 +55,7 @@ pos = None
 running = True
 while running:
 	pos = None
-	win.fill(WHITE)
+	win.blit(bg_img, (0,0))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -69,17 +75,18 @@ while running:
 				tile.kill()
 				score += 1
 
-	if scrolling - 10 > (num_tiles * TILE_HEIGHT):
+	if scrolling > (num_tiles * TILE_HEIGHT):
 		x = random.randint(0, 3)
 		t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
 		tile_group.add(t)
 		num_tiles += 1
 
 	for i in range(4):
-		pygame.draw.line(win, (25, 25, 25), (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
+		pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
 
 	speed = get_speed(score) * (FPS / 1000)
 	scrolling += speed
+
 	clock.tick(FPS)
 	pygame.display.update()
 
