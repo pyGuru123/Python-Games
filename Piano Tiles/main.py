@@ -37,6 +37,9 @@ bg_img = pygame.transform.scale(bg_img, (WIDTH, HEIGHT))
 # GROUPS & OBJECTS ***********************************************************
 
 tile_group = pygame.sprite.Group()
+x = random.randint(0, 3)
+t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
+tile_group.add(t)
 
 # FUNCTIONS ******************************************************************
 
@@ -45,7 +48,7 @@ def get_speed(score):
 
 # VARIABLES ******************************************************************
 scrolling = 0
-num_tiles = 0
+num_tiles = 1
 score = 0
 speed = 1
 
@@ -75,7 +78,8 @@ while running:
 				tile.kill()
 				score += 1
 
-	if scrolling > (num_tiles * TILE_HEIGHT):
+	t = tile_group.sprites()[-1]
+	if t.rect.top + speed>= 0:
 		x = random.randint(0, 3)
 		t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
 		tile_group.add(t)
@@ -84,7 +88,7 @@ while running:
 	for i in range(4):
 		pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
 
-	speed = get_speed(score) * (FPS / 1000)
+	speed = int(get_speed(score) * (FPS / 1000))
 	scrolling += speed
 
 	clock.tick(FPS)

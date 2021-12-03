@@ -33,7 +33,7 @@ class Tile(pygame.sprite.Sprite):
 			self.kill()
 
 		pygame.draw.rect(self.surface, self.color, (0,0, TILE_WIDTH, TILE_HEIGHT))
-		pygame.draw.rect(self.surface, WHITE, (0,0, TILE_WIDTH, TILE_HEIGHT), 4)
+		pygame.draw.rect(self.surface, PURPLE, (0,0, TILE_WIDTH, TILE_HEIGHT), 4)
 		pygame.draw.rect(self.surface, BLUE2, (0,0, TILE_WIDTH, TILE_HEIGHT), 2)
 		pygame.draw.line(self.surface, BLUE, self.line_start, self.line_end, 3)
 		pygame.draw.circle(self.surface, BLUE, self.center, 15, 3)
