@@ -17,6 +17,7 @@ class Tile(pygame.sprite.Sprite):
 		self.win = win
 		self.x, self.y = x, y
 		self.color = BLACK
+		self.alive = True
 
 		self.surface = pygame.Surface((TILE_WIDTH, TILE_HEIGHT), pygame.SRCALPHA)
 		self.rect = self.surface.get_rect()
@@ -32,9 +33,13 @@ class Tile(pygame.sprite.Sprite):
 		if self.rect.y >= HEIGHT:
 			self.kill()
 
-		pygame.draw.rect(self.surface, self.color, (0,0, TILE_WIDTH, TILE_HEIGHT))
-		pygame.draw.rect(self.surface, PURPLE, (0,0, TILE_WIDTH, TILE_HEIGHT), 4)
-		pygame.draw.rect(self.surface, BLUE2, (0,0, TILE_WIDTH, TILE_HEIGHT), 2)
-		pygame.draw.line(self.surface, BLUE, self.line_start, self.line_end, 3)
-		pygame.draw.circle(self.surface, BLUE, self.center, 15, 3)
+		if self.alive:
+			pygame.draw.rect(self.surface, self.color, (0,0, TILE_WIDTH, TILE_HEIGHT))
+			pygame.draw.rect(self.surface, PURPLE, (0,0, TILE_WIDTH, TILE_HEIGHT), 4)
+			pygame.draw.rect(self.surface, BLUE2, (0,0, TILE_WIDTH, TILE_HEIGHT), 2)
+			pygame.draw.line(self.surface, BLUE, self.line_start, self.line_end, 3)
+			pygame.draw.circle(self.surface, BLUE, self.center, 15, 3)
+		else:
+			pygame.draw.rect(self.surface, (0,0,0, 90), (0,0, TILE_WIDTH, TILE_HEIGHT))
+			
 		self.win.blit(self.surface, self.rect)

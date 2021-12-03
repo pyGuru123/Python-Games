@@ -47,7 +47,7 @@ def get_speed(score):
 	return 200 + 5 * score
 
 # VARIABLES ******************************************************************
-scrolling = 0
+
 num_tiles = 1
 score = 0
 speed = 1
@@ -75,21 +75,22 @@ while running:
 	if pos:
 		for tile in tile_group:
 			if tile.rect.collidepoint(pos):
-				tile.kill()
+				tile.alive = False
 				score += 1
 
-	t = tile_group.sprites()[-1]
-	if t.rect.top + speed>= 0:
-		x = random.randint(0, 3)
-		t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
-		tile_group.add(t)
-		num_tiles += 1
+	if len(tile_group) > 0:
+		t = tile_group.sprites()[-1]
+		if t.rect.top + speed >= 0:
+			x = random.randint(0, 3)
+			y = -TILE_HEIGHT - (0 - t.rect.top)
+			t = Tile(x * TILE_WIDTH, y, win)
+			tile_group.add(t)
+			num_tiles += 1
 
 	for i in range(4):
 		pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
 
 	speed = int(get_speed(score) * (FPS / 1000))
-	scrolling += speed
 
 	clock.tick(FPS)
 	pygame.display.update()
