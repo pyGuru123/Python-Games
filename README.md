@@ -12,6 +12,9 @@ and pygame library.
 * ### [Aeroblasters](https://github.com/pyGuru123/Python-Games/tree/master/Aeroblasters)
 	> Aeroblasters is a 2d plane shooter arcade game.
 
+* ### [Angry Walls](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
+	> A simple hypercasual game made on pydroid3.
+
 * ### [Arc Dash](https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
 	> Arc Dash is a simple endless target based hypercasual arcade game.
 
@@ -21,6 +24,12 @@ and pygame library.
 * ### [Bounce](https://github.com/pyGuru123/Python-Games/tree/master/Bounce)
 	> Bounce is an clone of the original Nokia's Bounce game
 
+* ### [Car Dodge 2D](https://github.com/pyGuru123/Python-Games/tree/master/Car%20Dodge%202d)
+	> A car dodge game made on pydroid3.
+
+* ### [Cave Story](https://github.com/pyGuru123/Python-Games/tree/master/Cave%20Story)
+	> A cave adventure based 2d platformer game made on pydroid3.
+
 * ### [Connected](https://github.com/pyGuru123/Python-Games/tree/master/Connected)
 	> Connected is a simple endless hypercasual game.
 
@@ -29,6 +38,12 @@ and pygame library.
 
 * ### [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
 	> Dodgy walls is a simple endless hypercasual arcade game.
+
+* ### [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
+	> Collect Eggs, score points. A simple game for pydroid3.
+
+* ### [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Flappy%20Bird)
+	> An implementation of flappy bird on pydroid3.
 
 * ### [GhostBusters](https://github.com/pyGuru123/Python-Games/tree/master/GhostBusters)
 	> GhostBusters is a scrollable platformer game with parallax.
@@ -72,21 +87,6 @@ and pygame library.
 ***
 
 ## Games made on/for pyrdoid3
-
-* ### [Angry Walls](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
-	> A simple hypercasual game made on pydroid3.
-
-* ### [Car Dodge 2D](https://github.com/pyGuru123/Python-Games/tree/master/Car%20Dodge%202d)
-	> A car dodge game made on pydroid3.
-
-* ### [Cave Story](https://github.com/pyGuru123/Python-Games/tree/master/Cave%20Story)
-	> A cave adventure based 2d platformer game made on pydroid3.
-
-* ### [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
-	> Collect Eggs, score points. A simple game for pydroid3.
-
-* ### [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Flappy%20Bird)
-	> An implementation of flappy bird on pydroid3.
 
 ***
 
