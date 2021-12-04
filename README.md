@@ -86,7 +86,21 @@ and pygame library.
 
 ***
 
-## Games made on/for pyrdoid3
+## Games made on / for pyrdoid3
+
+These games are specifically made and optimised for pydroid3 
+
+* [Aeroblasters](https://github.com/pyGuru123/Python-Games/tree/master/Aeroblasters)
+* [Angry Walls](https://github.com/pyGuru123/Python-Games/tree/master/Angry%20Walls)
+* [Arc Dash](https://github.com/pyGuru123/Python-Games/tree/master/Arc%20Dash)
+* [Cave Story](https://github.com/pyGuru123/Python-Games/tree/master/Cave%20Story)
+* [Connected](https://github.com/pyGuru123/Python-Games/tree/master/Connected)
+* [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
+* [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
+* [HyperTile Dash](https://github.com/pyGuru123/Python-Games/tree/master/HyperTile%20Dash)
+* [Flappy Bird](https://github.com/pyGuru123/Python-Games/tree/master/Flappy%20Bird)
+* [Qircle Rush](https://github.com/pyGuru123/Python-Games/tree/master/Qircle%20Rush)
+* [Rotate Dash](https://github.com/pyGuru123/Python-Games/tree/master/Rotate%20Dash)
 
 ***
 
