@@ -28,11 +28,18 @@ FPS = 30
 
 WHITE = (255, 255, 255)
 GRAY = (75, 75, 75)
+BLUE = (30, 144, 255)
 
 # IMAGES *********************************************************************
 
 bg_img = pygame.image.load('Assets/bg.png')
 bg_img = pygame.transform.scale(bg_img, (WIDTH, HEIGHT))
+
+piano_img = pygame.image.load('Assets/piano.png')
+piano_img = pygame.transform.scale(piano_img, (212, 212))
+
+start_img = pygame.image.load('Assets/start.png')
+start_img = pygame.transform.scale(start_img, (212, 212))
 
 # GROUPS & OBJECTS ***********************************************************
 
@@ -55,6 +62,10 @@ speed = 1
 clicked = False
 pos = None
 
+home_page = False
+game_page = True
+score_page = False
+
 running = True
 while running:
 	pos = None
@@ -71,27 +82,39 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			pos = event.pos
 
-	tile_group.update(speed)
-	if pos:
+	if home_page:
+		win.blit(piano_img, (WIDTH//8, HEIGHT//8))
+
+	if score_page:
+		pass
+
+	if game_page:
 		for tile in tile_group:
-			if tile.rect.collidepoint(pos):
-				tile.alive = False
-				score += 1
+			tile.update(speed)
 
-	if len(tile_group) > 0:
-		t = tile_group.sprites()[-1]
-		if t.rect.top + speed >= 0:
-			x = random.randint(0, 3)
-			y = -TILE_HEIGHT - (0 - t.rect.top)
-			t = Tile(x * TILE_WIDTH, y, win)
-			tile_group.add(t)
-			num_tiles += 1
+			if pos:
+				if tile.rect.collidepoint(pos):
+					tile.alive = False
+					score += 1
 
-	for i in range(4):
-		pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
+			if tile.rect.bottom >= HEIGHT and tile.alive:
+				running = False
 
-	speed = int(get_speed(score) * (FPS / 1000))
+		if len(tile_group) > 0:
+			t = tile_group.sprites()[-1]
+			if t.rect.top + speed >= 0:
+				x = random.randint(0, 3)
+				y = -TILE_HEIGHT - (0 - t.rect.top)
+				t = Tile(x * TILE_WIDTH, y, win)
+				tile_group.add(t)
+				num_tiles += 1
 
+		for i in range(4):
+			pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
+
+		speed = int(get_speed(score) * (FPS / 1000))
+
+	pygame.draw.rect(win, BLUE, (0,0, WIDTH, HEIGHT), 2)
 	clock.tick(FPS)
 	pygame.display.update()
 
