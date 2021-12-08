@@ -3,8 +3,11 @@
 # Author : Prajjwal Pathak (pyguru)
 # Date : Thursday, 30 November, 2021
 
+import json
 import random
 import pygame
+from threading import Thread
+
 from objects import Tile
 
 pygame.init()
@@ -51,7 +54,19 @@ tile_group.add(t)
 # FUNCTIONS ******************************************************************
 
 def get_speed(score):
-	return 200 + 5 * score
+	return 200 + 3 * score
+
+def play_notes(notePath):
+	pygame.mixer.Sound(notePath).play()
+
+# NOTES **********************************************************************
+
+with open('notes.json') as file:
+	notes_dict = json.load(file)
+
+notes_list = notes_dict['2']
+note_count = 0
+pygame.mixer.set_num_channels(len(notes_list))
 
 # VARIABLES ******************************************************************
 
@@ -96,6 +111,13 @@ while running:
 				if tile.rect.collidepoint(pos):
 					tile.alive = False
 					score += 1
+					pos = None
+
+					note = notes_list[note_count]
+					th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
+					th.start()
+					th.join()
+					note_count = (note_count + 1) % len(notes_list)
 
 			if tile.rect.bottom >= HEIGHT and tile.alive:
 				running = False
