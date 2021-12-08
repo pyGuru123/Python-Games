@@ -54,7 +54,7 @@ tile_group.add(t)
 # FUNCTIONS ******************************************************************
 
 def get_speed(score):
-	return 200 + 3 * score
+	return 200 + 6 * score
 
 def play_notes(notePath):
 	pygame.mixer.Sound(notePath).play()
@@ -64,7 +64,7 @@ def play_notes(notePath):
 with open('notes.json') as file:
 	notes_dict = json.load(file)
 
-notes_list = notes_dict['2']
+notes_list = notes_dict['4']
 note_count = 0
 pygame.mixer.set_num_channels(len(notes_list))
 
@@ -113,7 +113,8 @@ while running:
 					score += 1
 					pos = None
 
-					note = notes_list[note_count]
+					note = notes_list[note_count].strip()
+					print(note)
 					th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
 					th.start()
 					th.join()
