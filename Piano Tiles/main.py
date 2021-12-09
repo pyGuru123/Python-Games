@@ -44,6 +44,14 @@ piano_img = pygame.transform.scale(piano_img, (212, 212))
 start_img = pygame.image.load('Assets/start.png')
 start_img = pygame.transform.scale(start_img, (212, 212))
 
+# MUSIC **********************************************************************
+
+buzzer_fx = pygame.mixer.Sound('Sounds/piano-buzzer.mp3')
+
+pygame.mixer.music.load('Sounds/piano-bgmusic.mp3')
+pygame.mixer.music.set_volume(0.8)
+pygame.mixer.music.play(loops=-1)
+
 # GROUPS & OBJECTS ***********************************************************
 
 tile_group = pygame.sprite.Group()
@@ -64,7 +72,7 @@ def play_notes(notePath):
 with open('notes.json') as file:
 	notes_dict = json.load(file)
 
-notes_list = notes_dict['4']
+notes_list = notes_dict['1']
 note_count = 0
 pygame.mixer.set_num_channels(len(notes_list))
 
@@ -121,7 +129,13 @@ while running:
 					note_count = (note_count + 1) % len(notes_list)
 
 			if tile.rect.bottom >= HEIGHT and tile.alive:
+				tile.color = (255, 0, 0)
 				running = False
+
+		if pos:
+			buzzer_fx.play()
+			running = False
+
 
 		if len(tile_group) > 0:
 			t = tile_group.sprites()[-1]
