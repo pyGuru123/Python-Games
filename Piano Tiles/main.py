@@ -8,7 +8,7 @@ import random
 import pygame
 from threading import Thread
 
-from objects import Tile
+from objects import Tile, Square
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -42,7 +42,8 @@ piano_img = pygame.image.load('Assets/piano.png')
 piano_img = pygame.transform.scale(piano_img, (212, 212))
 
 start_img = pygame.image.load('Assets/start.png')
-start_img = pygame.transform.scale(start_img, (212, 212))
+start_img = pygame.transform.scale(start_img, (120, 40))
+start_rect = start_img.get_rect(center=(WIDTH//2, HEIGHT-80))
 
 # MUSIC **********************************************************************
 
@@ -54,15 +55,13 @@ pygame.mixer.music.play(loops=-1)
 
 # GROUPS & OBJECTS ***********************************************************
 
+square_group = pygame.sprite.Group()
 tile_group = pygame.sprite.Group()
-x = random.randint(0, 3)
-t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
-tile_group.add(t)
 
 # FUNCTIONS ******************************************************************
 
 def get_speed(score):
-	return 200 + 6 * score
+	return 200 + 5 * score
 
 def play_notes(notePath):
 	pygame.mixer.Sound(notePath).play()
@@ -72,27 +71,38 @@ def play_notes(notePath):
 with open('notes.json') as file:
 	notes_dict = json.load(file)
 
-notes_list = notes_dict['1']
+notes_list = notes_dict['4']
 note_count = 0
 pygame.mixer.set_num_channels(len(notes_list))
 
 # VARIABLES ******************************************************************
 
-num_tiles = 1
+num_tiles = 0
 score = 0
 speed = 1
 
 clicked = False
 pos = None
 
-home_page = False
-game_page = True
+home_page = True
+game_page = False
 score_page = False
+
+count = 0
 
 running = True
 while running:
 	pos = None
+
+	count += 1
+	if count % 100 == 0:
+			square = Square(win)
+			square_group.add(square)
+			counter = 0
+
 	win.blit(bg_img, (0,0))
+	square_group.update()
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -107,6 +117,18 @@ while running:
 
 	if home_page:
 		win.blit(piano_img, (WIDTH//8, HEIGHT//8))
+		win.blit(start_img, start_rect)
+
+		if pos and start_rect.collidepoint(pos):
+			home_page = False
+			game_page = True
+
+			x = random.randint(0, 3)
+			t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
+			tile_group.add(t)
+
+			num_tiles += 1
+			pos = None
 
 	if score_page:
 		pass
@@ -130,12 +152,11 @@ while running:
 
 			if tile.rect.bottom >= HEIGHT and tile.alive:
 				tile.color = (255, 0, 0)
-				running = False
+				game_page = False
 
 		if pos:
 			buzzer_fx.play()
 			running = False
-
 
 		if len(tile_group) > 0:
 			t = tile_group.sprites()[-1]

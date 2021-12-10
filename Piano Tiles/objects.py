@@ -1,4 +1,5 @@
 import pygame
+import random
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 TILE_WIDTH = WIDTH // 4
@@ -43,3 +44,34 @@ class Tile(pygame.sprite.Sprite):
 			pygame.draw.rect(self.surface, (0,0,0, 90), (0,0, TILE_WIDTH, TILE_HEIGHT))
 			
 		self.win.blit(self.surface, self.rect)
+
+class Square(pygame.sprite.Sprite):
+	def __init__(self, win):
+		super(Square, self).__init__()
+
+		self.win = win
+		self.color = (128, 128, 128)
+		self.speed = 3
+		self.angle = 0
+
+		self.side = random.randint(15, 40)
+		x = random.randint(self.side, WIDTH-self.side)
+		y = 0
+
+		self.surface = pygame.Surface((self.side, self.side), pygame.SRCALPHA)
+		self.rect = self.surface.get_rect(center=(x, y))
+
+	def update(self):
+		center = self.rect.center
+		self.angle = (self.angle + self.speed) % 360
+		image = pygame.transform.rotate(self.surface , self.angle)
+		self.rect = image.get_rect()
+		self.rect.center = center
+
+		self.rect.y += 1.5
+
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+		pygame.draw.rect(self.surface, self.color, (0,0, self.side, self.side), 4)
+		self.win.blit(image, self.rect)
