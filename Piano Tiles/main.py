@@ -45,6 +45,9 @@ start_img = pygame.image.load('Assets/start.png')
 start_img = pygame.transform.scale(start_img, (120, 40))
 start_rect = start_img.get_rect(center=(WIDTH//2, HEIGHT-80))
 
+overlay = pygame.image.load('Assets/red overlay.png')
+overlay = pygame.transform.scale(overlay, (WIDTH, HEIGHT))
+
 # MUSIC **********************************************************************
 
 buzzer_fx = pygame.mixer.Sound('Sounds/piano-buzzer.mp3')
@@ -86,9 +89,11 @@ pos = None
 
 home_page = True
 game_page = False
-score_page = False
+game_over = False
 
 count = 0
+overlay_index = 0
+
 
 running = True
 while running:
@@ -112,7 +117,7 @@ while running:
 				event.key == pygame.K_q:
 				running = False
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
+		if event.type == pygame.MOUSEBUTTONDOWN and not game_over:
 			pos = event.pos
 
 	if home_page:
@@ -129,9 +134,6 @@ while running:
 
 			num_tiles += 1
 			pos = None
-
-	if score_page:
-		pass
 
 	if game_page:
 		for tile in tile_group:
@@ -152,11 +154,11 @@ while running:
 
 			if tile.rect.bottom >= HEIGHT and tile.alive:
 				tile.color = (255, 0, 0)
-				game_page = False
+				game_over = True
 
 		if pos:
 			buzzer_fx.play()
-			running = False
+			game_over = True
 
 		if len(tile_group) > 0:
 			t = tile_group.sprites()[-1]
@@ -171,6 +173,14 @@ while running:
 			pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
 
 		speed = int(get_speed(score) * (FPS / 1000))
+
+		if game_over:
+			speed = 0
+			pos = None
+
+			if overlay_index > 20 or overlay_index % 3 == 0:
+				win.blit(overlay, (0,0))
+			overlay_index += 1
 
 	pygame.draw.rect(win, BLUE, (0,0, WIDTH, HEIGHT), 2)
 	clock.tick(FPS)
