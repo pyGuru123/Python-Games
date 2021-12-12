@@ -8,7 +8,7 @@ import random
 import pygame
 from threading import Thread
 
-from objects import Tile, Square, Text, Button
+from objects import Tile, Square, Text, Button, Counter
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -84,6 +84,8 @@ tile_group = pygame.sprite.Group()
 square_group = pygame.sprite.Group()
 text_group = pygame.sprite.Group()
 
+time_counter = Counter(win, gameover_font)
+
 # FUNCTIONS ******************************************************************
 
 def get_speed(score):
@@ -109,6 +111,7 @@ pos = None
 home_page = True
 game_page = False
 game_over = False
+sound_on = True
 
 count = 0
 overlay_index = 0
@@ -157,95 +160,104 @@ while running:
 			note_count = 0
 			pygame.mixer.set_num_channels(len(notes_list))
 
-
 	if game_page:
-		for tile in tile_group:
-			tile.update(speed)
+		time_counter.update()
+		if time_counter.count <= 0:
+			for tile in tile_group:
+				tile.update(speed)
+
+				if pos:
+					if tile.rect.collidepoint(pos):
+						tile.alive = False
+						score += 1
+						if score >= high:
+							high = score
+						pos = None
+
+						note = notes_list[note_count].strip()
+						th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
+						th.start()
+						th.join()
+						note_count = (note_count + 1) % len(notes_list)
+
+						tpos = tile.rect.centerx - 10, tile.rect.y
+						text = Text('+1', score_font, tpos, win)
+						text_group.add(text)
+
+				if tile.rect.bottom >= HEIGHT and tile.alive:
+					if not game_over:
+						tile.color = (255, 0, 0)
+						buzzer_fx.play()
+						game_over = True
 
 			if pos:
-				if tile.rect.collidepoint(pos):
-					tile.alive = False
-					score += 1
-					if score >= high:
-						high = score
-					pos = None
+				buzzer_fx.play()
+				game_over = True
 
-					note = notes_list[note_count].strip()
-					print(note)
-					th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
-					th.start()
-					th.join()
-					note_count = (note_count + 1) % len(notes_list)
-
-					tpos = tile.rect.centerx - 10, tile.rect.y
-					text = Text('+1', score_font, tpos, win)
-					text_group.add(text)
-
-			if tile.rect.bottom >= HEIGHT and tile.alive:
-				if not game_over:
-					tile.color = (255, 0, 0)
-					buzzer_fx.play()
-					game_over = True
-
-		if pos:
-			buzzer_fx.play()
-			game_over = True
-
-		if len(tile_group) > 0:
-			t = tile_group.sprites()[-1]
-			if t.rect.top + speed >= 0:
-				x = random.randint(0, 3)
-				y = -TILE_HEIGHT - (0 - t.rect.top)
-				t = Tile(x * TILE_WIDTH, y, win)
-				tile_group.add(t)
-
-		text_group.update(speed)
-		img1 = score_font.render(f'Score : {score}', True, WHITE)
-		win.blit(img1, (70 - img1.get_width() / 2, 10))
-		img2 = score_font.render(f'High : {high}', True, WHITE)
-		win.blit(img2, (200 - img2.get_width() / 2, 10))
-		for i in range(4):
-			pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
-
-		speed = int(get_speed(score) * (FPS / 1000))
-
-		if game_over:
-			speed = 0
-
-			if overlay_index > 20:
-				win.blit(overlay, (0,0))
-
-				img1 = gameover_font.render('Game over', True, WHITE)
-				img2 = score_font.render(f'Score : {score}', True, WHITE)
-				win.blit(img1, (WIDTH // 2 - img1.get_width() / 2, 180))
-				win.blit(img2, (WIDTH // 2 - img2.get_width() / 2, 250))
-
-				if close_btn.draw(win):
-					running = False
-
-				if replay_btn.draw(win):
-					index = random.randint(1, len(notes_dict))
-					notes_list = notes_dict[str(index)]
-					note_count = 0
-					pygame.mixer.set_num_channels(len(notes_list))
-
-					text_group.empty()
-					tile_group.empty()
-					score = 0
-					speed = 0
-					overlay_index = 0
-					game_over = False
-
+			if len(tile_group) > 0:
+				t = tile_group.sprites()[-1]
+				if t.rect.top + speed >= 0:
 					x = random.randint(0, 3)
-					t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
+					y = -TILE_HEIGHT - (0 - t.rect.top)
+					t = Tile(x * TILE_WIDTH, y, win)
 					tile_group.add(t)
 
-				if sound_btn.draw(win):
-					pass
-			else:
-				overlay_index += 1
-				if overlay_index % 3 == 0:
+			text_group.update(speed)
+			img1 = score_font.render(f'Score : {score}', True, WHITE)
+			win.blit(img1, (70 - img1.get_width() / 2, 10))
+			img2 = score_font.render(f'High : {high}', True, WHITE)
+			win.blit(img2, (200 - img2.get_width() / 2, 10))
+			for i in range(4):
+				pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
+
+			speed = int(get_speed(score) * (FPS / 1000))
+
+			if game_over:
+				speed = 0
+
+				if overlay_index > 20:
 					win.blit(overlay, (0,0))
+
+					img1 = gameover_font.render('Game over', True, WHITE)
+					img2 = score_font.render(f'Score : {score}', True, WHITE)
+					win.blit(img1, (WIDTH // 2 - img1.get_width() / 2, 180))
+					win.blit(img2, (WIDTH // 2 - img2.get_width() / 2, 250))
+
+					if close_btn.draw(win):
+						running = False
+
+					if replay_btn.draw(win):
+						index = random.randint(1, len(notes_dict))
+						notes_list = notes_dict[str(index)]
+						note_count = 0
+						pygame.mixer.set_num_channels(len(notes_list))
+
+						text_group.empty()
+						tile_group.empty()
+						score = 0
+						speed = 0
+						overlay_index = 0
+						game_over = False
+
+						time_counter = Counter(win, gameover_font)
+
+						x = random.randint(0, 3)
+						t = Tile(x * TILE_WIDTH, -TILE_HEIGHT, win)
+						tile_group.add(t)
+
+					if sound_btn.draw(win):
+						sound_on = not sound_on
+				
+						if sound_on:
+							sound_btn.update_image(sound_on_img)
+							pygame.mixer.music.play(loops=-1)
+						else:
+							sound_btn.update_image(sound_off_img)
+							pygame.mixer.music.stop()
+				else:
+					overlay_index += 1
+					if overlay_index % 3 == 0:
+						win.blit(overlay, (0,0))
 
 	pygame.draw.rect(win, BLUE, (0,0, WIDTH, HEIGHT), 2)
 	clock.tick(FPS)

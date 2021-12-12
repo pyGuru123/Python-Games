@@ -93,6 +93,24 @@ class Square(pygame.sprite.Sprite):
 		pygame.draw.rect(self.surface, (30, 144, 255, 128), (2,2, self.side-4, self.side-4), 2)
 		self.win.blit(image, self.rect)
 
+class Counter(pygame.sprite.Sprite):
+	def __init__(self, win, font):
+		super(Counter, self).__init__()
+
+		self.win = win
+		self.font = font
+		self.index = 1
+		self.count = 3
+
+	def update(self):
+		if self.index % 30 == 0:
+			self.count -= 1
+
+		self.index += 1
+
+		if self.count > 0:
+			self.image = self.font.render(f'{self.count}', True, (255, 255, 255))
+			self.win.blit(self.image, (WIDTH//2-16, HEIGHT//2-25))
 
 class Button(pygame.sprite.Sprite):
 	def __init__(self, img, scale, x, y):
