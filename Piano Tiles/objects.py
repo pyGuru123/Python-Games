@@ -45,12 +45,28 @@ class Tile(pygame.sprite.Sprite):
 			
 		self.win.blit(self.surface, self.rect)
 
+class Text(pygame.sprite.Sprite):
+	def __init__(self, text, font, pos, win):
+		super(Text, self).__init__()
+		self.win = win
+
+		self.x,self.y = pos
+		self.initial = self.y
+		self.image = font.render(text, True, (255, 255, 255))
+
+	def update(self, speed):
+		self.y += speed
+		if self.y - self.initial >= 100:
+			self.kill()
+
+		self.win.blit(self.image, (self.x, self.y))
+
 class Square(pygame.sprite.Sprite):
 	def __init__(self, win):
 		super(Square, self).__init__()
 
 		self.win = win
-		self.color = (128, 128, 128)
+		self.color = (255, 255, 255)
 		self.speed = 3
 		self.angle = 0
 
@@ -74,4 +90,5 @@ class Square(pygame.sprite.Sprite):
 			self.kill()
 
 		pygame.draw.rect(self.surface, self.color, (0,0, self.side, self.side), 4)
+		pygame.draw.rect(self.surface, (30, 144, 255, 128), (2,2, self.side-4, self.side-4), 2)
 		self.win.blit(image, self.rect)

@@ -8,7 +8,7 @@ import random
 import pygame
 from threading import Thread
 
-from objects import Tile, Square
+from objects import Tile, Square, Text
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -41,6 +41,9 @@ bg_img = pygame.transform.scale(bg_img, (WIDTH, HEIGHT))
 piano_img = pygame.image.load('Assets/piano.png')
 piano_img = pygame.transform.scale(piano_img, (212, 212))
 
+title_img = pygame.image.load('Assets/title.png')
+title_img = pygame.transform.scale(title_img, (200, 50))
+
 start_img = pygame.image.load('Assets/start.png')
 start_img = pygame.transform.scale(start_img, (120, 40))
 start_rect = start_img.get_rect(center=(WIDTH//2, HEIGHT-80))
@@ -56,10 +59,17 @@ pygame.mixer.music.load('Sounds/piano-bgmusic.mp3')
 pygame.mixer.music.set_volume(0.8)
 pygame.mixer.music.play(loops=-1)
 
+# FONTS **********************************************************************
+
+score_font = pygame.font.Font('Fonts/Futura condensed.ttf', 32)
+title_font = pygame.font.Font('Fonts/Alternity-8w7J.ttf', 30)
+gameover_font = pygame.font.Font('Fonts/Alternity-8w7J.ttf', 40)
+
 # GROUPS & OBJECTS ***********************************************************
 
-square_group = pygame.sprite.Group()
 tile_group = pygame.sprite.Group()
+square_group = pygame.sprite.Group()
+text_group = pygame.sprite.Group()
 
 # FUNCTIONS ******************************************************************
 
@@ -123,6 +133,7 @@ while running:
 	if home_page:
 		win.blit(piano_img, (WIDTH//8, HEIGHT//8))
 		win.blit(start_img, start_rect)
+		win.blit(title_img, (WIDTH//2-100, HEIGHT//2+50))
 
 		if pos and start_rect.collidepoint(pos):
 			home_page = False
@@ -152,8 +163,13 @@ while running:
 					th.join()
 					note_count = (note_count + 1) % len(notes_list)
 
+					tpos = tile.rect.centerx - 10, tile.rect.y
+					text = Text('+1', score_font, tpos, win)
+					text_group.add(text)
+
 			if tile.rect.bottom >= HEIGHT and tile.alive:
 				tile.color = (255, 0, 0)
+				buzzer_fx.play()
 				game_over = True
 
 		if pos:
@@ -169,6 +185,7 @@ while running:
 				tile_group.add(t)
 				num_tiles += 1
 
+		text_group.update(speed)
 		for i in range(4):
 			pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
 
