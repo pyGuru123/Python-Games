@@ -6,7 +6,9 @@
 
 Piano Tiles is a piano tiles musical game implementaion in python and pygame.
 
-![Alt text](app.gif?raw=true "Piano Tiles")
+<p align='center'>
+	<img src='app.png' width=200 height=300>
+</p>
 
 ## How to Download
 

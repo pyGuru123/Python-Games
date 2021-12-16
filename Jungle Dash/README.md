@@ -29,8 +29,6 @@ Controls:
 * Use Space or Up arrow key to jump.
 * Use Left & Right arrow key to move in left & right direction respectively
 
-![Alt text](game.gif?raw=true "Jungle Dash")
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
