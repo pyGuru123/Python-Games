@@ -1,7 +1,7 @@
 # Tetris
 
 # Author : Prajjwal Pathak (pyguru)
-# Date : Thursday, 30 September, 2021
+# Date : Thursday, 18 December, 2021
 
 import random
 import pygame
