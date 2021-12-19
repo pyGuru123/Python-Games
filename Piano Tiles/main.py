@@ -102,8 +102,8 @@ with open('notes.json') as file:
 # VARIABLES ******************************************************************
 
 score = 0
-high = 0
-speed = 1
+high_score = 0
+speed = 0
 
 clicked = False
 pos = None
@@ -168,21 +168,24 @@ while running:
 
 				if pos:
 					if tile.rect.collidepoint(pos):
-						tile.alive = False
-						score += 1
-						if score >= high:
-							high = score
+						if tile.alive:
+							tile.alive = False
+							score += 1
+							if score >= high_score:
+								high_score = score
+							
+
+							note = notes_list[note_count].strip()
+							th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
+							th.start()
+							th.join()
+							note_count = (note_count + 1) % len(notes_list)
+
+							tpos = tile.rect.centerx - 10, tile.rect.y
+							text = Text('+1', score_font, tpos, win)
+							text_group.add(text)
+
 						pos = None
-
-						note = notes_list[note_count].strip()
-						th = Thread(target=play_notes, args=(f'Sounds/{note}.ogg', ))
-						th.start()
-						th.join()
-						note_count = (note_count + 1) % len(notes_list)
-
-						tpos = tile.rect.centerx - 10, tile.rect.y
-						text = Text('+1', score_font, tpos, win)
-						text_group.add(text)
 
 				if tile.rect.bottom >= HEIGHT and tile.alive:
 					if not game_over:
@@ -205,7 +208,7 @@ while running:
 			text_group.update(speed)
 			img1 = score_font.render(f'Score : {score}', True, WHITE)
 			win.blit(img1, (70 - img1.get_width() / 2, 10))
-			img2 = score_font.render(f'High : {high}', True, WHITE)
+			img2 = score_font.render(f'High : {high_score}', True, WHITE)
 			win.blit(img2, (200 - img2.get_width() / 2, 10))
 			for i in range(4):
 				pygame.draw.line(win, WHITE, (TILE_WIDTH * i, 0), (TILE_WIDTH*i, HEIGHT), 1)
