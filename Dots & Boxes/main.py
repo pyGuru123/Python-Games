@@ -76,7 +76,7 @@ left = False
 fillcount = 0
 p1_score = 0
 p2_score = 0
-gameover = True
+gameover = False
 
 turn = 0
 players = ['X', 'O']
