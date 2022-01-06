@@ -60,27 +60,41 @@ class Cell:
 				pygame.draw.line(win, WHITE, (self.edges[index][0]),
 										(self.edges[index][1]), 2)
 
-cells = []
-for r in range(ROWS):
-	for c in range(COLS):
-		cell = Cell(r, c)
-		cells.append(cell)
+def create_cells():
+	cells = []
+	for r in range(ROWS):
+		for c in range(COLS):
+			cell = Cell(r, c)
+			cells.append(cell)
+	return cells
 
-pos = None
-ccell = None
-up = False
-right = False
-bottom = False
-left = False
+def reset_cells():
+	pos = None
+	ccell = None
+	up = False
+	right = False
+	bottom = False
+	left = False
+	return pos, ccell, up, right, bottom, left
 
-fillcount = 0
-p1_score = 0
-p2_score = 0
+def reset_score():
+	fillcount = 0
+	p1_score = 0
+	p2_score = 0
+	return fillcount, p1_score, p2_score
+
+def reset_player():
+	turn = 0
+	players = ['X', 'O']
+	player = players[turn]
+	next_turn = False
+	return turn, players, player, next_turn
+
 gameover = False
-
-turn = 0
-players = ['X', 'O']
-player = players[turn]
+cells = create_cells()
+pos, ccell, up, right, bottom, left = reset_cells()
+fillcount, p1_score, p2_score = reset_score()
+turn, players, player, next_turn = reset_player()
 
 running = True
 while running:
@@ -99,6 +113,13 @@ while running:
 			if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
 				running = False
 
+			if event.key == pygame.K_r:
+				gameover = False
+				cells = create_cells()
+				pos, ccell, up, right, bottom, left = reset_cells()
+				fillcount, p1_score, p2_score = reset_score()
+				turn, players, player, next_turn = reset_player()
+
 			if not gameover:
 				if event.key == pygame.K_UP:
 					up = True
@@ -110,10 +131,6 @@ while running:
 					left = True
 
 		if event.type == pygame.KEYUP:
-			if up or right or bottom or left:
-				turn = (turn + 1) % len(players)
-				player = players[turn]
-
 			if event.key == pygame.K_UP:
 				up = False
 			if event.key == pygame.K_RIGHT:
@@ -137,22 +154,26 @@ while running:
 		if not ccell.winner:
 			pygame.draw.circle(win, RED, (ccell.rect.centerx, ccell.rect.centery), 2)
 
-		if up:
+		if up and not ccell.sides[0]:
 			ccell.sides[0] = True
 			if index - ROWS >= 0:			
 				cells[index-ROWS].sides[2] = True
-		if right:
+				next_turn = True
+		if right and not ccell.sides[1]:
 			ccell.sides[1] = True
 			if (index + 1) % COLS > 0:
 				cells[index+1].sides[3] = True
-		if bottom:
+				next_turn = True
+		if bottom and not ccell.sides[2]:
 			ccell.sides[2] = True
 			if index + ROWS < len(cells):			
 				cells[index+ROWS].sides[0] = True
-		if left:
+				next_turn = True
+		if left and not ccell.sides[3]:
 			ccell.sides[3] = True
 			if (index % COLS) > 0:
 				cells[index-1].sides[1] = True
+				next_turn = True
 		
 		res = ccell.checkwin(player)
 		if res:
@@ -164,6 +185,11 @@ while running:
 			if fillcount == ROWS * COLS:
 				print(p1_score, p2_score)
 				gameover = True
+
+		if next_turn:
+			turn = (turn + 1) % len(players)
+			player = players[turn]
+			next_turn = False
 
 	p1img = font.render(f'Player 1 : {p1_score}', True, BLUE)
 	p1rect = p1img.get_rect()
@@ -188,7 +214,15 @@ while running:
 		pygame.draw.rect(win, RED, rect, 2)
 
 		over = font.render('Game Over', True, WHITE)
-		win.blit(over, (rect.centerx-over.get_width()/2, rect.y + 20))
+		win.blit(over, (rect.centerx-over.get_width()/2, rect.y + 10))
+		
+		winner = '1' if p1_score > p2_score else '2'
+		winner_img = font.render(f'Player {winner} Won', True, GREEN)
+		win.blit(winner_img, (rect.centerx-winner_img.get_width()/2, rect.centery- 10))
+
+		msg = 'Press r:restart, q:quit'
+		msgimg = font.render(msg, True, RED)
+		win.blit(msgimg, (rect.centerx-msgimg.get_width()/2, rect.centery + 20))
 
 	pygame.draw.rect(win, WHITE, (0,0,WIDTH,HEIGHT),2, border_radius=10)
 	pygame.display.update()
