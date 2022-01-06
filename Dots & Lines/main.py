@@ -4,15 +4,16 @@ import pygame
 SCREEN = WIDTH, HEIGHT = 100, 100
 CELLSIZE = 20
 PADDING = 20
-ROWS = COLS = (WIDTH - 2 * PADDING) // CELLSIZE
+ROWS = COLS = (WIDTH - 3 * PADDING) // CELLSIZE
 pygame.init()
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-font = pygame.font.Font('freesansbold.ttf', 20)
+font = pygame.font.SysFont('cursive', 25)
 
 class Cell:
 	def __init__(self, r, c):
@@ -35,22 +36,27 @@ class Cell:
 		self.sides = [False, False, False, False]
 		self.winner = None
 
+	def checkwin(self, winner):
+		if not self.winner:
+			if self.sides == [True]*4:
+				self.winner = winner
+				if winner == 'X':
+					color = GREEN
+				else:
+					color = RED
+				self.text = font.render(self.winner, True, color)
+
+				return 1
+		return 0
+
 	def update(self, win):
 		for index, side in enumerate(self.sides):
 			if side:
 				pygame.draw.line(win, WHITE, (self.edges[index][0]),
-										(self.edges[index][1]), 1)
+										(self.edges[index][1]), 2)
 
-		if not self.winner:
-			if self.sides == [True]*4:
-				self.winner = '1'
-				self.text = font.render(self.winner, True, GREEN)
-		else:
-			win.blit(self.text, (self.rect.centerx-5, self.rect.centery-10))
-
-
-def distance(A, B):
-	return math.sqrt((A[0]-B[0])**2 + (A[1]-B[1])**2)
+		if self.winner:
+			win.blit(self.text, (self.rect.centerx-5, self.rect.centery-7))
 
 cells = []
 for r in range(ROWS):
@@ -65,8 +71,18 @@ right = False
 bottom = False
 left = False
 
+fillcount = 0
+p1_score = 0
+p2_score = 0
+gameover = False
+
+turn = 0
+players = ['X', 'O']
+player = players[turn]
+
 running = True
 while running:
+	win.fill((0,0,0))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -97,6 +113,9 @@ while running:
 			if event.key == pygame.K_LEFT:
 				left = False
 
+			turn = (turn + 1) % len(players)
+			player = players[turn]
+
 	for r in range(ROWS+1):
 		for c in range(COLS+1):
 			pygame.draw.circle(win, WHITE, (c*CELLSIZE + PADDING, r*CELLSIZE + 
@@ -124,6 +143,17 @@ while running:
 			ccell.sides[3] = True
 			if (index % COLS) > 0:
 				cells[index-1].sides[1] = True
+		
+		res = ccell.checkwin(player)
+		if res:
+			fillcount += res
+			if player == 'X':
+				p1_score += 1
+			else:
+				p2_score += 1
+			if fillcount == ROWS * COLS:
+				print(p1_score, p2_score)
+				running = False
 
 	pygame.display.update()
 
