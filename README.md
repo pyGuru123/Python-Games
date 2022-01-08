@@ -39,6 +39,9 @@ and pygame library.
 * ### [Dodgy Walls](https://github.com/pyGuru123/Python-Games/tree/master/Dodgy%20Walls)
 	> Dodgy walls is a simple endless hypercasual arcade game.
 
+* ### [Dots & Boxes](https://github.com/pyGuru123/Python-Games/tree/master/Dots%20%26%20Boxes)
+	> Dots & Boxes is a simple dots and boxes game clone made with pygame.
+
 * ### [Egg Catching Game](https://github.com/pyGuru123/Python-Games/tree/master/Egg%20Catching%20Game)
 	> Collect Eggs, score points. A simple game for pydroid3.
 
