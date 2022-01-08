@@ -2,7 +2,10 @@ import pygame
 import random
 
 pygame.init()
-
+SCREEN = WIDTH, HEIGHT = 380, 500
+CELLSIZE = 20
+ROWS = HEIGHT // CELLSIZE
+COLS = WIDTH // CELLSIZE
 
 # COLORS
 
@@ -67,6 +70,52 @@ class Tetris:
 					if self.board[i + self.figure.y][j + self.figure.x] > 0:
 						intersection = True
 		return intersection
+
+	def remove_line(self):
+		for y in range(self.rows, 0, -1):
+			is_full = True
+			for x in range(0, self.cols):
+				if self.board[y][x] == 0:
+					is_full = False
+			if is_full:
+				del self.board[y]
+				self.board.insert(0, [0 for i in range(self.cols)])
+				self.score += 1
+
+	def freeze(self):
+		for i in range(4):
+			for j in range(4):
+				if i * 4 + j in self.figure.image():
+					self.board[i + self.figure.y][j + self.figure.x] = self.figure.color
+		self.remove_line()
+		self.new_figure()
+		if self.intersects():
+			pass 
+
+	def go_space(self):
+		while not self.intersects():
+			self.figure.y += 1
+		self.figure.y -= 1
+		self.freeze()
+
+	def go_down(self):
+		self.figure.y += 1
+		if self.intersects():
+			self.figure.y -= 1
+			self.freeze()
+
+	def go_side(self, dx):
+		self.figure.x += dx
+		if self.intersects():
+			self.figure.x -=  dx
+			self.freeze()
+
+	def rotate(self):
+		rotation = self.figure.rotation
+		self.figure.rotate()
+		if self.intersects():
+			self.figure.rotation = rotation
+
 		
 # t = Tetramino(1, 2)
 # print(t.image())
