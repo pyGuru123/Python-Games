@@ -2,8 +2,8 @@ import pygame
 import random
 
 pygame.init()
-SCREEN = WIDTH, HEIGHT = 320, 500
-win = pygame.display.set_mode(SCREEN)
+SCREEN = WIDTH, HEIGHT = 300, 500
+win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
 
 CELLSIZE = 20
 ROWS = (HEIGHT-120) // CELLSIZE
@@ -12,24 +12,34 @@ COLS = WIDTH // CELLSIZE
 clock = pygame.time.Clock()
 FPS = 24
 
-# COLORS
+# COLORS *********************************************************************
 
-BLACK = (0, 0, 0)
+BLACK = (21, 24, 29)
+BLUE = (31, 25, 76)
+RED = (252, 91, 122)
 WHITE = (255, 255, 255)
 
-# IMAGES
+# Images ********************************************************************* 
 
-img1 = pygame.image.load('Images/1.png')
-img2 = pygame.image.load('Images/2.png')
-img3 = pygame.image.load('Images/3.png')
-img4 = pygame.image.load('Images/4.png')
+img1 = pygame.image.load('Assets/1.png')
+img2 = pygame.image.load('Assets/2.png')
+img3 = pygame.image.load('Assets/3.png')
+img4 = pygame.image.load('Assets/4.png')
 
-images = {
+Assets = {
 	1 : img1,
 	2 : img2,
 	3 : img3,
 	4 : img4
 }
+
+# FONTS **********************************************************************
+
+font = pygame.font.Font('Fonts/Alternity-8w7J.ttf', 50)
+font2 = pygame.font.SysFont('cursive', 25)
+
+
+# OBJECTS ********************************************************************
 
 class Tetramino:
 	# matrix
@@ -72,6 +82,7 @@ class Tetris:
 		self.level = 1
 		self.board = [[0 for j in range(cols)] for i in range(rows)]
 		self.next = None
+		self.gameover = False
 		self.new_figure()
 
 	def draw_grid(self):
@@ -109,6 +120,8 @@ class Tetris:
 				del self.board[y]
 				self.board.insert(0, [0 for i in range(self.cols)])
 				self.score += 1
+				if self.score % 10 == 0:
+					self.level += 1
 				rerun = True
 
 		if rerun:
@@ -122,7 +135,7 @@ class Tetris:
 		self.remove_line()
 		self.new_figure()
 		if self.intersects():
-			pass 
+			self.gameover = True
 
 	def go_space(self):
 		while not self.intersects():
@@ -149,6 +162,8 @@ class Tetris:
 
 counter = 0
 move_down = False
+can_move = True
+
 tetris = Tetris(ROWS, COLS)
 		
 running = True
@@ -158,49 +173,100 @@ while running:
 	counter += 1
 	if counter >= 10000:
 		counter = 0
-	if counter % (FPS // (tetris.level * 2)) == 0 or move_down:
-		tetris.go_down()
 
+	if can_move:
+		if counter % (FPS // (tetris.level * 2)) == 0 or move_down:
+			if not tetris.gameover:
+				tetris.go_down()
+
+	# EVENT HANDLING *********************************************************
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
 
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_LEFT:
-				tetris.go_side(-1)
+			if can_move and not tetris.gameover:
+				if event.key == pygame.K_LEFT:
+					tetris.go_side(-1)
 
-			if event.key == pygame.K_RIGHT:
-				tetris.go_side(1)
+				if event.key == pygame.K_RIGHT:
+					tetris.go_side(1)
 
-			if event.key == pygame.K_UP:
-				tetris.rotate()
+				if event.key == pygame.K_UP:
+					tetris.rotate()
 
-			if event.key == pygame.K_DOWN:
-				move_down = True
+				if event.key == pygame.K_DOWN:
+					move_down = True
 
-			if event.key == pygame.K_SPACE:
-				tetris.go_space()
+				if event.key == pygame.K_SPACE:
+					tetris.go_space()
+
+			if event.key == pygame.K_r:
+				tetris.__init__(ROWS, COLS)
+
+			if event.key == pygame.K_p:
+				can_move = not can_move
+
+			if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
+				running = False
 
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_DOWN:
 				move_down = False
 
-	tetris.draw_grid()
+	# tetris.draw_grid()
 	for x in range(ROWS):
 		for y in range(COLS):
 			if tetris.board[x][y] > 0:
 				val = tetris.board[x][y]
-				img = images[val]
+				img = Assets[val]
 				win.blit(img, (y*CELLSIZE, x*CELLSIZE))
+				pygame.draw.rect(win, WHITE, (y*CELLSIZE, x*CELLSIZE,
+									CELLSIZE, CELLSIZE), 1)
 
 	if tetris.figure:
 		for i in range(4):
 			for j in range(4):
 				if i * 4 + j in tetris.figure.image():
-					img = images[tetris.figure.color]
-					win.blit(img, (CELLSIZE * (tetris.figure.x + j),
-								   CELLSIZE * (tetris.figure.y + i)))
+					img = Assets[tetris.figure.color]
+					x = CELLSIZE * (tetris.figure.x + j)
+					y = CELLSIZE * (tetris.figure.y + i)
+					win.blit(img, (x, y))
+					pygame.draw.rect(win, WHITE, (x, y, CELLSIZE, CELLSIZE), 1)
 
+	# GAMEOVER ***************************************************************
+
+	if tetris.gameover:
+		rect = pygame.Rect((50, 140, WIDTH-100, HEIGHT-350))
+		pygame.draw.rect(win, BLACK, rect)
+		pygame.draw.rect(win, RED, rect, 2)
+
+		over = font2.render('Game Over', True, WHITE)
+		msg1 = font2.render('Press r to restart', True, RED)
+		msg2 = font2.render('Press q to quit', True, RED)
+
+		win.blit(over, (rect.centerx-over.get_width()/2, rect.y + 20))
+		win.blit(msg1, (rect.centerx-msg1.get_width()/2, rect.y + 80))
+		win.blit(msg2, (rect.centerx-msg2.get_width()/2, rect.y + 110))
+
+	# HUD ********************************************************************
+
+	pygame.draw.rect(win, BLUE, (0, HEIGHT-120, WIDTH, 120))
+	if tetris.next:
+		for i in range(4):
+			for j in range(4):
+				if i * 4 + j in tetris.next.image():
+					img = Assets[tetris.next.color]
+					x = CELLSIZE * (tetris.next.x + j - 4)
+					y = HEIGHT - 100 + CELLSIZE * (tetris.next.y + i)
+					win.blit(img, (x, y))
+
+	scoreimg = font.render(f'{tetris.score}', True, WHITE)
+	levelimg = font2.render(f'Level : {tetris.level}', True, WHITE)
+	win.blit(scoreimg, (250-scoreimg.get_width()//2, HEIGHT-110))
+	win.blit(levelimg, (250-levelimg.get_width()//2, HEIGHT-30))
+
+	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT-120), 2)
 	clock.tick(FPS)
 	pygame.display.update()
 pygame.quit()
