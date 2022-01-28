@@ -2,7 +2,7 @@ import math
 import pygame
 
 SCREEN = WIDTH, HEIGHT = 300, 300
-CELLSIZE = 20
+CELLSIZE = 40
 PADDING = 20
 ROWS = COLS = (WIDTH - 4 * PADDING) // CELLSIZE
 pygame.init()
