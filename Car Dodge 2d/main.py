@@ -1,5 +1,6 @@
 import pygame
-from objects import Background, Player, Button
+import random
+from objects import Road, Player, Tree, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -32,32 +33,43 @@ select_car = font1.render('Select Car', True, WHITE)
 
 # IMAGES **********************************************************************
 
+bg = pygame.image.load('Assets/bg.png')
+
 menu_img = pygame.image.load('Assets/home.png')
-start_img = pygame.image.load('Assets/start.png')
-start_img = pygame.transform.scale(start_img, (120, 40))
+play_img = pygame.image.load('Assets/play.png')
 
-left_arrow = pygame.image.load('Assets/arrow1.png')
+left_arrow = pygame.image.load('Assets/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
-la_btn = Button(left_arrow, (32, 42), 40, 180)
-ra_btn = Button(right_arrow, (32, 42), WIDTH-60, 180)
-
-road_img = pygame.image.load('Assets/road.png')
-road_img = pygame.transform.scale(road_img, (WIDTH, HEIGHT))
 
 cars = []
 car_type = 0
-for i in range(1, 8):
+for i in range(1, 9):
 	img = pygame.image.load(f'Assets/cars/{i}.png')
+	img = pygame.transform.scale(img, (59, 101))
 	cars.append(img)
 
-bg = Background()
-
+# FUNCTIONS *******************************************************************
 def center(image):
 	return (WIDTH // 2) - image.get_width() // 2
 
-home_page = True
+# BUTTONS *********************************************************************
+play_btn = Button(play_img, (100, 34), center(play_img)+10, HEIGHT-80)
+la_btn = Button(left_arrow, (32, 42), 40, 180)
+ra_btn = Button(right_arrow, (32, 42), WIDTH-60, 180)
+
+# OBJECTS *********************************************************************
+road = Road()
+
+tree_group = pygame.sprite.Group()
+
+# VARIABLES *******************************************************************
+home_page = False
 car_page = False
-game_page = False
+game_page = True
+
+counter = 0
+speed = 2.5
+p = Player(100, HEIGHT-120, car_type)
 
 running = True
 while running:
@@ -71,7 +83,10 @@ while running:
 
 	if home_page:
 		win.blit(menu_img, (0,0))
-		win.blit(start_img, (WIDTH- start_img.get_width()+10, HEIGHT-180))
+		counter += 1
+		if counter % 60 == 0:
+			home_page = False
+			car_page = True
 
 	if car_page:
 		win.fill(BLACK)
@@ -88,13 +103,30 @@ while running:
 			if car_type >= len(cars):
 				car_type = 0
 
+		if play_btn.draw(win):
+			car_page = False
+			game_page = True
+
+			p = Player(100, HEIGHT-120, car_type)
+			counter = 0
+
 	if game_page:
-		bg.update(2.5)
-		bg.draw(win)
+		counter += 1
+		if counter % 60 == 0:
+			t = Tree(random.choice([-5, WIDTH-35]), -20)
+			tree_group.add(t)
 
-		win.blit(cars[6], (100, HEIGHT-100))
+		win.blit(bg, (0,0))
+		road.update(speed)
+		road.draw(win)
 
-	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT), 2)
+		p.update(0, 0)
+		p.draw(win)
+
+		tree_group.update(speed)
+		tree_group.draw(win)
+
+	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT), 3)
 	clock.tick(FPS)
 	pygame.display.update()
 

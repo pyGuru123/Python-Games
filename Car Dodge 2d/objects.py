@@ -1,11 +1,12 @@
 import pygame
+import random
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 
-class Background():
+class Road():
 	def __init__(self):
 		self.image = pygame.image.load('Assets/road.png')
-		self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
+		self.image = pygame.transform.scale(self.image, (WIDTH-60, HEIGHT))
 
 		self.reset()
 		self.move = True
@@ -25,14 +26,14 @@ class Background():
 		win.blit(self.image, (self.x, self.y2))
 
 	def reset(self):
-		self.x = 0
+		self.x = 30
 		self.y1 = 0
 		self.y2 = -HEIGHT
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self, x, y, type):
 		super(Player, self).__init__()
-		self.image = pygame.image.load('Assets/cars/{type}.png')
+		self.image = pygame.image.load(f'Assets/cars/{type+1}.png')
 		self.image = pygame.transform.scale(self.image, (48, 82))
 		self.rect = self.image.get_rect()
 		self.rect.x = x
@@ -43,6 +44,22 @@ class Player(pygame.sprite.Sprite):
 			self.rect.x -= 5
 		if right:
 			self.rect.y += 5
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Tree(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Tree, self).__init__()
+
+		type = random.randint(1, 4)
+		self.image = pygame.image.load(f'Assets/trees/{type}.png')
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, speed):
+		self.rect.y += speed
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
