@@ -2,14 +2,18 @@
 
 # Author : Prajjwal Pathak (pyguru)
 # Date : Thursday, 8 August, 2021
-
+import os
+print(os.getcwd())
+print(os.listdir())
+from kivy.core.window import Window
+print(Window.size)
 import random
 import pygame
 
 from objects import Balls, Coins, Tiles, Particle, Message, Button
 
 pygame.init()
-SCREEN = WIDTH, HEIGHT = 288, 512
+SCREEN = WIDTH, HEIGHT = Window.size
 CENTER = WIDTH //2, HEIGHT // 2
 
 info = pygame.display.Info()
