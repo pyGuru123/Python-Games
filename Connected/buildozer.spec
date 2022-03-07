@@ -49,7 +49,7 @@ requirements = kivy==2.0.0, kivymd, requests,pillow,charset_normalizer,chardet,i
 presplash.filename = logo.png
 
 # (str) Icon of the application
-icon.filename = Assets/logo.png
+icon.filename = log.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
