@@ -5,20 +5,20 @@
 import os
 print(os.getcwd())
 print(os.listdir())
-from kivy.core.window import Window
-print(Window.size)
+
 import random
 import pygame
-
+
 from objects import Balls, Coins, Tiles, Particle, Message, Button
 
 pygame.init()
-SCREEN = WIDTH, HEIGHT = Window.size
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+SCREEN = WIDTH, HEIGHT = width,height
 CENTER = WIDTH //2, HEIGHT // 2
 
-info = pygame.display.Info()
-width = info.current_w
-height = info.current_h
+
 
 if width >= height:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
@@ -47,25 +47,22 @@ color_index = 0
 color = color_list[color_index]
 
 # SOUNDS **********************************************************************
-
-flip_fx = pygame.mixer.Sound('Sounds/flip.mp3')
-score_fx = pygame.mixer.Sound('Sounds/point.mp3')
-dead_fx = pygame.mixer.Sound('Sounds/dead.mp3')
-score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
-
-pygame.mixer.music.load('Sounds/bgm.mp3')
+flip_fx = pygame.mixer.Sound(f'{pwd}/Sounds/flip.mp3')
+score_fx = pygame.mixer.Sound(f'{pwd}/Sounds/point.mp3')
+dead_fx = pygame.mixer.Sound(f'{pwd}/Sounds/dead.mp3')
+score_page_fx = pygame.mixer.Sound(f'{pwd}/Sounds/score_page.mp3')
+pygame.mixer.music.load(f'{pwd}/Sounds/bgm.mp3')
 pygame.mixer.music.play(loops=-1)
 pygame.mixer.music.set_volume(0.5)
 
 
 # FONTS ***********************************************************************
-
-title_font = "Fonts/Aladin-Regular.ttf"
-score_font = "Fonts/DroneflyRegular-K78LA.ttf"
-game_over_font = "Fonts/ghostclan.ttf"
-final_score_font = "Fonts/DalelandsUncialBold-82zA.ttf"
-new_high_font = "Fonts/BubblegumSans-Regular.ttf"
-
+title_font = f"{pwd}/Fonts/Aladin-Regular.ttf"
+score_font = f"{pwd}/Fonts/DroneflyRegular-K78LA.ttf"
+game_over_font = f"{pwd}/Fonts/ghostclan.ttf"
+final_score_font = f"{pwd}/Fonts/DalelandsUncialBold-82zA.ttf"
+new_high_font = f"{pwd}/Fonts/BubblegumSans-Regular.ttf"
+
 
 connected = Message(WIDTH//2, 120, 55, "ConnecteD", title_font, WHITE, win)
 score_msg = Message(WIDTH//2, 100, 60, "0", score_font, (150, 150, 150), win)
@@ -75,13 +72,13 @@ final_score = Message(WIDTH//2, HEIGHT//2, 90, "0", final_score_font, RED, win)
 new_high_msg = Message(WIDTH//2, HEIGHT//2+60, 20, "New High", None, GREEN, win)
 
 # Button images
-
-home_img = pygame.image.load('Assets/homeBtn.png')
-replay_img = pygame.image.load('Assets/replay.png')
-sound_off_img = pygame.image.load("Assets/soundOffBtn.png")
-sound_on_img = pygame.image.load("Assets/soundOnBtn.png")
-easy_img = pygame.image.load("Assets/easy.jpg")
-hard_img = pygame.image.load("Assets/hard.jpg")
+
+home_img = pygame.image.load(f'{pwd}/Assets/homeBtn.png')
+replay_img = pygame.image.load(f'{pwd}/Assets/replay.png')
+sound_off_img = pygame.image.load(f"{pwd}/Assets/soundOffBtn.png")
+sound_on_img = pygame.image.load(f"{pwd}/Assets/soundOnBtn.png")
+easy_img = pygame.image.load(f"{pwd}/Assets/easy.jpg")
+hard_img = pygame.image.load(f"{pwd}/Assets/hard.jpg")
 
 # Buttons
 
