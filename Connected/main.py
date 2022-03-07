@@ -1,4 +1,4 @@
-# Connected
+# Connected App
 
 # Author : Prajjwal Pathak (pyguru)
 # Date : Thursday, 8 August, 2021
