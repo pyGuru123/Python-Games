@@ -8,7 +8,7 @@ Car Dodge 2D is a simple car & obstacle dodging game made with pygame. The game 
 
 Install pydroid3 on Android from here : [pydroid3 playstore](https://play.google.com/store/apps/details?id=ru.iiec.pydroid3&hl=en_IN&gl=US)
 
-![Alt text](app.webp?raw=true "Car Dodge 2D")
+![Alt text](app.png?raw=true "Car Racing 2D")
 
 ## How to Download
 
