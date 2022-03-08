@@ -12,7 +12,7 @@ Install pydroid3 on Android from here : [pydroid3 playstore](https://play.google
 
 ## How to Download
 
-Download this project from here [Download Car Dodge 2D](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Car%20Dodge%202d)
+Download this project from here [Download Car Dodge 2D](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Car%20Racing%202d)
 
 ## Requirements
 
