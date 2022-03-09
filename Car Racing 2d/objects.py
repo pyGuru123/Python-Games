@@ -42,11 +42,33 @@ class Player(pygame.sprite.Sprite):
 	def update(self, left, right):
 		if left:
 			self.rect.x -= 5
+			if self.rect.x <= 40:
+				self.rect.x = 40
 		if right:
-			self.rect.y += 5
+			self.rect.x += 5
+			if self.rect.right >= 250:
+				self.rect.right = 250
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+
+class Nitro:
+	def __init__(self, x, y):
+		self.image = pygame.image.load('Assets/nitro.png')
+		self.image = pygame.transform.scale(self.image, (42, 42))
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+		self.gas = 0
+		self.amt = 1
+
+	def update(self):
+		self.gas += self.amt
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
 
 class Tree(pygame.sprite.Sprite):
 	def __init__(self, x, y):

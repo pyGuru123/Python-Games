@@ -1,6 +1,6 @@
 import pygame
 import random
-from objects import Road, Player, Tree, Button
+from objects import Road, Player, Nitro, Tree, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -35,7 +35,7 @@ select_car = font1.render('Select Car', True, WHITE)
 
 bg = pygame.image.load('Assets/bg.png')
 
-menu_img = pygame.image.load('Assets/home.png')
+home_img = pygame.image.load('Assets/home.png')
 play_img = pygame.image.load('Assets/play.png')
 
 left_arrow = pygame.image.load('Assets/arrow.png')
@@ -59,6 +59,7 @@ ra_btn = Button(right_arrow, (32, 42), WIDTH-60, 180)
 
 # OBJECTS *********************************************************************
 road = Road()
+nitro = Nitro(WIDTH-80, HEIGHT-80)
 
 tree_group = pygame.sprite.Group()
 
@@ -66,6 +67,10 @@ tree_group = pygame.sprite.Group()
 home_page = False
 car_page = False
 game_page = True
+
+move_left = False
+move_right = False
+nitro_on = False
 
 counter = 0
 speed = 2.5
@@ -80,6 +85,19 @@ while running:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
 				running = False
+
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			x, y = event.pos
+
+			if x <= WIDTH // 2:
+				move_left = True
+			else:
+				move_right = True
+
+		if event.type == pygame.MOUSEBUTTONUP:
+			move_left = False
+			move_right = False
+			nitro_on = False
 
 	if home_page:
 		win.blit(menu_img, (0,0))
@@ -120,7 +138,10 @@ while running:
 		road.update(speed)
 		road.draw(win)
 
-		p.update(0, 0)
+		nitro.update()
+		nitro.draw(win)
+
+		p.update(move_left, move_right)
 		p.draw(win)
 
 		tree_group.update(speed)
