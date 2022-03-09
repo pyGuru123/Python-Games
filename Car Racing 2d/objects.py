@@ -3,6 +3,9 @@ import random
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 
+BLUE = (53, 81, 92)
+RED = (255, 0, 0)
+
 class Road():
 	def __init__(self):
 		self.image = pygame.image.load('Assets/road.png')
@@ -61,13 +64,21 @@ class Nitro:
 		self.rect.y = y
 
 		self.gas = 0
-		self.amt = 1
 
-	def update(self):
-		self.gas += self.amt
+	def update(self, nitro_on):
+		if nitro_on:
+			self.gas -= 1
+			if self.gas <= 0:
+				self.gas = 0
+		else:
+			self.gas += 1
+			if self.gas >= 359:
+				self.gas = 359
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+		if self.gas and self.gas < 360:
+			pygame.draw.arc(win, (255, 255, 255), self.rect, 0, self.gas, 2)
 
 
 class Tree(pygame.sprite.Sprite):
@@ -114,6 +125,29 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
+
+class Particle(pygame.sprite.Sprite):
+	def __init__(self, x, y, size):
+		super(Particle, self).__init__()
+		self.x = x
+		self.y = y
+		self.size = random.randint(2, 5)
+		self.color = random.choice([BLUE, RED])
+		self.life = 60
+		self.x_vel = random.random() * random.choice([1, -1])
+		self.y_vel = random.randrange(0, 2)
+		self.lifetime = 0
+			
+	def update(self, win):
+		self.size -= 0.1
+		self.lifetime += 1
+		if self.lifetime <= self.life:
+			self.x += self.x_vel
+			self.y += self.y_vel
+			s = int(self.size)
+			pygame.draw.rect(win, self.color, (self.x, self.y,s,s))
+		else:
+			self.kill()
 
 # class Coin(pygame.sprite.Sprite):
 # 	def __init__(self):

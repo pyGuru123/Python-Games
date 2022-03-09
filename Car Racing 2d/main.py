@@ -1,6 +1,6 @@
 import pygame
 import random
-from objects import Road, Player, Nitro, Tree, Button
+from objects import Road, Player, Nitro, Particle, Tree, Button
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -60,8 +60,10 @@ ra_btn = Button(right_arrow, (32, 42), WIDTH-60, 180)
 # OBJECTS *********************************************************************
 road = Road()
 nitro = Nitro(WIDTH-80, HEIGHT-80)
+p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
+particle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
 home_page = False
@@ -74,7 +76,6 @@ nitro_on = False
 
 counter = 0
 speed = 2.5
-p = Player(100, HEIGHT-120, car_type)
 
 running = True
 while running:
@@ -89,15 +90,20 @@ while running:
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			x, y = event.pos
 
-			if x <= WIDTH // 2:
-				move_left = True
+			if nitro.rect.collidepoint((x, y)):
+				nitro_on = True
+				speed = 10
 			else:
-				move_right = True
+				if x <= WIDTH // 2:
+					move_left = True
+				else:
+					move_right = True
 
 		if event.type == pygame.MOUSEBUTTONUP:
 			move_left = False
 			move_right = False
 			nitro_on = False
+			speed = 2.5
 
 	if home_page:
 		win.blit(menu_img, (0,0))
@@ -134,13 +140,19 @@ while running:
 			t = Tree(random.choice([-5, WIDTH-35]), -20)
 			tree_group.add(t)
 
+		if nitro_on:
+			x, y = p.rect.centerx, p.rect.bottom - 5
+			particle = Particle(x, y, 0)
+			particle_group.add(particle)
+
 		win.blit(bg, (0,0))
 		road.update(speed)
 		road.draw(win)
 
-		nitro.update()
+		nitro.update(nitro_on)
 		nitro.draw(win)
 
+		particle_group.update(win)
 		p.update(move_left, move_right)
 		p.draw(win)
 
