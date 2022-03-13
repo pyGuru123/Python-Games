@@ -6,7 +6,7 @@ SCREEN = WIDTH, HEIGHT = 288, 512
 
 BLUE = (53, 81, 92)
 RED = (255, 0, 0)
-YELLOW = (255, 255, 255)
+YELLOW = (255, 255, 0)
 
 class Road():
 	def __init__(self):
@@ -87,6 +87,24 @@ class Nitro:
 				y = round(self.CENTER[1] + self.radius * math.sin(i * math.pi / 180))
 				pygame.draw.circle(win, YELLOW, (x, y), 1)
 
+class Enemy(pygame.sprite.Sprite):
+	def __init__(self, type):
+		super(Enemy, self).__init__()
+		self.image = pygame.image.load(f'Assets/cars/{type}.png')
+		self.image = pygame.transform.flip(self.image, False, True)
+		self.image = pygame.transform.scale(self.image, (48, 82))
+		self.rect = self.image.get_rect()
+		self.rect.x = random.choice([50, 95, 142, 190])
+		self.rect.y = -100
+
+	def update(self, speed):
+		self.rect.y += speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
 class Tree(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Tree, self).__init__()
@@ -131,29 +149,6 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
-
-class Particle(pygame.sprite.Sprite):
-	def __init__(self, x, y, size):
-		super(Particle, self).__init__()
-		self.x = x
-		self.y = y
-		self.size = random.randint(2, 5)
-		self.color = random.choice([BLUE, RED])
-		self.life = 60
-		self.x_vel = random.random() * random.choice([1, -1])
-		self.y_vel = random.randrange(0, 2)
-		self.lifetime = 0
-			
-	def update(self, win):
-		self.size -= 0.1
-		self.lifetime += 1
-		if self.lifetime <= self.life:
-			self.x += self.x_vel
-			self.y += self.y_vel
-			s = int(self.size)
-			pygame.draw.rect(win, self.color, (self.x, self.y,s,s))
-		else:
-			self.kill()
 
 # class Coin(pygame.sprite.Sprite):
 # 	def __init__(self):

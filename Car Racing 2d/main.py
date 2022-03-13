@@ -1,6 +1,6 @@
 import pygame
 import random
-from objects import Road, Player, Nitro, Particle, Tree, Button
+from objects import Road, Player, Nitro, Tree, Button, Enemy
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -71,18 +71,19 @@ nitro = Nitro(WIDTH-80, HEIGHT-80)
 p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
-particle_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
-home_page = True
+home_page = False
 car_page = False
-game_page = False
+game_page = True
 
 move_left = False
 move_right = False
 nitro_on = False
 
 counter = 0
+counter_inc = 1
 speed = 3
 
 running = True
@@ -110,7 +111,6 @@ while running:
 
 			if nitro.rect.collidepoint((x, y)):
 				nitro_on = True
-				speed = 10
 			else:
 				if x <= WIDTH // 2:
 					move_left = True
@@ -121,7 +121,8 @@ while running:
 			move_left = False
 			move_right = False
 			nitro_on = False
-			speed = 2.5
+			speed = 3
+			counter_inc = 1
 
 	if home_page:
 		win.blit(home_img, (0,0))
@@ -157,25 +158,38 @@ while running:
 		road.update(speed)
 		road.draw(win)
 
-		counter += 1
+		counter += counter_inc
 		if counter % 60 == 0:
 			t = Tree(random.choice([-5, WIDTH-35]), -20)
 			tree_group.add(t)
+
+		if counter % 90 == 0:
+			enemy = Enemy(random.randint(1, 8))
+			enemy_group.add(enemy)
 
 		if nitro_on and nitro.gas > 0:
 			x, y = p.rect.centerx - 8, p.rect.bottom - 10
 			win.blit(nitro_frames[nitro_counter], (x, y))
 			nitro_counter = (nitro_counter + 1) % len(nitro_frames)
 
+			speed = 10
+			if counter_inc == 1:
+				counter = 0
+				counter_inc = 3
+
+		if nitro.gas <= 0:
+			speed = 3
+			counter_inc = 1
+
 		nitro.update(nitro_on)
 		nitro.draw(win)
-
-		particle_group.update(win)
-		p.update(move_left, move_right)
-		p.draw(win)
-
+		enemy_group.update(speed)
+		enemy_group.draw(win)
 		tree_group.update(speed)
 		tree_group.draw(win)
+
+		p.update(move_left, move_right)
+		p.draw(win)
 
 	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT), 3)
 	clock.tick(FPS)
