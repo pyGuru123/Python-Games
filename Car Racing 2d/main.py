@@ -48,6 +48,14 @@ for i in range(1, 9):
 	img = pygame.transform.scale(img, (59, 101))
 	cars.append(img)
 
+nitro_frames = []
+nitro_counter = 0
+for i in range(6):
+	img = pygame.image.load(f'Assets/nitro/{i}.gif')
+	img = pygame.transform.flip(img, False, True)
+	img = pygame.transform.scale(img, (18, 36))
+	nitro_frames.append(img)
+
 # FUNCTIONS *******************************************************************
 def center(image):
 	return (WIDTH // 2) - image.get_width() // 2
@@ -66,16 +74,16 @@ tree_group = pygame.sprite.Group()
 particle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
-home_page = False
+home_page = True
 car_page = False
-game_page = True
+game_page = False
 
 move_left = False
 move_right = False
 nitro_on = False
 
 counter = 0
-speed = 2.5
+speed = 3
 
 running = True
 while running:
@@ -86,6 +94,16 @@ while running:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
 				running = False
+
+			if event.key == pygame.K_LEFT:
+				move_left = True
+
+			if event.key == pygame.K_RIGHT:
+				move_right = True
+
+		if event.type == pygame.KEYUP:
+			move_left = False
+			move_right = False
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			x, y = event.pos
@@ -106,7 +124,7 @@ while running:
 			speed = 2.5
 
 	if home_page:
-		win.blit(menu_img, (0,0))
+		win.blit(home_img, (0,0))
 		counter += 1
 		if counter % 60 == 0:
 			home_page = False
@@ -135,19 +153,19 @@ while running:
 			counter = 0
 
 	if game_page:
+		win.blit(bg, (0,0))
+		road.update(speed)
+		road.draw(win)
+
 		counter += 1
 		if counter % 60 == 0:
 			t = Tree(random.choice([-5, WIDTH-35]), -20)
 			tree_group.add(t)
 
-		if nitro_on:
-			x, y = p.rect.centerx, p.rect.bottom - 5
-			particle = Particle(x, y, 0)
-			particle_group.add(particle)
-
-		win.blit(bg, (0,0))
-		road.update(speed)
-		road.draw(win)
+		if nitro_on and nitro.gas > 0:
+			x, y = p.rect.centerx - 8, p.rect.bottom - 10
+			win.blit(nitro_frames[nitro_counter], (x, y))
+			nitro_counter = (nitro_counter + 1) % len(nitro_frames)
 
 		nitro.update(nitro_on)
 		nitro.draw(win)

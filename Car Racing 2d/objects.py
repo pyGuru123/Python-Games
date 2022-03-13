@@ -1,3 +1,4 @@
+import math
 import pygame
 import random
 
@@ -5,6 +6,7 @@ SCREEN = WIDTH, HEIGHT = 288, 512
 
 BLUE = (53, 81, 92)
 RED = (255, 0, 0)
+YELLOW = (255, 255, 255)
 
 class Road():
 	def __init__(self):
@@ -20,9 +22,9 @@ class Road():
 			self.y2 += speed
 
 			if self.y1 >= HEIGHT:
-				self.y1 = -HEIGHT
+				self.y1 = -HEIGHT + 30
 			if self.y2 >= HEIGHT:
-				self.y2 = -HEIGHT
+				self.y2 = -HEIGHT + 30
 
 	def draw(self, win):
 		win.blit(self.image, (self.x, self.y1))
@@ -64,12 +66,14 @@ class Nitro:
 		self.rect.y = y
 
 		self.gas = 0
+		self.radius = 20
+		self.CENTER = self.rect.centerx, self.rect.centery
 
 	def update(self, nitro_on):
 		if nitro_on:
 			self.gas -= 1
-			if self.gas <= 0:
-				self.gas = 0
+			if self.gas <= -60:
+				self.gas = -60
 		else:
 			self.gas += 1
 			if self.gas >= 359:
@@ -77,9 +81,11 @@ class Nitro:
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
-		if self.gas and self.gas < 360:
-			pygame.draw.arc(win, (255, 255, 255), self.rect, 0, self.gas, 2)
-
+		if self.gas > 0 and self.gas < 360:
+			for i in range(self.gas):
+				x = round(self.CENTER[0] + self.radius * math.cos(i * math.pi / 180))
+				y = round(self.CENTER[1] + self.radius * math.sin(i * math.pi / 180))
+				pygame.draw.circle(win, YELLOW, (x, y), 1)
 
 class Tree(pygame.sprite.Sprite):
 	def __init__(self, x, y):
