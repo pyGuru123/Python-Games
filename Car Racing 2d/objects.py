@@ -8,6 +8,8 @@ BLUE = (53, 81, 92)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
+lane_pos = [50, 95, 142, 190]
+
 class Road():
 	def __init__(self):
 		self.image = pygame.image.load('Assets/road.png')
@@ -22,9 +24,9 @@ class Road():
 			self.y2 += speed
 
 			if self.y1 >= HEIGHT:
-				self.y1 = -HEIGHT + 30
+				self.y1 = -HEIGHT
 			if self.y2 >= HEIGHT:
-				self.y2 = -HEIGHT + 30
+				self.y2 = -HEIGHT
 
 	def draw(self, win):
 		win.blit(self.image, (self.x, self.y1))
@@ -87,14 +89,25 @@ class Nitro:
 				y = round(self.CENTER[1] + self.radius * math.sin(i * math.pi / 180))
 				pygame.draw.circle(win, YELLOW, (x, y), 1)
 
-class Enemy(pygame.sprite.Sprite):
+class Obstacle(pygame.sprite.Sprite):
 	def __init__(self, type):
-		super(Enemy, self).__init__()
-		self.image = pygame.image.load(f'Assets/cars/{type}.png')
-		self.image = pygame.transform.flip(self.image, False, True)
-		self.image = pygame.transform.scale(self.image, (48, 82))
+		super(Obstacle, self).__init__()
+		dx = 0
+		if type == 1:
+			ctype = random.randint(1, 8)
+			self.image = pygame.image.load(f'Assets/cars/{ctype}.png')
+			self.image = pygame.transform.flip(self.image, False, True)
+			self.image = pygame.transform.scale(self.image, (48, 82))
+		if type == 2:
+			self.image = pygame.image.load('Assets/barrel.png')
+			self.image = pygame.transform.scale(self.image, (24, 36))
+			dx = 10
+		elif type == 3:
+			self.image = pygame.image.load('Assets/roadblock.png')
+			self.image = pygame.transform.scale(self.image, (50, 25))
+
 		self.rect = self.image.get_rect()
-		self.rect.x = random.choice([50, 95, 142, 190])
+		self.rect.x = random.choice(lane_pos) + dx
 		self.rect.y = -100
 
 	def update(self, speed):

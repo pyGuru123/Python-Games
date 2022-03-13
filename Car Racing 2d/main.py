@@ -1,6 +1,7 @@
 import pygame
 import random
-from objects import Road, Player, Nitro, Tree, Button, Enemy
+from objects import Road, Player, Nitro, Tree, Button, \
+					Obstacle
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -71,12 +72,12 @@ nitro = Nitro(WIDTH-80, HEIGHT-80)
 p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
-enemy_group = pygame.sprite.Group()
+obstacle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
-home_page = False
+home_page = True
 car_page = False
-game_page = True
+game_page = False
 
 move_left = False
 move_right = False
@@ -160,12 +161,16 @@ while running:
 
 		counter += counter_inc
 		if counter % 60 == 0:
-			t = Tree(random.choice([-5, WIDTH-35]), -20)
-			tree_group.add(t)
+			tree = Tree(random.choice([-5, WIDTH-35]), -20)
+			tree_group.add(tree)
 
 		if counter % 90 == 0:
-			enemy = Enemy(random.randint(1, 8))
-			enemy_group.add(enemy)
+			obs = random.choices([1, 2, 3], weights=[6,2,2], k=1)[0]
+			obstacle = Obstacle(obs)
+			obstacle_group.add(obstacle)
+
+		if counter >= 10000:
+			counter = 0
 
 		if nitro_on and nitro.gas > 0:
 			x, y = p.rect.centerx - 8, p.rect.bottom - 10
@@ -175,7 +180,7 @@ while running:
 			speed = 10
 			if counter_inc == 1:
 				counter = 0
-				counter_inc = 3
+				counter_inc = 5
 
 		if nitro.gas <= 0:
 			speed = 3
@@ -183,8 +188,8 @@ while running:
 
 		nitro.update(nitro_on)
 		nitro.draw(win)
-		enemy_group.update(speed)
-		enemy_group.draw(win)
+		obstacle_group.update(speed)
+		obstacle_group.draw(win)
 		tree_group.update(speed)
 		tree_group.draw(win)
 
