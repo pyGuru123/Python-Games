@@ -56,6 +56,39 @@ class Player(pygame.sprite.Sprite):
 			if self.rect.right >= 250:
 				self.rect.right = 250
 
+		self.mask = pygame.mask.from_surface(self.image)
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
+class Obstacle(pygame.sprite.Sprite):
+	def __init__(self, type):
+		super(Obstacle, self).__init__()
+		dx = 0
+		if type == 1:
+			ctype = random.randint(1, 8)
+			self.image = pygame.image.load(f'Assets/cars/{ctype}.png')
+			self.image = pygame.transform.flip(self.image, False, True)
+			self.image = pygame.transform.scale(self.image, (48, 82))
+		if type == 2:
+			self.image = pygame.image.load('Assets/barrel.png')
+			self.image = pygame.transform.scale(self.image, (24, 36))
+			dx = 10
+		elif type == 3:
+			self.image = pygame.image.load('Assets/roadblock.png')
+			self.image = pygame.transform.scale(self.image, (50, 25))
+
+		self.rect = self.image.get_rect()
+		self.rect.x = random.choice(lane_pos) + dx
+		self.rect.y = -100
+
+	def update(self, speed):
+		self.rect.y += speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+		self.mask = pygame.mask.from_surface(self.image)
+
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
@@ -88,35 +121,6 @@ class Nitro:
 				x = round(self.CENTER[0] + self.radius * math.cos(i * math.pi / 180))
 				y = round(self.CENTER[1] + self.radius * math.sin(i * math.pi / 180))
 				pygame.draw.circle(win, YELLOW, (x, y), 1)
-
-class Obstacle(pygame.sprite.Sprite):
-	def __init__(self, type):
-		super(Obstacle, self).__init__()
-		dx = 0
-		if type == 1:
-			ctype = random.randint(1, 8)
-			self.image = pygame.image.load(f'Assets/cars/{ctype}.png')
-			self.image = pygame.transform.flip(self.image, False, True)
-			self.image = pygame.transform.scale(self.image, (48, 82))
-		if type == 2:
-			self.image = pygame.image.load('Assets/barrel.png')
-			self.image = pygame.transform.scale(self.image, (24, 36))
-			dx = 10
-		elif type == 3:
-			self.image = pygame.image.load('Assets/roadblock.png')
-			self.image = pygame.transform.scale(self.image, (50, 25))
-
-		self.rect = self.image.get_rect()
-		self.rect.x = random.choice(lane_pos) + dx
-		self.rect.y = -100
-
-	def update(self, speed):
-		self.rect.y += speed
-		if self.rect.top >= HEIGHT:
-			self.kill()
-
-	def draw(self, win):
-		win.blit(self.image, self.rect)
 
 class Tree(pygame.sprite.Sprite):
 	def __init__(self, x, y):

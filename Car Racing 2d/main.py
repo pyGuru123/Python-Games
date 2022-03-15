@@ -28,9 +28,10 @@ BLACK = (0, 0, 20)
 
 # FONTS ***********************************************************************
 
-font1 = pygame.font.SysFont('cursive', 32)
+font = pygame.font.SysFont('cursive', 32)
 
-select_car = font1.render('Select Car', True, WHITE)
+select_car = font.render('Select Car', True, WHITE)
+game_over_img = font.render('Game Over', True, WHITE)
 
 # IMAGES **********************************************************************
 
@@ -38,6 +39,8 @@ bg = pygame.image.load('Assets/bg.png')
 
 home_img = pygame.image.load('Assets/home.png')
 play_img = pygame.image.load('Assets/play.png')
+end_img = pygame.image.load('Assets/end.jpg')
+end_img = pygame.transform.scale(end_img, (WIDTH, HEIGHT))
 
 left_arrow = pygame.image.load('Assets/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
@@ -78,6 +81,7 @@ obstacle_group = pygame.sprite.Group()
 home_page = True
 car_page = False
 game_page = False
+over_page = False
 
 move_left = False
 move_right = False
@@ -89,6 +93,8 @@ speed = 3
 
 running = True
 while running:
+	win.fill(BLACK)
+	
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -133,7 +139,6 @@ while running:
 			car_page = True
 
 	if car_page:
-		win.fill(BLACK)
 		win.blit(select_car, (center(select_car), 80))
 
 		win.blit(cars[car_type], (WIDTH//2-30, 150))
@@ -153,6 +158,10 @@ while running:
 
 			p = Player(100, HEIGHT-120, car_type)
 			counter = 0
+
+	if over_page:
+		win.blit(end_img, (0, 0))
+		win.blit(game_over_img, (center(game_over_img), 130))
 
 	if game_page:
 		win.blit(bg, (0,0))
@@ -195,6 +204,15 @@ while running:
 
 		p.update(move_left, move_right)
 		p.draw(win)
+
+		# COLLISION DETECTION
+		for obstacle in obstacle_group:
+			if pygame.sprite.collide_mask(p, obstacle):
+				pygame.draw.rect(win, RED, p.rect, 1)
+				speed = 0
+
+				game_page = False
+				over_page = True
 
 	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT), 3)
 	clock.tick(FPS)
