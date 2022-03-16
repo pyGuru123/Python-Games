@@ -65,6 +65,8 @@ class Obstacle(pygame.sprite.Sprite):
 	def __init__(self, type):
 		super(Obstacle, self).__init__()
 		dx = 0
+		self.type = type
+
 		if type == 1:
 			ctype = random.randint(1, 8)
 			self.image = pygame.image.load(f'Assets/cars/{ctype}.png')

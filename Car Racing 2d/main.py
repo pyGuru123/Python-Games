@@ -31,7 +31,6 @@ BLACK = (0, 0, 20)
 font = pygame.font.SysFont('cursive', 32)
 
 select_car = font.render('Select Car', True, WHITE)
-game_over_img = font.render('Game Over', True, WHITE)
 
 # IMAGES **********************************************************************
 
@@ -41,6 +40,8 @@ home_img = pygame.image.load('Assets/home.png')
 play_img = pygame.image.load('Assets/play.png')
 end_img = pygame.image.load('Assets/end.jpg')
 end_img = pygame.transform.scale(end_img, (WIDTH, HEIGHT))
+game_over_img = pygame.image.load('Assets/game_over.png')
+game_over_img = pygame.transform.scale(game_over_img, (220, 220))
 
 left_arrow = pygame.image.load('Assets/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
@@ -90,6 +91,7 @@ nitro_on = False
 counter = 0
 counter_inc = 1
 speed = 3
+dodged = 0
 
 running = True
 while running:
@@ -161,7 +163,7 @@ while running:
 
 	if over_page:
 		win.blit(end_img, (0, 0))
-		win.blit(game_over_img, (center(game_over_img), 130))
+		win.blit(game_over_img, (center(game_over_img), 16))
 
 	if game_page:
 		win.blit(bg, (0,0))
@@ -205,8 +207,13 @@ while running:
 		p.update(move_left, move_right)
 		p.draw(win)
 
-		# COLLISION DETECTION
+		# COLLISION DETECTION & KILLS
 		for obstacle in obstacle_group:
+			if obstacle.rect.y >= HEIGHT:
+				if obstacle.type == 1:
+					dodged += 1
+				obstacle.kill() 
+
 			if pygame.sprite.collide_mask(p, obstacle):
 				pygame.draw.rect(win, RED, p.rect, 1)
 				speed = 0
