@@ -1,7 +1,7 @@
 import pygame
 import random
 from objects import Road, Player, Nitro, Tree, Button, \
-					Obstacle, Coins
+					Obstacle, Coins, Fuel
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -79,6 +79,7 @@ p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
 coin_group = pygame.sprite.Group()
+fuel_group = pygame.sprite.Group()
 obstacle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
@@ -179,18 +180,20 @@ while running:
 			tree_group.add(tree)
 
 		if counter % 270 == 0:
-			count = random.randint(1, 3)
+			type = random.choices([1, 2], weights=[6, 4], k=1)[0]
 			x = random.choice(lane_pos)+10
-			for i in range(count):
-				coin = Coins(x,-100 - (25 * i))
-				coin_group.add(coin)
+			if type == 1:
+				count = random.randint(1, 3)
+				for i in range(count):
+					coin = Coins(x,-100 - (25 * i))
+					coin_group.add(coin)
+			elif type == 2:
+				fuel = Fuel(x, -100)
+				fuel_group.add(fuel)
 		elif counter % 90 == 0:
 			obs = random.choices([1, 2, 3], weights=[6,2,2], k=1)[0]
 			obstacle = Obstacle(obs)
 			obstacle_group.add(obstacle)
-
-		if counter >= 10000:
-			counter = 0
 
 		if nitro_on and nitro.gas > 0:
 			x, y = p.rect.centerx - 8, p.rect.bottom - 10
@@ -214,6 +217,8 @@ while running:
 		tree_group.draw(win)
 		coin_group.update(speed)
 		coin_group.draw(win)
+		fuel_group.update(speed)
+		fuel_group.draw(win)
 
 		p.update(move_left, move_right)
 		p.draw(win)

@@ -142,6 +142,23 @@ class Tree(pygame.sprite.Sprite):
 	def draw(self, win):
 		win.blit(self.image, self.rect)
 
+class Fuel(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		super(Fuel, self).__init__()
+
+		self.image = pygame.image.load('Assets/fuel.png')
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, speed):
+		self.rect.y += speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+	def draw(self, win):
+		win.blit(self.image, self.rect)
+
 class Coins(pygame.sprite.Sprite):
 	def __init__(self, x, y):
 		super(Coins, self).__init__()
