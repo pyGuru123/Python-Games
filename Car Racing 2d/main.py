@@ -1,7 +1,7 @@
 import pygame
 import random
 from objects import Road, Player, Nitro, Tree, Button, \
-					Obstacle
+					Obstacle, Coins
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -17,6 +17,8 @@ else:
 
 clock = pygame.time.Clock()
 FPS = 30
+
+lane_pos = [50, 95, 142, 190]
 
 # COLORS **********************************************************************
 
@@ -76,6 +78,7 @@ nitro = Nitro(WIDTH-80, HEIGHT-80)
 p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
+coins_group = pygame.sprite.Group()
 obstacle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
@@ -203,6 +206,8 @@ while running:
 		obstacle_group.draw(win)
 		tree_group.update(speed)
 		tree_group.draw(win)
+		coin_group.update(speed)
+		coin_group.draw(win)
 
 		p.update(move_left, move_right)
 		p.draw(win)

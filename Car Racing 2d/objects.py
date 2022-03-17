@@ -136,9 +136,39 @@ class Tree(pygame.sprite.Sprite):
 
 	def update(self, speed):
 		self.rect.y += speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
 
 	def draw(self, win):
 		win.blit(self.image, self.rect)
+
+class Coins(pygame.sprite.Sprite):
+	def __init__(self):
+		super(Coins, self).__init__()
+
+		self.images = []
+		for i in range(1, 7):
+			img = pygame.image.load(f'Assets/Coins/{i}.png')
+			self.images.append(img)
+
+		self.counter = 0
+		self.index = 0
+		self.image = self.images[self.index]
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+	def update(self, speed):
+		self.counter += 1
+		if self.counter % 5 == 0:
+			self.index = (self.index + 1) % len(self.images)
+
+		self.rect.y += speed
+		if self.rect.top >= HEIGHT:
+			self.kill()
+
+	def draw(self, win):
+		win.blit(self.images[self.index], self.rect)
 
 class Button(pygame.sprite.Sprite):
 	def __init__(self, img, scale, x, y):
@@ -168,24 +198,3 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
-
-# class Coin(pygame.sprite.Sprite):
-# 	def __init__(self):
-# 		super(Coin, self).__init__()
-
-# 		self.images = []
-# 		for i in range(1, 9):
-# 			img = pygame.image.load(f'Assets/Coins/{i}.png')
-# 			img = pygame.transform.scale(img, (22, 24))
-# 			self.images.append(img)
-
-# 		self.index = 0
-# 		self.counter = 0
-
-# 	def update(self):
-# 		self.counter += 1
-# 		if self.counter % 5 == 0:
-# 			self.index = (self.index + 1) % len(self.images)
-
-# 	def draw(self, win):
-# 		win.blit(self.images[self.index], (100, 100))
