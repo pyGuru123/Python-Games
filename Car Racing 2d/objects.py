@@ -143,7 +143,7 @@ class Tree(pygame.sprite.Sprite):
 		win.blit(self.image, self.rect)
 
 class Coins(pygame.sprite.Sprite):
-	def __init__(self):
+	def __init__(self, x, y):
 		super(Coins, self).__init__()
 
 		self.images = []
@@ -167,8 +167,10 @@ class Coins(pygame.sprite.Sprite):
 		if self.rect.top >= HEIGHT:
 			self.kill()
 
+		self.image = self.images[self.index]
+
 	def draw(self, win):
-		win.blit(self.images[self.index], self.rect)
+		win.blit(self.image, self.rect)
 
 class Button(pygame.sprite.Sprite):
 	def __init__(self, img, scale, x, y):

@@ -78,7 +78,7 @@ nitro = Nitro(WIDTH-80, HEIGHT-80)
 p = Player(100, HEIGHT-120, car_type)
 
 tree_group = pygame.sprite.Group()
-coins_group = pygame.sprite.Group()
+coin_group = pygame.sprite.Group()
 obstacle_group = pygame.sprite.Group()
 
 # VARIABLES *******************************************************************
@@ -178,7 +178,13 @@ while running:
 			tree = Tree(random.choice([-5, WIDTH-35]), -20)
 			tree_group.add(tree)
 
-		if counter % 90 == 0:
+		if counter % 270 == 0:
+			count = random.randint(1, 3)
+			x = random.choice(lane_pos)+10
+			for i in range(count):
+				coin = Coins(x,-100 - (25 * i))
+				coin_group.add(coin)
+		elif counter % 90 == 0:
 			obs = random.choices([1, 2, 3], weights=[6,2,2], k=1)[0]
 			obstacle = Obstacle(obs)
 			obstacle_group.add(obstacle)
