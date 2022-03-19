@@ -44,6 +44,9 @@ end_img = pygame.image.load('Assets/end.jpg')
 end_img = pygame.transform.scale(end_img, (WIDTH, HEIGHT))
 game_over_img = pygame.image.load('Assets/game_over.png')
 game_over_img = pygame.transform.scale(game_over_img, (220, 220))
+coin_img = pygame.image.load('Assets/coins/1.png')
+dodge_img = pygame.image.load('Assets/car_dodge.png')
+dodge_img = pygame.transform.scale(dodge_img, (90, 56))
 
 left_arrow = pygame.image.load('Assets/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
@@ -96,6 +99,8 @@ counter = 0
 counter_inc = 1
 speed = 3
 dodged = 0
+coins = 0
+cfuel = 100
 
 running = True
 while running:
@@ -169,6 +174,9 @@ while running:
 		win.blit(end_img, (0, 0))
 		win.blit(game_over_img, (center(game_over_img), 16))
 
+		win.blit(coin_img, (80, 240))
+		win.blit(dodge_img, (60, 280))
+
 	if game_page:
 		win.blit(bg, (0,0))
 		road.update(speed)
@@ -223,6 +231,11 @@ while running:
 		p.update(move_left, move_right)
 		p.draw(win)
 
+		if cfuel > 0:
+			pygame.draw.rect(win, GREEN, (20, 20, cfuel, 15), border_radius=5)
+		pygame.draw.rect(win, WHITE, (20, 20, 100, 15), 2, border_radius=5)
+		cfuel -= 0.05
+
 		# COLLISION DETECTION & KILLS
 		for obstacle in obstacle_group:
 			if obstacle.rect.y >= HEIGHT:
@@ -236,6 +249,14 @@ while running:
 
 				game_page = False
 				over_page = True
+
+		if pygame.sprite.spritecollide(p, coin_group, True):
+			coins += 1
+
+		if pygame.sprite.spritecollide(p, fuel_group, True):
+			cfuel += 25
+			if cfuel >= 100:
+				cfuel = 100
 
 	pygame.draw.rect(win, BLUE, (0, 0, WIDTH, HEIGHT), 3)
 	clock.tick(FPS)
