@@ -46,10 +46,14 @@ game_over_img = pygame.image.load('Assets/game_over.png')
 game_over_img = pygame.transform.scale(game_over_img, (220, 220))
 coin_img = pygame.image.load('Assets/coins/1.png')
 dodge_img = pygame.image.load('Assets/car_dodge.png')
-dodge_img = pygame.transform.scale(dodge_img, (90, 56))
 
 left_arrow = pygame.image.load('Assets/buttons/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
+
+home_btn_img = pygame.image.load('Assets/buttons/home.png')
+replay_img = pygame.image.load('Assets/buttons/replay.png')
+sound_off_img = pygame.image.load("Assets/buttons/soundOff.png")
+sound_on_img = pygame.image.load("Assets/buttons/soundOn.png")
 
 cars = []
 car_type = 0
@@ -75,6 +79,19 @@ play_btn = Button(play_img, (100, 34), center(play_img)+10, HEIGHT-80)
 la_btn = Button(left_arrow, (32, 42), 40, 180)
 ra_btn = Button(right_arrow, (32, 42), WIDTH-60, 180)
 
+home_btn = Button(home_btn_img, (24, 24), WIDTH // 4 - 18, HEIGHT - 80)
+replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT - 86)
+sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT - 80)
+
+# SOUNDS **********************************************************************
+
+click_fx = pygame.mixer.Sound('Sounds/click.mp3')
+fuel_fx = pygame.mixer.Sound('Sounds/fuel.wav')
+
+pygame.mixer.music.load('Sounds/mixkit-tech-house-vibes-130.mp3')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.6)
+
 # OBJECTS *********************************************************************
 road = Road()
 nitro = Nitro(WIDTH-80, HEIGHT-80)
@@ -94,6 +111,7 @@ over_page = False
 move_left = False
 move_right = False
 nitro_on = False
+sound_on = True
 
 counter = 0
 counter_inc = 1
@@ -101,6 +119,9 @@ speed = 3
 dodged = 0
 coins = 0
 cfuel = 100
+
+endx, enddx = 0, 0.5
+gameovery = -50
 
 running = True
 while running:
@@ -166,11 +187,13 @@ while running:
 		win.blit(cars[car_type], (WIDTH//2-30, 150))
 		if la_btn.draw(win):
 			car_type -= 1
+			click_fx.play()
 			if car_type < 0:
 				car_type = len(cars) - 1
 
 		if ra_btn.draw(win):
 			car_type += 1
+			click_fx.play()
 			if car_type >= len(cars):
 				car_type = 0
 
@@ -182,8 +205,14 @@ while running:
 			counter = 0
 
 	if over_page:
-		win.blit(end_img, (0, 0))
-		win.blit(game_over_img, (center(game_over_img), 16))
+		win.blit(end_img, (endx, 0))
+		endx += enddx
+		if endx >= 10 or endx<=-10:
+			enddx *= -1
+
+		win.blit(game_over_img, (center(game_over_img), gameovery))
+		if gameovery < 16:
+			gameovery += 1
 
 		num_coin_img = font.render(f'{coins}', True, WHITE)
 		num_dodge_img = font.render(f'{dodged}', True, WHITE)
@@ -194,6 +223,23 @@ while running:
 		win.blit(num_coin_img, (180, 250))
 		win.blit(num_dodge_img, (180, 300))
 		win.blit(distance_img, (center(distance_img), (350)))
+
+		if home_btn.draw(win):
+			pass
+
+		if replay_btn.draw(win):
+			pass
+
+		if sound_btn.draw(win):
+			sound_on = not sound_on
+
+			if sound_on:
+				sound_btn.update_image(sound_on_img)
+				pygame.mixer.music.play(loops=-1)
+			else:
+				sound_btn.update_image(sound_off_img)
+				pygame.mixer.music.stop()
+
 
 	if game_page:
 		win.blit(bg, (0,0))
@@ -273,6 +319,7 @@ while running:
 
 		if pygame.sprite.spritecollide(p, fuel_group, True):
 			cfuel += 25
+			fuel_fx.play()
 			if cfuel >= 100:
 				cfuel = 100
 
