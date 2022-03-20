@@ -86,8 +86,6 @@ class Obstacle(pygame.sprite.Sprite):
 
 	def update(self, speed):
 		self.rect.y += speed
-		if self.rect.top >= HEIGHT:
-			self.kill()
 
 		self.mask = pygame.mask.from_surface(self.image)
 

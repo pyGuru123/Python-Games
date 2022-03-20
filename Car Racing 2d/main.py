@@ -39,7 +39,7 @@ select_car = font.render('Select Car', True, WHITE)
 bg = pygame.image.load('Assets/bg.png')
 
 home_img = pygame.image.load('Assets/home.png')
-play_img = pygame.image.load('Assets/play.png')
+play_img = pygame.image.load('Assets/buttons/play.png')
 end_img = pygame.image.load('Assets/end.jpg')
 end_img = pygame.transform.scale(end_img, (WIDTH, HEIGHT))
 game_over_img = pygame.image.load('Assets/game_over.png')
@@ -48,7 +48,7 @@ coin_img = pygame.image.load('Assets/coins/1.png')
 dodge_img = pygame.image.load('Assets/car_dodge.png')
 dodge_img = pygame.transform.scale(dodge_img, (90, 56))
 
-left_arrow = pygame.image.load('Assets/arrow.png')
+left_arrow = pygame.image.load('Assets/buttons/arrow.png')
 right_arrow = pygame.transform.flip(left_arrow, True, False)
 
 cars = []
@@ -120,9 +120,20 @@ while running:
 			if event.key == pygame.K_RIGHT:
 				move_right = True
 
+			if event.key == pygame.K_n:
+				nitro_on = True
+
 		if event.type == pygame.KEYUP:
-			move_left = False
-			move_right = False
+			if event.key == pygame.K_LEFT:
+				move_left = False
+
+			if event.key == pygame.K_RIGHT:
+				move_right = False
+
+			if event.key == pygame.K_n:
+				nitro_on = False
+				speed = 3
+				counter_inc = 1
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			x, y = event.pos
@@ -174,8 +185,15 @@ while running:
 		win.blit(end_img, (0, 0))
 		win.blit(game_over_img, (center(game_over_img), 16))
 
+		num_coin_img = font.render(f'{coins}', True, WHITE)
+		num_dodge_img = font.render(f'{dodged}', True, WHITE)
+		distance_img = font.render(f'Distance : {counter/1000:.2f} km', True, WHITE)
+
 		win.blit(coin_img, (80, 240))
-		win.blit(dodge_img, (60, 280))
+		win.blit(dodge_img, (50, 280))
+		win.blit(num_coin_img, (180, 250))
+		win.blit(num_dodge_img, (180, 300))
+		win.blit(distance_img, (center(distance_img), (350)))
 
 	if game_page:
 		win.blit(bg, (0,0))
