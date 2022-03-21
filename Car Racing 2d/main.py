@@ -87,6 +87,9 @@ sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT - 80)
 
 click_fx = pygame.mixer.Sound('Sounds/click.mp3')
 fuel_fx = pygame.mixer.Sound('Sounds/fuel.wav')
+start_fx = pygame.mixer.Sound('Sounds/start.mp3')
+restart_fx = pygame.mixer.Sound('Sounds/restart.mp3')
+coin_fx = pygame.mixer.Sound('Sounds/coin.mp3')
 
 pygame.mixer.music.load('Sounds/mixkit-tech-house-vibes-130.mp3')
 pygame.mixer.music.play(loops=-1)
@@ -201,6 +204,8 @@ while running:
 			car_page = False
 			game_page = True
 
+			start_fx.play()
+
 			p = Player(100, HEIGHT-120, car_type)
 			counter = 0
 
@@ -225,10 +230,32 @@ while running:
 		win.blit(distance_img, (center(distance_img), (350)))
 
 		if home_btn.draw(win):
-			pass
+			over_page = False
+			home_page = True
+
+			coins = 0
+			dodged = 0
+			counter = 0
+			nitro.gas = 0
+			cfuel = 100
+
+			endx, enddx = 0, 0.5
+			gameovery = -50
 
 		if replay_btn.draw(win):
-			pass
+			over_page = False
+			game_page = True
+
+			coins = 0
+			dodged = 0
+			counter = 0
+			nitro.gas = 0
+			cfuel = 100
+
+			endx, enddx = 0, 0.5
+			gameovery = -50
+
+			restart_fx.play()
 
 		if sound_btn.draw(win):
 			sound_on = not sound_on
@@ -239,7 +266,6 @@ while running:
 			else:
 				sound_btn.update_image(sound_off_img)
 				pygame.mixer.music.stop()
-
 
 	if game_page:
 		win.blit(bg, (0,0))
@@ -314,8 +340,14 @@ while running:
 				game_page = False
 				over_page = True
 
+				tree_group.empty()
+				coin_group.empty()
+				fuel_group.empty()
+				obstacle_group.empty()
+
 		if pygame.sprite.spritecollide(p, coin_group, True):
 			coins += 1
+			coin_fx.play()
 
 		if pygame.sprite.spritecollide(p, fuel_group, True):
 			cfuel += 25
