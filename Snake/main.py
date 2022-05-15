@@ -28,9 +28,17 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 
+# LOADING FONTS **************************************************************
+
+smallfont = pygame.font.SysFont('Corbel', 25)
+gameoptions = ['Classic', 'Boxed','Arcade', 'Exit']
+cmode = 0
+
 # LOADING IMAGES *************************************************************
 
 bg = pygame.image.load('Assets/bg.png')
+logo = pygame.image.load('Assets/logo.jpg')
+logo2 = pygame.image.load('Assets/logo2.jpg')
 
 tile_list = []
 for i in range(4):
@@ -171,18 +179,18 @@ class Food:
 level = 1
 MAX_LEVEL = 3
 score = 0
-leveldata, length = loadlevel(1)
 
 snake = Snake()
-food = Food()
 
+homepage = True
+gamepage = False
 gameover = False
 
 running = True
 while running:
+	selected = False
 	win.fill(BLACK)
-	for i in range(5):
-		win.blit(bg, (0, 104 * i))
+	win.blit(bg, (0, 0))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -190,6 +198,22 @@ while running:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				running = False
+
+			if homepage:
+				if event.key == pygame.K_UP:
+					cmode -= 1
+					if cmode < 0:
+						cmode = 3
+
+				if event.key == pygame.K_DOWN:
+					cmode += 1
+					if cmode > 3:
+						cmode = 0
+
+				if event.key == pygame.K_RETURN:
+					selected = True
+					if cmode == 3:
+						running = False
 
 			if event.key == pygame.K_RIGHT and snake.direction != 'left':
 				snake.direction = 'right'
@@ -203,45 +227,79 @@ while running:
 			if event.key == pygame.K_DOWN and snake.direction != 'up':
 				snake.direction = 'down'
 
-	if not gameover:
-		# drawGrid()
-		# draw level
-		for y in range(ROWS):
-			for x in range(COLS):
-				if leveldata[y][x] > 0:
-					tile = leveldata[y][x]
-					pos = (x*CELLSIZE, y*CELLSIZE)
-					win.blit(tile_list[tile-1], pos)
+	if homepage:
+		win.blit(logo, (0,0))
+		win.blit(logo2, (0,225))
 
-					if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
-						pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
-						# gameover = True
-						pass
-		
-		snake.update()
-		snake.checkFood(food)
-		snake.draw()
-		food.update()
-		food.draw()
+		for index, mode in enumerate(gameoptions):
+			color = (32, 32, 32)
+			if cmode == index:
+				color = WHITE
+			shadow = smallfont.render(mode, True, color)
+			text = smallfont.render(mode, True, WHITE)
+			win.blit(text, (WIDTH//2 - text.get_width()//2+1, HEIGHT//2 + 55*index+1))
+			win.blit(shadow, (WIDTH//2 - text.get_width()//2, HEIGHT//2 + 55*index))
 
-		pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 20), border_radius=10)
-		pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 20),1 , border_radius=10)
+		if selected:
+			if cmode == 0:
+				pass
 
-		if snake.checkFood(food):
-			snake.eatFood()
-			food.respawn()
-			score += 1
+			if cmode == 1:
+				pass
 
-			if score % 10 == 0:
-				level += 1
-				if level <= MAX_LEVEL:
-					leveldata, length = loadlevel(level)
-					score = 0
-					snake.__init__()
-				else:
-					gameover = True
-	else:
-		pass
+			if cmode == 2:
+				level = 1
+				leveldata, length = loadlevel(level)
+				snake.__init__()
+
+				homepage = False
+				gamepage = True
+				score = 0
+
+			food = Food()
+
+		pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
+
+	if gamepage:
+		if not gameover:
+			# drawGrid()
+			# draw level
+			for y in range(ROWS):
+				for x in range(COLS):
+					if leveldata[y][x] > 0:
+						tile = leveldata[y][x]
+						pos = (x*CELLSIZE, y*CELLSIZE)
+						win.blit(tile_list[tile-1], pos)
+
+						if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
+							pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
+							# gameover = True
+							pass
+			
+			snake.update()
+			snake.checkFood(food)
+			snake.draw()
+			food.update()
+			food.draw()
+
+			pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 20), border_radius=10)
+			pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 20),1 , border_radius=10)
+
+			if snake.checkFood(food):
+				snake.eatFood()
+				food.respawn()
+				score += 1
+
+				if score % 10 == 0:
+					level += 1
+					if level <= MAX_LEVEL:
+						leveldata, length = loadlevel(level)
+						score = 0
+						snake.__init__()
+					else:
+						gameover = True
+		else:
+			pass
 
 	clock.tick(FPS)
 	pygame.display.update()
