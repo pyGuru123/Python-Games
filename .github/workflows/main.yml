@@ -24,23 +24,4 @@ jobs:
           name: package-connected
           path: ${{ steps.buildozer-c.outputs.filename }}
 
-  build-snake:
-    name: Build Snake
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer-s
-        with:
-          workdir: Snake
-          buildozer_version: stable
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: package-snake
-          path: ${{ steps.buildozer-s.outputs.filename }}
