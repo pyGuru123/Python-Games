@@ -90,9 +90,6 @@ class Snake:
 		# if snake.tailCollision():
 		# 	print(True)
 
-	def eatFood(self):
-		self.length += 1
-
 	def outOfBound(self):
 		for index, block in enumerate(self.body):
 			if block[0] > WIDTH:
@@ -104,10 +101,13 @@ class Snake:
 			elif block[1] < 0:
 				self.body[index][1] = HEIGHT - CELLSIZE
 
+	def eatFood(self):
+		self.length += 1
+
 	def checkFood(self, food):
 		if self.head[0] == food.x and self.head[1] == food.y:
-			self.eatFood()
-			food.respawn()
+			return True
+		return False
 
 	def tailCollision(self):
 		head = self.body[-1]
@@ -155,8 +155,11 @@ class Food:
 
 snake = Snake()
 food = Food()
-leveldata, length = loadlevel(1)
 
+level = 1
+score = 0
+leveldata, length = loadlevel(1)
+gameover = False
 
 running = True
 while running:
@@ -183,24 +186,42 @@ while running:
 			if event.key == pygame.K_DOWN and snake.direction != 'up':
 				snake.direction = 'down'
 
-	# drawGrid()
-	# draw level
-	for y in range(ROWS):
-		for x in range(COLS):
-			if leveldata[y][x] > 0:
-				tile = leveldata[y][x]
-				pos = (x*CELLSIZE, y*CELLSIZE)
-				win.blit(tile_list[tile-1], pos)
+	if not gameover:
+		# drawGrid()
+		# draw level
+		for y in range(ROWS):
+			for x in range(COLS):
+				if leveldata[y][x] > 0:
+					tile = leveldata[y][x]
+					pos = (x*CELLSIZE, y*CELLSIZE)
+					win.blit(tile_list[tile-1], pos)
 
-				if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
-					pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
-					pass
-	
-	snake.update()
-	snake.checkFood(food)
-	snake.draw()
-	food.update()
-	food.draw() 
+					if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
+						pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
+						# gameover = True
+						pass
+		
+		snake.update()
+		snake.checkFood(food)
+		snake.draw()
+		food.update()
+		food.draw()
+
+		pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 20), border_radius=10)
+		pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 20),1 , border_radius=10)
+
+		if snake.checkFood(food):
+			snake.eatFood()
+			food.respawn()
+			score += 1
+
+			if score % 10 == 0:
+				level += 1
+				leveldata, length = loadlevel(level)
+				score = 0
+				snake.__init__()
+	else:
+		pass
 
 	clock.tick(FPS)
 	pygame.display.update()
