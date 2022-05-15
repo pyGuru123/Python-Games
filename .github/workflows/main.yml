@@ -13,7 +13,7 @@ jobs:
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+        id: buildozer-c
         with:
           workdir: Connected
           buildozer_version: stable
@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: package-connected
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: ${{ steps.buildozer-c.outputs.filename }}
 
   build-snake:
     name: Build Snake
@@ -34,7 +34,7 @@ jobs:
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+        id: buildozer-s
         with:
           workdir: Snake
           buildozer_version: stable
@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: package-snake
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: ${{ steps.buildozer-s.outputs.filename }}
