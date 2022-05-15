@@ -1,0 +1,227 @@
+.sprite {
+    background-image: url(spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+}
+
+.sprite-apple {
+    width: 16px;
+    height: 16px;
+    background-position: -5px -5px;
+}
+
+.sprite-github {
+    width: 30px;
+    height: 30px;
+    background-position: -31px -5px;
+}
+
+.sprite-gmail {
+    width: 30px;
+    height: 30px;
+    background-position: -71px -5px;
+}
+
+.sprite-grapes {
+    width: 16px;
+    height: 16px;
+    background-position: -111px -5px;
+}
+
+.sprite-lastsnakeheadupdate {
+    width: 32px;
+    height: 32px;
+    background-position: -137px -5px;
+}
+
+.sprite-lastsnakeheadupdate-_1_ {
+    width: 32px;
+    height: 32px;
+    background-position: -179px -5px;
+}
+
+.sprite-lastsnakeheadupdate-_2_ {
+    width: 32px;
+    height: 32px;
+    background-position: -5px -47px;
+}
+
+.sprite-lastsnakeheadupdate-_3_ {
+    width: 32px;
+    height: 32px;
+    background-position: -47px -47px;
+}
+
+.sprite-lastsnakeheadupdate-_4_ {
+    width: 32px;
+    height: 32px;
+    background-position: -89px -47px;
+}
+
+.sprite-lastsnakeheadupdate-_5_ {
+    width: 32px;
+    height: 32px;
+    background-position: -131px -47px;
+}
+
+.sprite-lastsnakeheadupdate-_6_ {
+    width: 32px;
+    height: 32px;
+    background-position: -173px -47px;
+}
+
+.sprite-lastsnakeheadupdate_spritesheet {
+    width: 148px;
+    height: 90px;
+    background-position: -5px -89px;
+}
+
+.sprite-left_connector {
+    width: 32px;
+    height: 32px;
+    background-position: -163px -89px;
+}
+
+.sprite-linkedin {
+    width: 30px;
+    height: 30px;
+    background-position: -205px -89px;
+}
+
+.sprite-mouse {
+    width: 16px;
+    height: 16px;
+    background-position: -221px -5px;
+}
+
+.sprite-orange {
+    width: 16px;
+    height: 16px;
+    background-position: -221px -31px;
+}
+
+.sprite-right_connector {
+    width: 32px;
+    height: 32px;
+    background-position: -205px -129px;
+}
+
+.sprite-snake_body32_horizontal00 {
+    width: 32px;
+    height: 32px;
+    background-position: -163px -171px;
+}
+
+.sprite-snake_body32_horizontal01 {
+    width: 32px;
+    height: 32px;
+    background-position: -205px -171px;
+}
+
+.sprite-snake_body32_vertical00 {
+    width: 32px;
+    height: 32px;
+    background-position: -247px -5px;
+}
+
+.sprite-snake_body32_vertical01 {
+    width: 32px;
+    height: 32px;
+    background-position: -247px -47px;
+}
+
+.sprite-snake_spritesheet_bodyupd {
+    width: 36px;
+    height: 36px;
+    background-position: -247px -89px;
+}
+
+.sprite-stackoverflow {
+    width: 30px;
+    height: 30px;
+    background-position: -247px -135px;
+}
+
+.sprite-tail_final {
+    width: 16px;
+    height: 16px;
+    background-position: -163px -135px;
+}
+
+.sprite-tail_final00 {
+    width: 16px;
+    height: 16px;
+    background-position: -247px -175px;
+}
+
+.sprite-tail_final01 {
+    width: 16px;
+    height: 16px;
+    background-position: -5px -201px;
+}
+
+.sprite-tail_final02 {
+    width: 16px;
+    height: 16px;
+    background-position: -31px -201px;
+}
+
+.sprite-tail_final03 {
+    width: 16px;
+    height: 16px;
+    background-position: -57px -201px;
+}
+
+.sprite-tail_final04 {
+    width: 16px;
+    height: 16px;
+    background-position: -83px -201px;
+}
+
+.sprite-tongue_final00 {
+    width: 16px;
+    height: 16px;
+    background-position: -109px -201px;
+}
+
+.sprite-tongue_final01 {
+    width: 16px;
+    height: 16px;
+    background-position: -135px -201px;
+}
+
+.sprite-tongue_final02 {
+    width: 16px;
+    height: 16px;
+    background-position: -247px -201px;
+}
+
+.sprite-tongue_final03 {
+    width: 16px;
+    height: 16px;
+    background-position: -5px -227px;
+}
+
+.sprite-tongue_final04 {
+    width: 16px;
+    height: 16px;
+    background-position: -31px -227px;
+}
+
+.sprite-tongue_final05 {
+    width: 16px;
+    height: 16px;
+    background-position: -57px -227px;
+}
+
+.sprite-tumblr {
+    width: 30px;
+    height: 30px;
+    background-position: -83px -227px;
+}
+
+.sprite-twitter {
+    width: 30px;
+    height: 30px;
+    background-position: -123px -227px;
+}
