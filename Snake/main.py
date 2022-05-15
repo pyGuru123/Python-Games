@@ -3,13 +3,22 @@
 
 import random
 import pygame
+import pickle
 
 pygame.init()
-SCREEN = WIDTH, HEIGHT =  288, 512
+SCREEN = WIDTH, HEIGHT = 288, 512
 CELLSIZE = 16
 ROWS = HEIGHT // CELLSIZE
 COLS = WIDTH // CELLSIZE
-win = pygame.display.set_mode(SCREEN)
+
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 
 FPS = 15
 clock = pygame.time.Clock()
@@ -22,7 +31,19 @@ WHITE = (255, 255, 255)
 
 # LOADING IMAGES *************************************************************
 
-bg = pygame.image.load('Assets/bg1.png')
+bg = pygame.image.load('Assets/bg.png')
+
+tile_list = []
+for i in range(4):
+	tile = pygame.image.load(f'Tiles/{i+1}.png')
+	tile_list.append(tile)
+
+tile_size = {
+	1 : (16, 64),
+	2 : (64, 16),
+	3 : (32, 32),
+	4 : (32, 32)
+}
 
 def drawGrid():
 	for row in range(ROWS):
@@ -30,6 +51,15 @@ def drawGrid():
 	for col in range(COLS):
 		pygame.draw.line(win, WHITE, (col*CELLSIZE, 0), (col*CELLSIZE, HEIGHT))
 
+def loadlevel(level):
+	file = f'Levels/level{level}_data'
+	with open(file, 'rb') as f:
+		data = pickle.load(f)
+		for y in range(len(data)):
+			for x in range(len(data[0])):
+				if data[y][x] >= 0:
+					data[y][x] += 1
+	return data, len(data[0])
 
 class Snake:
 	def __init__(self):
@@ -125,6 +155,8 @@ class Food:
 
 snake = Snake()
 food = Food()
+leveldata, length = loadlevel(1)
+
 
 running = True
 while running:
@@ -152,6 +184,18 @@ while running:
 				snake.direction = 'down'
 
 	# drawGrid()
+	# draw level
+	for y in range(ROWS):
+		for x in range(COLS):
+			if leveldata[y][x] > 0:
+				tile = leveldata[y][x]
+				pos = (x*CELLSIZE, y*CELLSIZE)
+				win.blit(tile_list[tile-1], pos)
+
+				if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
+					pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
+					pass
+	
 	snake.update()
 	snake.checkFood(food)
 	snake.draw()
