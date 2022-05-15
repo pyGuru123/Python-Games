@@ -1,6 +1,5 @@
 # Snake
 
-
 import random
 import pygame
 import pickle
@@ -20,7 +19,7 @@ if width >= height:
 else:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 
-FPS = 15
+FPS = 10
 clock = pygame.time.Clock()
 
 BLACK = (0, 0, 0)
@@ -60,6 +59,19 @@ def loadlevel(level):
 				if data[y][x] >= 0:
 					data[y][x] += 1
 	return data, len(data[0])
+
+def tile_collide(leveld, head):
+	for y in range(ROWS):
+		for x in range(COLS):
+			if leveld[y][x] > 0:
+				tile = leveldata[y][x]
+				pos = (x*CELLSIZE, y*CELLSIZE)
+
+				if (pos[0] <= head[0] <= pos[0] + tile_size[tile][0] and 
+					pos[1] <= head[1] <= pos[1] + tile_size[tile][1]):
+					return True
+
+	return False
 
 class Snake:
 	def __init__(self):
@@ -141,6 +153,9 @@ class Food:
 		self.x = random.randint(0,COLS-1) * CELLSIZE
 		self.y = random.randint(0,ROWS-1) * CELLSIZE
 
+		if tile_collide(leveldata, (self.x, self.y)):
+			self.respawn()
+
 	def update(self):
 		self.counter += 1
 		if self.counter % 3 == 0:
@@ -153,12 +168,14 @@ class Food:
 	def draw(self):
 		win.blit(self.temp, (self.x, self.y))
 
+level = 1
+MAX_LEVEL = 3
+score = 0
+leveldata, length = loadlevel(1)
+
 snake = Snake()
 food = Food()
 
-level = 1
-score = 0
-leveldata, length = loadlevel(1)
 gameover = False
 
 running = True
@@ -217,9 +234,12 @@ while running:
 
 			if score % 10 == 0:
 				level += 1
-				leveldata, length = loadlevel(level)
-				score = 0
-				snake.__init__()
+				if level <= MAX_LEVEL:
+					leveldata, length = loadlevel(level)
+					score = 0
+					snake.__init__()
+				else:
+					gameover = True
 	else:
 		pass
 
