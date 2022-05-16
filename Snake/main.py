@@ -39,6 +39,7 @@ cmode = 0
 bg = pygame.image.load('Assets/bg.png')
 logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
+tree = pygame.image.load('Assets/tree.png')
 
 tile_list = []
 for i in range(5):
@@ -266,8 +267,9 @@ while running:
 		pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
 
 	if gamepage:
-		if not gameover:
-			# drawGrid()
+		# drawGrid()
+
+		if not gameover:	
 			# draw level
 			for y in range(ROWS):
 				for x in range(COLS):
@@ -293,6 +295,7 @@ while running:
 				score += 1
 
 			if cmode == 0 or cmode == 1:
+				win.blit(tree, (WIDTH//2 - 8, HEIGHT//2 - 52))
 				score_img = smallfont.render(f'{score}', True, WHITE)
 				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
 
