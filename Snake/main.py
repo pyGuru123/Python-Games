@@ -41,7 +41,7 @@ logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
 
 tile_list = []
-for i in range(4):
+for i in range(5):
 	tile = pygame.image.load(f'Tiles/{i+1}.png')
 	tile_list.append(tile)
 
@@ -49,7 +49,8 @@ tile_size = {
 	1 : (16, 64),
 	2 : (64, 16),
 	3 : (32, 32),
-	4 : (32, 32)
+	4 : (32, 32),
+	5 : (32, 32)
 }
 
 def drawGrid():
@@ -59,7 +60,10 @@ def drawGrid():
 		pygame.draw.line(win, WHITE, (col*CELLSIZE, 0), (col*CELLSIZE, HEIGHT))
 
 def loadlevel(level):
-	file = f'Levels/level{level}_data'
+	if level == 'boxed':
+		file = f'Levels/boxed'
+	else:
+		file = f'Levels/level{level}_data'
 	with open(file, 'rb') as f:
 		data = pickle.load(f)
 		for y in range(len(data)):
@@ -177,7 +181,7 @@ class Food:
 		win.blit(self.temp, (self.x, self.y))
 
 level = 1
-MAX_LEVEL = 3
+MAX_LEVEL = 4
 score = 0
 
 snake = Snake()
@@ -242,21 +246,22 @@ while running:
 
 		if selected:
 			if cmode == 0:
-				pass
+				leveldata = [[0 for i in range(COLS)] for j in range(ROWS)]
 
 			if cmode == 1:
-				pass
+				level = 'boxed'
+				leveldata, length = loadlevel(level)
 
 			if cmode == 2:
 				level = 1
 				leveldata, length = loadlevel(level)
-				snake.__init__()
-
-				homepage = False
-				gamepage = True
-				score = 0
-
+				
+			snake.__init__()
 			food = Food()
+
+			homepage = False
+			gamepage = True
+			score = 0			
 
 		pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
 
@@ -282,15 +287,20 @@ while running:
 			food.update()
 			food.draw()
 
-			pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 20), border_radius=10)
-			pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 20),1 , border_radius=10)
-
 			if snake.checkFood(food):
 				snake.eatFood()
 				food.respawn()
 				score += 1
 
-				if score % 10 == 0:
+			if cmode == 0 or cmode == 1:
+				score_img = smallfont.render(f'{score}', True, WHITE)
+				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
+
+			elif cmode == 2:
+				pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 16), border_radius=10)
+				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 16),1 , border_radius=10)
+
+				if score and score % 10 == 0:
 					level += 1
 					if level <= MAX_LEVEL:
 						leveldata, length = loadlevel(level)

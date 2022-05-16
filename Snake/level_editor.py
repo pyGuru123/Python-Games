@@ -14,7 +14,7 @@ HEIGHT = SCREEN_HEIGHT
 
 TILE_WIDTH = 16
 TILE_HEIGHT = 16
-NUM_TILES = 4
+NUM_TILES = 5
 
 ROWS = SCREEN_HEIGHT // TILE_HEIGHT
 COLS = MAX_COLS = SCREEN_WIDTH // TILE_WIDTH
@@ -81,10 +81,10 @@ button_list = []
 b_col = 0
 b_row = 0
 for i in range(len(img_list)):
-	if TILE_WIDTH > 16:
-		image = pygame.transform.scale(img_list[i], (16,16))
-	else:
-		image = img_list[i]
+	# if TILE_WIDTH > 16:
+	image = pygame.transform.scale(img_list[i], (16,16))
+	# else:
+	# 	image = img_list[i]
 	t_button = button.Button(SCREEN_WIDTH + (35 * b_col + 15), 30 * b_row + 10, image, 1)
 	button_list.append(t_button)
 
