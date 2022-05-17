@@ -44,7 +44,6 @@ cmode = 0
 bg = pygame.image.load('Assets/bg.png')
 logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
-tree = pygame.image.load('Assets/tree.png')
 
 gameover_img = pygame.image.load('Assets/gameover.png')
 
@@ -193,6 +192,28 @@ class Food:
 	def draw(self):
 		win.blit(self.temp, (self.x, self.y))
 
+class Tree:
+	def __init__(self, x, y):
+		self.x = x
+		self.y = y
+		self.counter = self.index = 0
+
+		self.imglist = []
+		for i in range(4):
+			img = pygame.image.load(f'Assets/tree{i}.png')
+			self.imglist.append(img)
+		self.image = self.imglist[self.index]
+
+	def update(self):
+		self.counter += 1
+		if self.counter % 3 == 0:
+			self.index = (self.index + 1) % 3
+			self.counter = 0
+			self.image = self.imglist[self.index]
+
+	def draw(self):
+		win.blit(self.image, (self.x, self.y))
+
 # GAME VARIABLES *************************************************************
 
 level = 1
@@ -200,6 +221,7 @@ MAX_LEVEL = 4
 score = 0
 
 snake = Snake()
+tree = Tree(WIDTH//2 - 8, HEIGHT//2 - 52)
 
 homepage = True
 gamepage = False
@@ -290,13 +312,16 @@ while running:
 					if leveldata[y][x] > 0:
 						tile = leveldata[y][x]
 						pos = (x*CELLSIZE, y*CELLSIZE)
-						win.blit(tile_list[tile-1], pos)
-
 						rect = pygame.Rect(pos[0], pos[1], tile_size[tile][0],
 								tile_size[tile][1])
+
+						if tile != 3:
+							pygame.draw.rect(win, (18, 18, 18), (rect.x+2, rect.y+2,
+										 rect.width, rect.height))
+						win.blit(tile_list[tile-1], pos)
 						if rect.collidepoint(snake.head):
 							gameover = True
-			
+
 			snake.update()
 			snake.checkFood(food)
 			snake.draw()
@@ -309,7 +334,9 @@ while running:
 				score += 1
 
 			if cmode == 0 or cmode == 1:
-				win.blit(tree, (WIDTH//2 - 8, HEIGHT//2 - 52))
+				tree.update()
+				tree.draw()
+
 				score_img = smallfont.render(f'{score}', True, WHITE)
 				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
 
@@ -327,6 +354,7 @@ while running:
 						gameover = True
 		else:
 			win.blit(gameover_img, (WIDTH//2 - gameover_img.get_width()//2, 80))
+			pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
 
 	clock.tick(FPS)
 	pygame.display.update()
