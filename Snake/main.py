@@ -22,6 +22,8 @@ else:
 FPS = 10
 clock = pygame.time.Clock()
 
+# COLORS *********************************************************************
+
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
@@ -31,6 +33,9 @@ WHITE = (255, 255, 255)
 # LOADING FONTS **************************************************************
 
 smallfont = pygame.font.SysFont('Corbel', 25)
+
+# GAME MODES *****************************************************************
+
 gameoptions = ['Classic', 'Boxed','Arcade', 'Exit']
 cmode = 0
 
@@ -40,6 +45,10 @@ bg = pygame.image.load('Assets/bg.png')
 logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
 tree = pygame.image.load('Assets/tree.png')
+
+gameover_img = pygame.image.load('Assets/gameover.png')
+
+# LOADING TILES **************************************************************
 
 tile_list = []
 for i in range(5):
@@ -53,6 +62,8 @@ tile_size = {
 	4 : (32, 32),
 	5 : (32, 32)
 }
+
+# FUNCTIONS & CLASSES ********************************************************
 
 def drawGrid():
 	for row in range(ROWS):
@@ -80,8 +91,9 @@ def tile_collide(leveld, head):
 				tile = leveldata[y][x]
 				pos = (x*CELLSIZE, y*CELLSIZE)
 
-				if (pos[0] <= head[0] <= pos[0] + tile_size[tile][0] and 
-					pos[1] <= head[1] <= pos[1] + tile_size[tile][1]):
+				rect = pygame.Rect(pos[0], pos[1], tile_size[tile][0],
+								tile_size[tile][1])
+				if rect.collidepoint(head):
 					return True
 
 	return False
@@ -181,6 +193,8 @@ class Food:
 	def draw(self):
 		win.blit(self.temp, (self.x, self.y))
 
+# GAME VARIABLES *************************************************************
+
 level = 1
 MAX_LEVEL = 4
 score = 0
@@ -278,10 +292,10 @@ while running:
 						pos = (x*CELLSIZE, y*CELLSIZE)
 						win.blit(tile_list[tile-1], pos)
 
-						if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
-							pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
-							# gameover = True
-							pass
+						rect = pygame.Rect(pos[0], pos[1], tile_size[tile][0],
+								tile_size[tile][1])
+						if rect.collidepoint(snake.head):
+							gameover = True
 			
 			snake.update()
 			snake.checkFood(food)
@@ -312,7 +326,7 @@ while running:
 					else:
 						gameover = True
 		else:
-			pass
+			win.blit(gameover_img, (WIDTH//2 - gameover_img.get_width()//2, 80))
 
 	clock.tick(FPS)
 	pygame.display.update()
