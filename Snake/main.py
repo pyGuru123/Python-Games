@@ -1,6 +1,5 @@
 # Snake
 
-
 import random
 import pygame
 import pickle
@@ -20,8 +19,10 @@ if width >= height:
 else:
 	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
 
-FPS = 15
+FPS = 10
 clock = pygame.time.Clock()
+
+# COLORS *********************************************************************
 
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
@@ -29,12 +30,27 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
 
+# LOADING FONTS **************************************************************
+
+smallfont = pygame.font.SysFont('Corbel', 25)
+
+# GAME MODES *****************************************************************
+
+gameoptions = ['Classic', 'Boxed','Arcade', 'Exit']
+cmode = 0
+
 # LOADING IMAGES *************************************************************
 
 bg = pygame.image.load('Assets/bg.png')
+logo = pygame.image.load('Assets/logo.jpg')
+logo2 = pygame.image.load('Assets/logo2.jpg')
+
+gameover_img = pygame.image.load('Assets/gameover.png')
+
+# LOADING TILES **************************************************************
 
 tile_list = []
-for i in range(4):
+for i in range(5):
 	tile = pygame.image.load(f'Tiles/{i+1}.png')
 	tile_list.append(tile)
 
@@ -42,8 +58,11 @@ tile_size = {
 	1 : (16, 64),
 	2 : (64, 16),
 	3 : (32, 32),
-	4 : (32, 32)
+	4 : (32, 32),
+	5 : (32, 32)
 }
+
+# FUNCTIONS & CLASSES ********************************************************
 
 def drawGrid():
 	for row in range(ROWS):
@@ -52,7 +71,10 @@ def drawGrid():
 		pygame.draw.line(win, WHITE, (col*CELLSIZE, 0), (col*CELLSIZE, HEIGHT))
 
 def loadlevel(level):
-	file = f'Levels/level{level}_data'
+	if level == 'boxed':
+		file = f'Levels/boxed'
+	else:
+		file = f'Levels/level{level}_data'
 	with open(file, 'rb') as f:
 		data = pickle.load(f)
 		for y in range(len(data)):
@@ -60,6 +82,20 @@ def loadlevel(level):
 				if data[y][x] >= 0:
 					data[y][x] += 1
 	return data, len(data[0])
+
+def tile_collide(leveld, head):
+	for y in range(ROWS):
+		for x in range(COLS):
+			if leveld[y][x] > 0:
+				tile = leveldata[y][x]
+				pos = (x*CELLSIZE, y*CELLSIZE)
+
+				rect = pygame.Rect(pos[0], pos[1], tile_size[tile][0],
+								tile_size[tile][1])
+				if rect.collidepoint(head):
+					return True
+
+	return False
 
 class Snake:
 	def __init__(self):
@@ -90,9 +126,6 @@ class Snake:
 		# if snake.tailCollision():
 		# 	print(True)
 
-	def eatFood(self):
-		self.length += 1
-
 	def outOfBound(self):
 		for index, block in enumerate(self.body):
 			if block[0] > WIDTH:
@@ -104,10 +137,13 @@ class Snake:
 			elif block[1] < 0:
 				self.body[index][1] = HEIGHT - CELLSIZE
 
+	def eatFood(self):
+		self.length += 1
+
 	def checkFood(self, food):
 		if self.head[0] == food.x and self.head[1] == food.y:
-			self.eatFood()
-			food.respawn()
+			return True
+		return False
 
 	def tailCollision(self):
 		head = self.body[-1]
@@ -141,6 +177,9 @@ class Food:
 		self.x = random.randint(0,COLS-1) * CELLSIZE
 		self.y = random.randint(0,ROWS-1) * CELLSIZE
 
+		if tile_collide(leveldata, (self.x, self.y)):
+			self.respawn()
+
 	def update(self):
 		self.counter += 1
 		if self.counter % 3 == 0:
@@ -153,16 +192,46 @@ class Food:
 	def draw(self):
 		win.blit(self.temp, (self.x, self.y))
 
-snake = Snake()
-food = Food()
-leveldata, length = loadlevel(1)
+class Tree:
+	def __init__(self, x, y):
+		self.x = x
+		self.y = y
+		self.counter = self.index = 0
 
+		self.imglist = []
+		for i in range(4):
+			img = pygame.image.load(f'Assets/tree{i}.png')
+			self.imglist.append(img)
+		self.image = self.imglist[self.index]
+
+	def update(self):
+		self.counter += 1
+		if self.counter % 3 == 0:
+			self.index = (self.index + 1) % 3
+			self.counter = 0
+			self.image = self.imglist[self.index]
+
+	def draw(self):
+		win.blit(self.image, (self.x, self.y))
+
+# GAME VARIABLES *************************************************************
+
+level = 1
+MAX_LEVEL = 4
+score = 0
+
+snake = Snake()
+tree = Tree(WIDTH//2 - 8, HEIGHT//2 - 52)
+
+homepage = True
+gamepage = False
+gameover = False
 
 running = True
 while running:
+	selected = False
 	win.fill(BLACK)
-	for i in range(5):
-		win.blit(bg, (0, 104 * i))
+	win.blit(bg, (0, 0))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
@@ -170,6 +239,22 @@ while running:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				running = False
+
+			if homepage:
+				if event.key == pygame.K_UP:
+					cmode -= 1
+					if cmode < 0:
+						cmode = 3
+
+				if event.key == pygame.K_DOWN:
+					cmode += 1
+					if cmode > 3:
+						cmode = 0
+
+				if event.key == pygame.K_RETURN:
+					selected = True
+					if cmode == 3:
+						running = False
 
 			if event.key == pygame.K_RIGHT and snake.direction != 'left':
 				snake.direction = 'right'
@@ -183,24 +268,93 @@ while running:
 			if event.key == pygame.K_DOWN and snake.direction != 'up':
 				snake.direction = 'down'
 
-	# drawGrid()
-	# draw level
-	for y in range(ROWS):
-		for x in range(COLS):
-			if leveldata[y][x] > 0:
-				tile = leveldata[y][x]
-				pos = (x*CELLSIZE, y*CELLSIZE)
-				win.blit(tile_list[tile-1], pos)
+	if homepage:
+		win.blit(logo, (0,0))
+		win.blit(logo2, (0,225))
 
-				if (pos[0] <= snake.head[0] <= pos[0] + tile_size[tile][0] and 
-					pos[1] <= snake.head[1] <= pos[1] + tile_size[tile][1]):
-					pass
-	
-	snake.update()
-	snake.checkFood(food)
-	snake.draw()
-	food.update()
-	food.draw() 
+		for index, mode in enumerate(gameoptions):
+			color = (32, 32, 32)
+			if cmode == index:
+				color = WHITE
+			shadow = smallfont.render(mode, True, color)
+			text = smallfont.render(mode, True, WHITE)
+			win.blit(text, (WIDTH//2 - text.get_width()//2+1, HEIGHT//2 + 55*index+1))
+			win.blit(shadow, (WIDTH//2 - text.get_width()//2, HEIGHT//2 + 55*index))
+
+		if selected:
+			if cmode == 0:
+				leveldata = [[0 for i in range(COLS)] for j in range(ROWS)]
+
+			if cmode == 1:
+				level = 'boxed'
+				leveldata, length = loadlevel(level)
+
+			if cmode == 2:
+				level = 1
+				leveldata, length = loadlevel(level)
+				
+			snake.__init__()
+			food = Food()
+
+			homepage = False
+			gamepage = True
+			score = 0			
+
+		pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
+
+	if gamepage:
+		# drawGrid()
+
+		if not gameover:	
+			# draw level
+			for y in range(ROWS):
+				for x in range(COLS):
+					if leveldata[y][x] > 0:
+						tile = leveldata[y][x]
+						pos = (x*CELLSIZE, y*CELLSIZE)
+						rect = pygame.Rect(pos[0], pos[1], tile_size[tile][0],
+								tile_size[tile][1])
+
+						if tile != 3:
+							pygame.draw.rect(win, (18, 18, 18), (rect.x+2, rect.y+2,
+										 rect.width, rect.height))
+						win.blit(tile_list[tile-1], pos)
+						if rect.collidepoint(snake.head):
+							gameover = True
+
+			snake.update()
+			snake.checkFood(food)
+			snake.draw()
+			food.update()
+			food.draw()
+
+			if snake.checkFood(food):
+				snake.eatFood()
+				food.respawn()
+				score += 1
+
+			if cmode == 0 or cmode == 1:
+				tree.update()
+				tree.draw()
+
+				score_img = smallfont.render(f'{score}', True, WHITE)
+				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
+
+			elif cmode == 2:
+				pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 16), border_radius=10)
+				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 16),1 , border_radius=10)
+
+				if score and score % 10 == 0:
+					level += 1
+					if level <= MAX_LEVEL:
+						leveldata, length = loadlevel(level)
+						score = 0
+						snake.__init__()
+					else:
+						gameover = True
+		else:
+			win.blit(gameover_img, (WIDTH//2 - gameover_img.get_width()//2, 80))
+			pygame.draw.rect(win, BLUE, (0,0,WIDTH,HEIGHT), 2)
 
 	clock.tick(FPS)
 	pygame.display.update()
