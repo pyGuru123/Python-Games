@@ -46,6 +46,7 @@ logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
 
 gameover_img = pygame.image.load('Assets/gameover.png')
+bar_img = pygame.image.load('Assets/bar.png')
 
 # LOADING TILES **************************************************************
 
@@ -364,8 +365,9 @@ while running:
 				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
 
 			elif cmode == 2:
-				pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 16), border_radius=10)
-				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 16),1 , border_radius=10)
+				bar = pygame.transform.scale(bar_img, (score*10, 10))
+				win.blit(bar, (WIDTH//2-50, HEIGHT-50))
+				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-51, 100, 10),1 , border_radius=10)
 
 				if score and score % 10 == 0:
 					level += 1
