@@ -99,12 +99,15 @@ def tile_collide(leveld, head):
 
 class Snake:
 	def __init__(self):
-		self.length = 1
+		self.length = 3
 		self.direction = None
 		self.x = COLS // 2
 		self.y = ROWS // 2
-		self.head = [COLS//2 * CELLSIZE, ROWS//2 * CELLSIZE]
-		self.body = [self.head]
+		self.head = COLS//2 * CELLSIZE, ROWS//2 * CELLSIZE
+		self.body = [[self.head[0]-2*CELLSIZE, self.head[1]],
+					[self.head[0]-CELLSIZE, self.head[1]],
+					self.head]
+		print(self.body)
 
 		self.headup = pygame.image.load('Assets/body/uhead.png')
 		self.headdown = pygame.image.load('Assets/body/dhead.png')
@@ -165,10 +168,24 @@ class Snake:
 		for index, block in enumerate(self.body):
 			x, y = block
 			rect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
-			if block == self.head:
-				win.blit(self.headright, rect)
-			else:
-				pygame.draw.rect(win, GREEN, rect)
+			if index == self.length - 1:
+				head = self.body[index]
+				neck = self.body[index-1]
+				image = self.headright
+				if head[0] == neck[0] and head[1] < neck[1]:
+					image = self.headup
+				elif head[0] == neck[0] and head[1] > neck[1]:
+					image = self.headdown
+				elif head[1] == neck[1] and head[0] < neck[0]:
+					image = self.headleft
+				elif head[1] == neck[1] and head[0] > neck[0]:
+					image = self.headright
+				win.blit(image, (x, y))
+			
+			# if block == self.head:
+			# 	win.blit(self.headright, rect)
+			# else:
+			# 	pygame.draw.rect(win, GREEN, rect)
 
 class Food:
 	def __init__(self):
