@@ -106,6 +106,11 @@ class Snake:
 		self.head = [COLS//2 * CELLSIZE, ROWS//2 * CELLSIZE]
 		self.body = [self.head]
 
+		self.headup = pygame.image.load('Assets/body/uhead.png')
+		self.headdown = pygame.image.load('Assets/body/dhead.png')
+		self.headleft = pygame.image.load('Assets/body/lhead.png')
+		self.headright = pygame.image.load('Assets/body/rhead.png')
+
 	def update(self):
 		head = self.body[-1]
 		if self.direction == 'up':
@@ -157,12 +162,13 @@ class Snake:
 		return has_eaten_tail
 
 	def draw(self):
-		for block in self.body:
+		for index, block in enumerate(self.body):
 			x, y = block
-			color = GREEN
+			rect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
 			if block == self.head:
-				color = BLUE
-			pygame.draw.rect(win, color, (x, y, CELLSIZE, CELLSIZE))
+				win.blit(self.headright, rect)
+			else:
+				pygame.draw.rect(win, GREEN, rect)
 
 class Food:
 	def __init__(self):
