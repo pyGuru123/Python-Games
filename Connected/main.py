@@ -4,7 +4,11 @@
 # Date : Thursday, 8 August, 2021
 
 import random
-import pygame
+try:
+    import pygame_sdl2
+    pygame_sdl2.import_as_pygame()
+except ImportError:
+    pass
 
 from objects import Balls, Coins, Tiles, Particle, Message, Button
 
@@ -43,6 +47,9 @@ color_index = 0
 color = color_list[color_index]
 
 # SOUNDS **********************************************************************
+
+print(os.path.exists("Assets/homeBtn.png"))
+
 home_img = pygame.image.load('Assets/homeBtn.png')
 replay_img = pygame.image.load('Assets/replay.png')
 sound_off_img = pygame.image.load("Assets/soundOffBtn.png")
