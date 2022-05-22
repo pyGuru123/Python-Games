@@ -33,7 +33,7 @@ jobs:
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer-h
         with:
-          workdir: HyperTile Dash
+          workdir: HyperTile_Dash
           buildozer_version: stable
 
       - name: Upload artifacts
