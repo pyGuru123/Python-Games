@@ -1,27 +1,36 @@
-name: Build
+name: Build for Android
 on: [push,pull_request]
 
 jobs:
   # Build job. Builds app for Android with Buildozer
   build-connected:
-    name: Build Connected
+    name: Build Android
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build with Buildozer
+      - name: Build Connected
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer-c
         with:
           workdir: Connected
           buildozer_version: stable
-
+      - name: Build HyperTile Dash
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer-h
+        with:
+          workdir: HyperTile Dash
+          buildozer_version: stable
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package-connected
           path: ${{ steps.buildozer-c.outputs.filename }}
-
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: package-connected
+          path: ${{ steps.buildozer-h.outputs.filename }}
 
