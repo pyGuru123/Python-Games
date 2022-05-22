@@ -47,6 +47,12 @@ death_color = death_color_list[color_index]
 
 # FONTS ***********************************************************************
 
+target_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'target.mp3'))
+empty_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'empty.mp3'))
+deadly_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dead.mp3'))
+dash_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dash.mp3'))
+score_page_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'score_page.mp3'))
+
 title_font = path.join(FONTS_PATH,"Aladin-Regular.ttf")
 tap_to_play_font = path.join(FONTS_PATH,"BubblegumSans-Regular.ttf")
 score_font = path.join(FONTS_PATH,"DalelandsUncialBold-82zA.ttf")

@@ -262,7 +262,7 @@ class Message:
 		self.color = color
 		self.x, self.y = x, y
 		if not font:
-			self.font = pygame.font.SysFont(path.join(FONTS_PATH,"Verdana"), size)
+			self.font = pygame.font.SysFont(path.join(FONTS_PATH,"Verdana"),size)
 			anti_alias = True
 		else:
 			self.font = pygame.font.Font(font, size)
