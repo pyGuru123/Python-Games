@@ -43,10 +43,10 @@ requirements = python3,pygame
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/splash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/Assets/skull.png
+icon.filename = %(source.dir)s/logo.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait

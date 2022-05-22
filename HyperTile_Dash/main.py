@@ -6,7 +6,7 @@
 import random
 import pygame
 
-from objects import Tile, Player, SkullCircle, Particle, Message, BlinkingText, Button
+from objects import *
 
 pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
@@ -47,10 +47,10 @@ death_color = death_color_list[color_index]
 
 # FONTS ***********************************************************************
 
-title_font = "Fonts/Aladin-Regular.ttf"
-tap_to_play_font = "Fonts/BubblegumSans-Regular.ttf"
-score_font = "Fonts/DalelandsUncialBold-82zA.ttf"
-game_over_font = "Fonts/ghostclan.ttf"
+title_font = path.join(FONTS_PATH,"Aladin-Regular.ttf")
+tap_to_play_font = path.join(FONTS_PATH,"BubblegumSans-Regular.ttf")
+score_font = path.join(FONTS_PATH,"DalelandsUncialBold-82zA.ttf")
+game_over_font = path.join(FONTS_PATH,"ghostclan.ttf")
 
 HyperTile = Message(WIDTH//2, HEIGHT//2-20, 50, "HyperTiles", title_font, BLUE, win)
 dash = Message(WIDTH//2+40, HEIGHT//2+40, 50, "Dash...", title_font, GREEN, win)
@@ -63,11 +63,11 @@ high_score_msg = Message(WIDTH//2 + 35, HEIGHT//2 - 5, 35, "0", None, WHITE, win
 
 # SOUNDS **********************************************************************
 
-target_tile_fx = pygame.mixer.Sound('Sounds/target.mp3')
-empty_tile_fx = pygame.mixer.Sound('Sounds/empty.mp3')
-deadly_tile_fx = pygame.mixer.Sound('Sounds/dead.mp3')
-dash_fx = pygame.mixer.Sound('Sounds/dash.mp3')
-score_page_fx = pygame.mixer.Sound('Sounds/score_page.mp3')
+target_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'target.mp3'))
+empty_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'empty.mp3'))
+deadly_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dead.mp3'))
+dash_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dash.mp3'))
+score_page_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'score_page.mp3'))
 
 pygame.mixer.music.load('Sounds/cbpd.mp3')
 pygame.mixer.music.play(loops=-1)
@@ -75,10 +75,10 @@ pygame.mixer.music.set_volume(0.5)
 
 # Button images
 
-home_img = pygame.image.load('Assets/homeBtn.png')
-replay_img = pygame.image.load('Assets/replay.png')
-sound_off_img = pygame.image.load("Assets/soundOffBtn.png")
-sound_on_img = pygame.image.load("Assets/soundOnBtn.png")
+home_img = pygame.image.load(path.join(ASSETS_PATH,'homeBtn.png'))
+replay_img = pygame.image.load(path.join(ASSETS_PATH,'replay.png'))
+sound_off_img = pygame.image.load(path.join(ASSETS_PATH,"soundOffBtn.png"))
+sound_on_img = pygame.image.load(path.join(ASSETS_PATH,"soundOnBtn.png"))
 
 # Buttons
 
