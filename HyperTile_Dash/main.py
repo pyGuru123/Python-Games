@@ -52,7 +52,7 @@ tap_to_play_font = path.join(FONTS_PATH,"BubblegumSans-Regular.ttf")
 score_font = path.join(FONTS_PATH,"DalelandsUncialBold-82zA.ttf")
 game_over_font = path.join(FONTS_PATH,"ghostclan.ttf")
 
-HyperTile = Message(WIDTH//2, HEIGHT//2-20, 50, "HyperTiles", title_font, BLUE, win)
+HyperTile = Message(WIDTH//2, HEIGHT//2-20, 50, "Hyper Tiles", title_font, BLUE, win)
 dash = Message(WIDTH//2+40, HEIGHT//2+40, 50, "Dash...", title_font, GREEN, win)
 tap_to_play = BlinkingText(WIDTH//2, HEIGHT-50, 20, "Tap To Play", tap_to_play_font, WHITE, win)
 
