@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+from os import path
 
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
@@ -9,7 +10,15 @@ TILE_Y = 100
 pygame.font.init()
 pygame.mixer.init()
 
-skull_image = pygame.image.load('Assets/skull.png')
+ROOT_PATH = path.abspath(".")
+ASSETS_PATH = path.join(ROOT_PATH, "Assets")
+SOUNDS_PATH = path.join(ROOT_PATH, "Sounds")
+FONTS_PATH = path.join(ROOT_PATH, "Fonts")
+
+skull_image = pygame.image.load(
+	path.join(ASSETS_PATH, 'skull.png')
+)
+
 skull_image = pygame.transform.scale(skull_image, (15,15))
 
 
