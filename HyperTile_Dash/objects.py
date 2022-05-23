@@ -2,18 +2,68 @@ import pygame
 import random
 import math
 from os import path
-
+pygame.init()
 SCREEN = WIDTH, HEIGHT = 288, 512
 CENTER = WIDTH //2, HEIGHT // 2
 TILE_Y = 100
 
+info = pygame.display.Info()
+width = info.current_w
+height = info.current_h
+if width >= height:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+else:
+	win = pygame.display.set_mode(SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
+
 pygame.font.init()
 pygame.mixer.init()
+RED = (255,0,0)
+GREEN = (0,177,64)
+BLUE = (30, 144,255)
+ORANGE = (252,76,2)
+YELLOW = (254,221,0)
+PURPLE = (155,38,182)
+AQUA = (0,103,127)
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+GRAY = (32, 32, 32)
 
 ROOT_PATH = path.abspath(".")
 ASSETS_PATH = path.join(ROOT_PATH, "Assets")
 SOUNDS_PATH = path.join(ROOT_PATH, "Sounds")
 FONTS_PATH = path.join(ROOT_PATH, "Fonts")
+
+target_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'target.mp3'))
+empty_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'empty.mp3'))
+deadly_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dead.mp3'))
+dash_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dash.mp3'))
+score_page_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'score_page.mp3'))
+
+title_font = path.join(FONTS_PATH,"Aladin-Regular.ttf")
+tap_to_play_font = path.join(FONTS_PATH,"BubblegumSans-Regular.ttf")
+score_font = path.join(FONTS_PATH,"DalelandsUncialBold-82zA.ttf")
+game_over_font = path.join(FONTS_PATH,"ghostclan.ttf")
+
+# SOUNDS **********************************************************************
+
+target_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'target.mp3'))
+empty_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'empty.mp3'))
+deadly_tile_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dead.mp3'))
+dash_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'dash.mp3'))
+score_page_fx = pygame.mixer.Sound(path.join(SOUNDS_PATH,'score_page.mp3'))
+
+pygame.mixer.music.load('Sounds/cbpd.mp3')
+pygame.mixer.music.play(loops=-1)
+pygame.mixer.music.set_volume(0.5)
+
+# Button images
+
+home_img = pygame.image.load(path.join(ASSETS_PATH,'homeBtn.png'))
+replay_img = pygame.image.load(path.join(ASSETS_PATH,'replay.png'))
+sound_off_img = pygame.image.load(path.join(ASSETS_PATH,"soundOffBtn.png"))
+sound_on_img = pygame.image.load(path.join(ASSETS_PATH,"soundOnBtn.png"))
+
+# Buttons
 
 skull_image = pygame.image.load(
 	path.join(ASSETS_PATH, 'skull.png')
@@ -330,3 +380,17 @@ class Button(pygame.sprite.Sprite):
 
 		win.blit(self.image, self.rect)
 		return action
+
+HyperTile = Message(WIDTH//2, HEIGHT//2-20, 50, "Hyper Tiles", title_font, BLUE, win)
+dash = Message(WIDTH//2+40, HEIGHT//2+40, 50, "Dash...", title_font, GREEN, win)
+tap_to_play = BlinkingText(WIDTH//2, HEIGHT-50, 20, "Tap To Play", tap_to_play_font, WHITE, win)
+
+score_msg = Message(WIDTH//2, HEIGHT//2, 50, "0", score_font, (100, 100, 100), win)
+final_score = Message(WIDTH//3, HEIGHT//2 - 20, 90, "0", score_font, WHITE, win)
+best_msg = Message(WIDTH//2 + 45, HEIGHT//2 - 40, 25, "BEST", None, WHITE, win)
+high_score_msg = Message(WIDTH//2 + 35, HEIGHT//2 - 5, 35, "0", None, WHITE, win)
+
+
+home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 50)
+replay_btn = Button(replay_img, (36,36), WIDTH // 2  - 18, HEIGHT//2 + 45)
+sound_btn = Button(sound_on_img, (24, 24), WIDTH - WIDTH // 4 - 18, HEIGHT//2 + 50)
