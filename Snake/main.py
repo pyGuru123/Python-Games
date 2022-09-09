@@ -46,6 +46,7 @@ logo = pygame.image.load('Assets/logo.jpg')
 logo2 = pygame.image.load('Assets/logo2.jpg')
 
 gameover_img = pygame.image.load('Assets/gameover.png')
+bar_img = pygame.image.load('Assets/bar.png')
 
 # LOADING TILES **************************************************************
 
@@ -99,12 +100,20 @@ def tile_collide(leveld, head):
 
 class Snake:
 	def __init__(self):
-		self.length = 1
+		self.length = 3
 		self.direction = None
 		self.x = COLS // 2
 		self.y = ROWS // 2
-		self.head = [COLS//2 * CELLSIZE, ROWS//2 * CELLSIZE]
-		self.body = [self.head]
+		self.head = COLS//2 * CELLSIZE, ROWS//2 * CELLSIZE
+		self.body = [[self.head[0]-2*CELLSIZE, self.head[1]],
+					[self.head[0]-CELLSIZE, self.head[1]],
+					self.head]
+		print(self.body)
+
+		self.headup = pygame.image.load('Assets/body/uhead.png')
+		self.headdown = pygame.image.load('Assets/body/dhead.png')
+		self.headleft = pygame.image.load('Assets/body/lhead.png')
+		self.headright = pygame.image.load('Assets/body/rhead.png')
 
 	def update(self):
 		head = self.body[-1]
@@ -157,12 +166,27 @@ class Snake:
 		return has_eaten_tail
 
 	def draw(self):
-		for block in self.body:
+		for index, block in enumerate(self.body):
 			x, y = block
-			color = GREEN
-			if block == self.head:
-				color = BLUE
-			pygame.draw.rect(win, color, (x, y, CELLSIZE, CELLSIZE))
+			rect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+			if index == self.length - 1:
+				head = self.body[index]
+				neck = self.body[index-1]
+				image = self.headright
+				if head[0] == neck[0] and head[1] < neck[1]:
+					image = self.headup
+				elif head[0] == neck[0] and head[1] > neck[1]:
+					image = self.headdown
+				elif head[1] == neck[1] and head[0] < neck[0]:
+					image = self.headleft
+				elif head[1] == neck[1] and head[0] > neck[0]:
+					image = self.headright
+				win.blit(image, (x, y))
+			
+			# if block == self.head:
+			# 	win.blit(self.headright, rect)
+			# else:
+			# 	pygame.draw.rect(win, GREEN, rect)
 
 class Food:
 	def __init__(self):
@@ -341,8 +365,9 @@ while running:
 				win.blit(score_img, (WIDTH-30 - score_img.get_width()//2, HEIGHT - 50))
 
 			elif cmode == 2:
-				pygame.draw.rect(win, RED, (WIDTH//2-50, HEIGHT-50, score*10, 16), border_radius=10)
-				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-50, 100, 16),1 , border_radius=10)
+				bar = pygame.transform.scale(bar_img, (score*10, 10))
+				win.blit(bar, (WIDTH//2-50, HEIGHT-50))
+				pygame.draw.rect(win, WHITE, (WIDTH//2-50, HEIGHT-51, 100, 10),1 , border_radius=10)
 
 				if score and score % 10 == 0:
 					level += 1
