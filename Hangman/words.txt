@@ -1,0 +1,54 @@
+﻿Greedy : लालची
+Revenge : बदला
+Tough : कठिन
+Cost : कीमत
+Spoil : खराब कर देना
+Know : जानना
+Goal : लक्ष्य
+Praise : तारीफ करना
+Need : जरूरत
+Tolerate : बर्दाश्त करना
+Irritate : चिढाना
+Honest : ईमानदार 
+Neighbour : पड़ोसी
+Exception : अपवाद
+Imitate : नकल करना
+Violence : हिंसा
+Intention : इरादा
+Illusion : भ्रम
+Willpower : इचछाशक्ति
+Flexible : लचीला
+Lucky : भाग्यशाली
+Wicked : दुब्ट
+Weak : कमजोर
+Enemy :  दुश्मन
+Effect : प्रभाव
+Demand : माँग
+Spend : खर्च करना
+Accurate : सटीक
+Arrogant : अहंकारी
+Learn : सीखना
+Allow : अनुमति देना
+Hesitate : संकोच करना
+Bother : तंग करना
+Stubborn : जिद्दी
+Rotten : सड़ा हुआ
+Ultimate : अंतिम
+Almost : लगभग
+Innocent : निर्दोष
+Guilty : दोषी
+Perhaps : शायद
+Result : परिणाम
+Faithful : वफादार
+Blame : दोष देना
+Rely : भरोसा करना
+Actually : दरअसल
+Destroy : बर्बाद करना
+Wink : आँख मारना
+Burden : बोझ
+Justify : सही साबित करना
+Wise : समझदार
+Priority : प्राथमिकता
+Regular : नियमित
+Agree : सहमत होना
+Risky : खतरे वाला
