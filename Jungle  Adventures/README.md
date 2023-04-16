@@ -2,7 +2,11 @@
 
 This is a 2D RPG game based on the real-life military operation Linda Nchi conducted by the Kenyan army against Al-Shabaab militants in Somalia. The game features a variety of enemies, weapons, and levels that the player must navigate in order to complete the game.
 
-##Screenshots
+## Play here
+![Play](https://muriungi6.itch.io/jungle-adventure)
+
+## Screenshots
+
 ![Menu Screen](https://github.com/riush03/Python-Games/blob/master/Jungle%20%20Adventures/screenshots/Screenshot_1.png)
 ## Requirements
 
