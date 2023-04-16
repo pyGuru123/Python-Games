@@ -3,7 +3,7 @@
 This is a 2D RPG game based on the real-life military operation Linda Nchi conducted by the Kenyan army against Al-Shabaab militants in Somalia. The game features a variety of enemies, weapons, and levels that the player must navigate in order to complete the game.
 
 ##Screenshots
-![Menu Screen]()
+![Menu Screen](https://github.com/riush03/Python-Games/blob/master/Jungle%20Dash%20Adventures/screenshots/Screenshot_1.png)
 ## Requirements
 
 To run this game, you will need to have the following software installed:
