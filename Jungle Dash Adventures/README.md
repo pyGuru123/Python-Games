@@ -1,36 +1,53 @@
-# Jungle Dash
+# Jungle Adventure
 
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-swag.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com)
+This is a 2D RPG game based on the real-life military operation Linda Nchi conducted by the Kenyan army against Al-Shabaab militants in Somalia. The game features a variety of enemies, weapons, and levels that the player must navigate in order to complete the game.
 
-Jungle Dash is a simple 2D platformer game made with python and pygame.
-
-![Alt text](app.png?raw=true "Jungle Dash")
-
-## How to Download
-
-Download this project from here [Download Jungle Dash](https://downgit.github.io/#/home?url=https://github.com/pyGuru123/Python-Games/tree/master/Jungle%20Dash)
-
+##Screenshots
+![Menu Screen]()
 ## Requirements
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install following packages :-
-* Pygame
+To run this game, you will need to have the following software installed:
 
-```bash
-pip install pygame
-```
+- Python 3.x
+- Pygame library[game.py](game.py)
 
-## Usage
+You can install Pygame using the following command:
 
-Double click the game.py to open the game, Click start to start playing the game. The objective of the game is to clear all levels & collecting diamonds without getting hit by bees, slimes or without touching water & lava
 
-Controls:
-* Use Space or Up arrow key to jump.
-* Use Left & Right arrow key to move in left & right direction respectively
+## How to Play
 
-## Contributing
+1. Clone the repository to your local machine using `git clone`.
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+2. Navigate to the game directory in your terminal or command prompt.
 
-Please make sure to update tests as appropriate.
+3. Run the game by executing the `main.py` file:
+
+4. Use the following controls to navigate the game:
+    
+    - ⬆️/SPACE to Jump
+    - ⬅️ to move left
+    - ➡️ to move right
+    - ⬇️ to move down
+
+ 
+5. Your goal is to navigate through each level, defeat enemies, and reach the end of the level without losing all your health. Collect power-ups along the way to gain an advantage against your enemies.
+
+Enjoy the game!
+
+## How to Run/Test
+
+1. Clone the repository to your local machine using `git clone`.
+
+2. Navigate to the game directory in your terminal or command prompt.
+
+3. Double-click on the `OLN.py` file to run the game.
+
+4. Use the following controls to navigate the game:
+    
+    - ⬆️/SPACE to Jump
+    - ⬅️ to move left
+    - ➡️ to move right
+    - ⬇️ to move down
+ 
+
+Enjoy the game.
