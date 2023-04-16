@@ -6,7 +6,6 @@ from pygame.locals import *
 from pygame import mixer
 from pygame.locals import *
 import asyncio
-import pygbag
 
 class Adventurer:
 	def __init__(self, screen, pos, world, groups):
@@ -613,7 +612,7 @@ game_over = False
 level_won = False
 game_won = False
 running = True
-async def run():
+async def main():
 
     # Use global variables inside the coroutine
     global score, cur_score, main_menu, game_over, level_won, game_won, running, bg, level, world
@@ -622,6 +621,7 @@ async def run():
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+
 
         pressed_keys = pygame.key.get_pressed()
 
@@ -708,5 +708,7 @@ async def run():
 
     pygame.quit()
 
-asyncio.run(run())
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
